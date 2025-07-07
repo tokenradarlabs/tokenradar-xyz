@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { api } from "@/trpc/react";
 
 const formSchema = z.object({
   email: z.string().min(1, "Email is required").email("Please enter a valid email address"),
@@ -33,9 +35,19 @@ export default function RegisterForm() {
     },
   });
 
+  const registerMutation = api.auth.register.useMutation({
+    onSuccess: () => {
+      toast.success("Registration successful!");
+      // Clear the form
+      form.reset();
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
   async function onSubmit(values: FormData) {
-    // TODO: Implement registration logic
-    console.log(values);
+    registerMutation.mutate(values);
   }
 
   return (
@@ -58,6 +70,7 @@ export default function RegisterForm() {
                       type="email" 
                       {...field} 
                       onBlur={field.onBlur}
+                      disabled={registerMutation.isPending}
                     />
                   </FormControl>
                   <FormMessage />
@@ -76,6 +89,7 @@ export default function RegisterForm() {
                       type="password" 
                       {...field}
                       onBlur={field.onBlur}
+                      disabled={registerMutation.isPending}
                     />
                   </FormControl>
                   <FormMessage />
@@ -85,10 +99,15 @@ export default function RegisterForm() {
             <Button 
               type="submit" 
               className="w-full"
-              disabled={!form.formState.isValid && form.formState.isSubmitted}
+              disabled={!form.formState.isValid || registerMutation.isPending}
             >
-              Register
+              {registerMutation.isPending ? "Registering..." : "Register"}
             </Button>
+            {registerMutation.isSuccess && (
+              <p className="text-center text-green-600 mt-4">
+                Successfully registered! ✅
+              </p>
+            )}
           </form>
         </Form>
       </CardContent>

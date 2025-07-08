@@ -1,7 +1,10 @@
 import { z } from "zod";
+import { hash } from "bcryptjs";
 import { TRPCError } from "@trpc/server";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+
+const HASH_ROUNDS = 12; // Industry standard for bcrypt
 
 const registerSchema = z.object({
   email: z.string().min(1, "Email is required").email("Please enter a valid email address"),
@@ -26,19 +29,20 @@ export const authRouter = createTRPCRouter({
         });
       }
 
-      // Create user - temporarily store plain password
-      // TODO: PR #2 - Add password hashing
-      // TODO: PR #3 - Update schema to properly store password
+      // Hash password with bcrypt
+      const hashedPassword = await hash(password, HASH_ROUNDS);
+
+      // Create user
+      // Note: We're temporarily storing the hashed password in providerAccountId
+      // This will be moved to a proper password field in the next PR
       const user = await ctx.db.user.create({
         data: {
           email,
-          // For now, we'll create a basic account without password
-          // This will be updated in PR #3 with proper schema
           accounts: {
             create: {
               type: "credentials",
               provider: "credentials",
-              providerAccountId: email,
+              providerAccountId: hashedPassword,
             },
           },
         },

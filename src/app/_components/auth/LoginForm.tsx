@@ -1,10 +1,11 @@
-"use client"
+"use client";
 
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -12,50 +13,51 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { api } from "@/trpc/react";
 
-const loginFormSchema = z.object({
+const formSchema = z.object({
   email: z.string().min(1, "Email is required").email("Please enter a valid email address"),
   password: z.string().min(1, "Password is required"),
-})
+});
 
-type LoginFormValues = z.infer<typeof loginFormSchema>
+type FormData = z.infer<typeof formSchema>;
 
-export function LoginForm() {
-  const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginFormSchema),
+export default function LoginForm() {
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
     mode: "all",
     defaultValues: {
       email: "",
       password: "",
     },
-  })
+  });
 
-  async function onSubmit(data: LoginFormValues) {
-    try {
-      // TODO: Implement login logic here
-      console.log(data)
-    } catch (error) {
-      console.error("Login failed:", error)
-      form.setError("root", {
-        message: "Invalid email or password",
-      })
-    }
+  const loginMutation = api.auth.login.useMutation({
+    onSuccess: () => {
+      toast.success("Login successful!");
+      // Clear the form
+      form.reset();
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  async function onSubmit(values: FormData) {
+    loginMutation.mutate(values);
   }
 
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center">Welcome Back</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="email"
@@ -63,18 +65,18 @@ export function LoginForm() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Enter your email"
-                      type="email"
-                      {...field}
+                    <Input 
+                      placeholder="Enter your email" 
+                      type="email" 
+                      {...field} 
                       onBlur={field.onBlur}
+                      disabled={loginMutation.isPending}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="password"
@@ -82,34 +84,33 @@ export function LoginForm() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Enter your password"
+                    <Input 
+                      placeholder="Enter your password" 
+                      type="password" 
                       {...field}
                       onBlur={field.onBlur}
+                      disabled={loginMutation.isPending}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
-            {form.formState.errors.root && (
-              <div className="text-sm text-destructive">
-                {form.formState.errors.root.message}
-              </div>
-            )}
-
-            <Button
-              type="submit"
+            <Button 
+              type="submit" 
               className="w-full"
-              disabled={!form.formState.isValid && form.formState.isSubmitted}
+              disabled={!form.formState.isValid || loginMutation.isPending}
             >
-              Sign in
+              {loginMutation.isPending ? "Logging in..." : "Login"}
             </Button>
+            {loginMutation.isSuccess && (
+              <p className="text-center text-green-600 mt-4">
+                Successfully logged in! ✅
+              </p>
+            )}
           </form>
         </Form>
       </CardContent>
     </Card>
-  )
+  );
 } 

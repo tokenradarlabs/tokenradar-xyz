@@ -32,9 +32,7 @@ export const authRouter = createTRPCRouter({
       // Hash password with bcrypt
       const hashedPassword = await hash(password, HASH_ROUNDS);
 
-      // Create user
-      // Note: We're temporarily storing the hashed password in providerAccountId
-      // This will be moved to a proper password field in the next PR
+      // Create user with proper password storage
       const user = await ctx.db.user.create({
         data: {
           email,
@@ -42,7 +40,8 @@ export const authRouter = createTRPCRouter({
             create: {
               type: "credentials",
               provider: "credentials",
-              providerAccountId: hashedPassword,
+              providerAccountId: email, // Use email as the provider account ID
+              password: hashedPassword, // Store hashed password in the dedicated field
             },
           },
         },

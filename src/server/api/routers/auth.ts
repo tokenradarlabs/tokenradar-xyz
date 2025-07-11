@@ -3,6 +3,7 @@ import { hash, compare } from "bcryptjs";
 import { TRPCError } from "@trpc/server";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { signJWT } from "@/lib/jwt";
 
 const HASH_ROUNDS = 12;
 
@@ -73,7 +74,7 @@ export const authRouter = createTRPCRouter({
         },
       });
 
-      if (!user || user.accounts.length === 0) {
+      if (!user || user.accounts.length === 0 || !user.email) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "No user found with this email",
@@ -99,10 +100,16 @@ export const authRouter = createTRPCRouter({
         });
       }
 
-      // For now, just return success. JWT implementation will come in next PR
+      // Generate JWT token
+      const token = signJWT({
+        userId: user.id,
+        email: user.email,
+      });
+
       return {
         success: true,
         userId: user.id,
+        token,
       };
     }),
 }); 

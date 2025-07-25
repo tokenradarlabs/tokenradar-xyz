@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "./button";
 
 export function Navbar() {
@@ -7,7 +8,8 @@ export function Navbar() {
       <nav className="w-full border-b border-white/10 bg-gradient-to-r from-[#0f172a] via-[#1e293b] to-[#0f172a] backdrop-blur supports-[backdrop-filter]:bg-opacity-60">
         <div className="flex h-14 items-center px-20 mx-auto max-w-7xl">
           <div className="flex">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center gap-2">
+              <Image src="/logo.png" alt="TokenRadar Logo" width={28} height={28} className="rounded-full" />
               <span className="font-bold text-lg bg-gradient-to-r from-[#a78bfa] via-[#6ee7ff] to-white bg-clip-text text-transparent">
                 TokenRadar-xyz
               </span>

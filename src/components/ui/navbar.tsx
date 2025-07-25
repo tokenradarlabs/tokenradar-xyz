@@ -9,7 +9,7 @@ export function Navbar() {
           <div className="flex">
             <Link href="/" className="flex items-center space-x-2">
               <span className="font-bold text-lg bg-gradient-to-r from-[#a78bfa] via-[#6ee7ff] to-white bg-clip-text text-transparent">
-                TokenRadar
+                TokenRadar-xyz
               </span>
             </Link>
           </div>

@@ -6,8 +6,8 @@ export default function Home() {
       {/* Header */}
       <div className="flex flex-col items-center gap-4 mb-10">
         <div className="flex items-center gap-2">
-          <div className="bg-white/10 rounded-full p-2">
-            <Image src="/globe.svg" alt="TokenRadar Labs Logo" width={40} height={40} />
+          <div className="rounded-full p-2">
+            <Image src="/logo.png" alt="TokenRadar Labs Logo" width={40} height={40} />
           </div>
           <span className="text-xl font-semibold text-[#6ee7ff]">TokenRadar Labs</span>
         </div>

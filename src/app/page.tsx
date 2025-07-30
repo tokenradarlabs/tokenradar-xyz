@@ -2,7 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useRef } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Home() {
   return (
@@ -22,66 +27,28 @@ export default function Home() {
           TokenRadar delivers real-time token price tracking and market insights for your crypto community.<br />Stay ahead with instant alerts and comprehensive market data.
         </p>
         <div className="flex gap-4 mt-6 flex-col sm:flex-row relative">
-          {/* Dropdown logic with delay */}
-          {(() => {
-            const [open, setOpen] = useState(false);
-            const closeTimeout = useRef<NodeJS.Timeout | null>(null);
-
-            const handleOpen = () => {
-              if (closeTimeout.current) clearTimeout(closeTimeout.current);
-              setOpen(true);
-            };
-            const handleClose = () => {
-              closeTimeout.current = setTimeout(() => setOpen(false), 200);
-            };
-            const handleDropdownEnter = () => {
-              if (closeTimeout.current) clearTimeout(closeTimeout.current);
-            };
-            const handleDropdownLeave = () => {
-              closeTimeout.current = setTimeout(() => setOpen(false), 200);
-            };
-
-            return (
-              <div
-                className="relative"
-                onMouseEnter={handleOpen}
-                onMouseLeave={handleClose}
-                onFocus={handleOpen}
-                onBlur={handleClose}
-                tabIndex={0}
-              >
-                <button
-                  className="bg-[#22d3ee] hover:bg-[#0ea5e9] text-white font-semibold px-6 py-3 rounded-lg shadow transition-all flex items-center gap-2 justify-center focus:outline-none"
-                  aria-haspopup="true"
-                  aria-expanded={open}
-                >
-                  <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path stroke="#fff" strokeWidth="2" d="M3 17l6-6 4 4 8-8"/></svg>
-                  Start Tracking
-                </button>
-                {/* Dropdown with delay */}
-                {open && (
-                  <div
-                    className="absolute left-0 w-48 mt-2 z-10"
-                    onMouseEnter={handleDropdownEnter}
-                    onMouseLeave={handleDropdownLeave}
-                  >
-                    <div className="bg-[#10172a] rounded-lg shadow-lg py-2 flex flex-col">
-                      <Link href="/priceAlerts" className="px-4 py-2 hover:bg-[#a78bfa]/20 text-white flex items-center gap-2 rounded-t-lg transition-colors">
-                        {/* Dollar icon from public folder */}
-                        <Image src="/dollar.svg" alt="Dollar icon" width={18} height={18} />
-                        Price Alerts
-                      </Link>
-                      <Link href="/percentageAlerts" className="px-4 py-2 hover:bg-[#6ee7ff]/20 text-white flex items-center gap-2 rounded-b-lg transition-colors">
-                        {/* Percent icon from public folder */}
-                        <Image src="/percent.svg" alt="Percent icon" width={18} height={18} />
-                        Percentage Alerts
-                      </Link>
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })()}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="bg-[#22d3ee] hover:bg-[#0ea5e9] text-white font-semibold px-6 py-3 rounded-lg shadow transition-all flex items-center gap-2 justify-center focus:outline-none">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path stroke="#fff" strokeWidth="2" d="M3 17l6-6 4 4 8-8"/></svg>
+                Start Tracking
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-48 bg-[#10172a] border-slate-700">
+              <DropdownMenuItem asChild>
+                <Link href="/price" className="px-4 py-2 hover:bg-[#a78bfa]/20 text-white flex items-center gap-2 rounded-t-lg transition-colors cursor-pointer">
+                  <Image src="/dollar.svg" alt="Dollar icon" width={18} height={18} />
+                  Price Alerts
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/percentageAlerts" className="px-4 py-2 hover:bg-[#6ee7ff]/20 text-white flex items-center gap-2 rounded-b-lg transition-colors cursor-pointer">
+                  <Image src="/percent.svg" alt="Percent icon" width={18} height={18} />
+                  Percentage Alerts
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <button className="bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-3 rounded-lg border border-white/10 flex items-center gap-2 justify-center">
             <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="2" stroke="#fff" strokeWidth="2"/><path stroke="#fff" strokeWidth="2" d="M4 10h16"/></svg>
             View Features

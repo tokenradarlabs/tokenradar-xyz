@@ -25,8 +25,8 @@ export function RegisterForm() {
       password: "",
       confirmPassword: "",
     },
-    mode: "onChange",
-    criteriaMode: "all",
+    mode: "onChange", // Validate on change
+    criteriaMode: "all", // Show all validation criteria
   });
 
   async function onSubmit(values: RegisterFormData) {

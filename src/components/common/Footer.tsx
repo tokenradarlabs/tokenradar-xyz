@@ -3,14 +3,6 @@
 import React from "react";
 import Link from "next/link";
 
-/**
- * Footer component for TokenRadar Labs
- * - Logo and company name with gradient styling
- * - Company description
- * - Four columns: Features, Company, Connect
- * - Copyright text
- * - Dark/light mode support (black for dark, navy blue for light)
- */
 export default function Footer() {
   return (
     <footer className="bg-gradient-to-br from-slate-50 to-blue-50 dark:from-transparent dark:to-transparent dark:bg-black text-slate-800 dark:text-white py-12">

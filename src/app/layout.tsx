@@ -2,7 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Navbar } from "@/components/ui/navbar";
 import "./globals.css";
 import Footer from "@/components/common/Footer";
-import { NextSeo } from "next-seo";
+import { Metadata } from "next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,21 +14,21 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-<NextSeo
-  title="Tokenradar-xyz"
-  description="Real-Time Crypto Market Intelligence"
-  openGraph={{
+export const metadata: Metadata = {
+  title: "Tokenradar-xyz",
+  description: "Real-Time Crypto Market Intelligence",
+  openGraph: {
     images: [
       {
         url:'https://raw.githubusercontent.com/tokenradarlabs/tokenradar-xyz/main/public/logo.png',
         width: 800,
         height: 600,
         alt: 'Tokenradar-xyz image alt',
-        type: 'logo.png',
+        type: 'image/png',
       }
     ]
-  }}
-/>
+  }
+}
 
 export default function RootLayout({
   children,

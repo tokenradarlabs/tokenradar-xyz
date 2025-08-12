@@ -1,20 +1,22 @@
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image';
+import Link from 'next/link';
 
 export function AuthSide() {
   return (
-    <div className="hidden lg:flex flex-col items-center justify-center h-full bg-gray-900 text-white p-8">
-      <Link href="/" className="flex items-center gap-2 mb-8">
-        <Image src="/logo.png" alt="TokenRadar.xyz" width={40} height={40} />
-        <h1 className="text-2xl font-bold">TokenRadar.xyz</h1>
+    <div className='hidden h-full flex-col items-center justify-center bg-gray-900 p-8 text-white lg:flex'>
+      <Link href='/' className='mb-8 flex items-center gap-2'>
+        <Image src='/logo.png' alt='TokenRadar.xyz' width={150} height={150} />
       </Link>
-      <div className="text-center">
-        <h2 className="text-3xl font-bold mb-4">
-          Welcome to TokenRadar.xyz
+      <div className='text-center'>
+        <h2 className='mb-4 text-3xl font-bold'>
+          <span className='animate-gradient bg-gradient-to-r from-pink-500 via-blue-400 to-cyan-400 bg-clip-text text-transparent'>
+            Welcome to TokenRadar.xyz
+          </span>
         </h2>
-        <p className="text-gray-300">
-          Your one-stop solution for tracking cryptocurrency prices and
-          setting up alerts.
+
+        <p className='text-gray-300'>
+          Your one-stop solution for tracking cryptocurrency prices and setting
+          up alerts.
         </p>
       </div>
     </div>

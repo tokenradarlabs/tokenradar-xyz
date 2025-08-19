@@ -2,11 +2,7 @@
 import React from "react";
 import { PlugZap, Bot, Percent } from "lucide-react";
 
-type Coin = { label: string; icon: React.ReactNode };
-type Channel = { label: string; value: string; icon: React.ReactNode };
-type Direction = { label: string; value: string; icon: React.ReactNode };
-type Interval = { label: string; value: string };
-type Exchange = { label: string; value: string };
+type SelectOption = { label: string; value: string };
 
 type Props = {
   channel: string; setChannel: (v: string) => void;
@@ -17,68 +13,70 @@ type Props = {
   percent: string; setPercent: (v: string) => void;
   interval: string; setInterval: (v: string) => void;
   exchange: string; setExchange: (v: string) => void;
-  coins: Coin[]; channels: Channel[]; directions: Direction[];
-  intervals: Interval[]; exchanges: Exchange[];
+  channels: SelectOption[];
+  coins: SelectOption[];
+  directions: SelectOption[];
+  intervals: SelectOption[];
+  exchanges: SelectOption[];
   onSubmit: (e: React.FormEvent) => void;
   price?: string;
 };
+
+const selectClass = "w-full px-4 py-2 rounded-lg bg-gray-800 text-gray-100 focus:ring-2 focus:ring-pink-500 border border-gray-700 outline-none transition";
+const labelClass = "block font-medium text-gray-300 mb-1 text-sm";
+
 const PercentAlertForm: React.FC<Props> = ({
-  channel, setChannel, webhook, setWebhook,
-  discordBot, setDiscordBot, coin, setCoin,
-  direction, setDirection, percent, setPercent,
+  channel, setChannel, webhook, setWebhook, discordBot, setDiscordBot,
+  coin, setCoin, direction, setDirection, percent, setPercent,
   interval, setInterval, exchange, setExchange,
-  coins, channels, directions, intervals, exchanges,
-  onSubmit, price
+  channels, coins, directions, intervals, exchanges, onSubmit, price,
 }) => (
-  <form className="space-y-5" onSubmit={onSubmit}>
+  <form className="space-y-7" onSubmit={onSubmit}>
     {/* Channel */}
     <div>
-      <label className="block font-medium text-gray-700 dark:text-gray-300 mb-1">Channel</label>
-      <select value={channel} onChange={e => setChannel(e.target.value)}
-        className="w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+      <label className={labelClass}>Channel</label>
+      <select value={channel} onChange={e => setChannel(e.target.value)} className={selectClass}>
         {channels.map(ch => (
           <option key={ch.value} value={ch.value}>{ch.label}</option>
         ))}
       </select>
     </div>
-    {/* Conditional Inputs */}
+    {/* Conditional */}
     {channel === "webhook" && (
       <div>
-        <label className="block font-medium text-gray-700 dark:text-gray-300 mb-1">Webhook URL</label>
-        <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2">
-          <PlugZap className="mr-2 text-indigo-600" />
+        <label className={labelClass}>Webhook URL</label>
+        <div className="flex items-center bg-gray-800 rounded-lg px-4 py-2 border border-gray-700">
+          <PlugZap className="mr-2 text-pink-400" />
           <input type="url" value={webhook} onChange={e => setWebhook(e.target.value)}
             placeholder="https://webhook.site/..." required
-            className="bg-transparent outline-none w-full text-gray-900 dark:text-white" />
+            className="bg-transparent outline-none w-full text-gray-100 placeholder-gray-400" />
         </div>
       </div>
     )}
     {channel === "discord" && (
       <div>
-        <label className="block font-medium text-gray-700 dark:text-gray-300 mb-1">Discord Bot Token</label>
-        <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2">
-          <Bot className="mr-2 text-purple-600" />
+        <label className={labelClass}>Discord Bot Token</label>
+        <div className="flex items-center bg-gray-800 rounded-lg px-4 py-2 border border-gray-700">
+          <Bot className="mr-2 text-purple-400" />
           <input type="text" value={discordBot} onChange={e => setDiscordBot(e.target.value)}
             placeholder="Paste Discord Bot Token"
-            className="bg-transparent outline-none w-full text-gray-900 dark:text-white" />
+            className="bg-transparent outline-none w-full text-gray-100 placeholder-gray-400" />
         </div>
       </div>
     )}
     {/* Coin + Direction */}
     <div className="grid grid-cols-2 gap-5">
       <div>
-        <label className="block font-medium text-gray-700 dark:text-gray-300 mb-1">Coin</label>
-        <select value={coin} onChange={e => setCoin(e.target.value)}
-          className="w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+        <label className={labelClass}>Coin</label>
+        <select value={coin} onChange={e => setCoin(e.target.value)} className={selectClass}>
           {coins.map(c => (
-            <option key={c.label} value={c.label}>{c.label}</option>
+            <option key={c.value} value={c.value}>{c.label}</option>
           ))}
         </select>
       </div>
       <div>
-        <label className="block font-medium text-gray-700 dark:text-gray-300 mb-1">Direction</label>
-        <select value={direction} onChange={e => setDirection(e.target.value)}
-          className="w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+        <label className={labelClass}>Direction</label>
+        <select value={direction} onChange={e => setDirection(e.target.value)} className={selectClass}>
           {directions.map(dir => (
             <option key={dir.value} value={dir.value}>{dir.label}</option>
           ))}
@@ -88,18 +86,17 @@ const PercentAlertForm: React.FC<Props> = ({
     {/* Percent + Interval */}
     <div className="grid grid-cols-2 gap-5">
       <div>
-        <label className="block font-medium text-gray-700 dark:text-gray-300 mb-1">Percent (%)</label>
-        <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2">
-          <Percent className="mr-2 text-pink-500" />
+        <label className={labelClass}>Percent (%)</label>
+        <div className="flex items-center bg-gray-800 rounded-lg px-4 py-2 border border-gray-700">
+          <Percent className="mr-2 text-pink-400" />
           <input type="number" value={percent} onChange={e => setPercent(e.target.value)}
-            min="0" max="100" placeholder="00"
-            className="bg-transparent outline-none w-full text-gray-900 dark:text-white" required />
+            min="0" max="100" required placeholder="00"
+            className="bg-transparent outline-none w-full text-gray-100 placeholder-gray-400" />
         </div>
       </div>
       <div>
-        <label className="block font-medium text-gray-700 dark:text-gray-300 mb-1">Interval</label>
-        <select value={interval} onChange={e => setInterval(e.target.value)}
-          className="w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+        <label className={labelClass}>Interval</label>
+        <select value={interval} onChange={e => setInterval(e.target.value)} className={selectClass}>
           {intervals.map(i => (
             <option key={i.value} value={i.value}>{i.label}</option>
           ))}
@@ -108,22 +105,22 @@ const PercentAlertForm: React.FC<Props> = ({
     </div>
     {/* Exchange */}
     <div>
-      <label className="block font-medium text-gray-700 dark:text-gray-300 mb-1">Exchange</label>
-      <select value={exchange} onChange={e => setExchange(e.target.value)}
-        className="w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
+      <label className={labelClass}>Exchange</label>
+      <select value={exchange} onChange={e => setExchange(e.target.value)} className={selectClass}>
         {exchanges.map(ex => (
           <option key={ex.value} value={ex.value}>{ex.label}</option>
         ))}
       </select>
     </div>
     {/* Price Note */}
-    <div className="text-sm mt-3 text-gray-500 dark:text-gray-400">
-      ⚡ The price of {coin} is currently <span className="text-green-600 font-bold">{price ?? '...'}</span>.
+    <div className="text-sm mt-3 text-gray-400">
+      ⚡ The price of {coin} is currently <span className="text-green-400 font-bold">{price ?? '...'}</span>.
     </div>
     <button type="submit"
-      className="w-full py-3 mt-4 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-purple-700 hover:to-blue-600 text-white font-bold rounded-xl shadow-lg transition-all duration-200">
+      className="w-full py-3 mt-6 bg-gradient-to-r from-pink-600 to-purple-700 hover:from-purple-700 hover:to-blue-600 text-white font-bold rounded-xl shadow-lg transition">
       Set Alert
     </button>
   </form>
 );
+
 export default PercentAlertForm;

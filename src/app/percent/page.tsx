@@ -1,20 +1,19 @@
 "use client";
 import React, { useState } from "react";
-import { PlugZap, Bot, Percent, ArrowUp, ArrowDown, Bitcoin } from "lucide-react";
 import PercentAlertForm from "@/components/PercentAlertForm/PercentAlertForm";
 
 const channels = [
-  { label: "Webhook", value: "webhook", icon: <PlugZap className="mr-1 text-indigo-600" size={20} /> },
-  { label: "Discord Bot", value: "discord", icon: <Bot className="mr-1 text-purple-600" size={20} /> },
+  { label: "Webhook", value: "webhook" },
+  { label: "Discord Bot", value: "discord" },
 ];
 const coins = [
-  { label: "BTC", icon: <Bitcoin className="inline mr-1 text-yellow-500" size={18} /> },
-  { label: "ETH", icon: <span className="inline-block mr-1 w-4 h-4 bg-blue-500 rounded-full"></span> },
-  { label: "USDT", icon: <span className="inline-block mr-1 w-4 h-4 bg-green-500 rounded-full"></span> },
+  { label: "BTC", value: "BTC" },
+  { label: "ETH", value: "ETH" },
+  { label: "USDT", value: "USDT" },
 ];
 const directions = [
-  { label: "goes up", value: "up", icon: <ArrowUp className="inline mr-1 text-green-600" size={18} /> },
-  { label: "goes down", value: "down", icon: <ArrowDown className="inline mr-1 text-red-600" size={18} /> },
+  { label: "goes up", value: "up" },
+  { label: "goes down", value: "down" },
 ];
 const intervals = [
   { label: "5 minutes", value: "5m" },
@@ -31,21 +30,18 @@ export default function PercentPage() {
   const [channel, setChannel] = useState(channels[0].value);
   const [webhook, setWebhook] = useState("");
   const [discordBot, setDiscordBot] = useState("");
-  const [coin, setCoin] = useState(coins[0].label);
+  const [coin, setCoin] = useState(coins[0].value);
   const [direction, setDirection] = useState(directions[0].value);
   const [percent, setPercent] = useState("");
   const [interval, setInterval] = useState(intervals[0].value);
   const [exchange, setExchange] = useState(exchanges[0].value);
 
-  // Demo static price, replace with real data if needed
   const price = "117,197.41 USD";
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle logic here
     const formData = { channel, webhook, discordBot, coin, direction, percent, interval, exchange };
     console.log(formData);
-    // API call, feedback etc. can be added
   };
 
   return (
@@ -66,7 +62,7 @@ export default function PercentPage() {
           percent={percent} setPercent={setPercent}
           interval={interval} setInterval={setInterval}
           exchange={exchange} setExchange={setExchange}
-          coins={coins} channels={channels}
+          channels={channels} coins={coins}
           directions={directions} intervals={intervals}
           exchanges={exchanges}
           onSubmit={handleSubmit}

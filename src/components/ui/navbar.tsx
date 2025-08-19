@@ -1,19 +1,25 @@
 "use client";
-
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "./button";
 
 const NAV_ITEMS = [
-  { label: "Price", icon: <span className="mr-1">📈</span> },
-  { label: "Percent", icon: <span className="mr-1">%</span> },
-  { label: "Periodic", icon: <span className="mr-1">⏱️</span> },
-  { label: "Volume", icon: <span className="mr-1">📊</span> },
+  { label: "Price", icon: <span className="mr-1">📈</span>, path: "/price" },
+  { label: "Percent", icon: <span className="mr-1">%</span>, path: "/percent" },
+  { label: "Periodic", icon: <span className="mr-1">⏱️</span>, path: "/periodic" },
+  { label: "Volume", icon: <span className="mr-1">📊</span>, path: "/volume" },
 ];
 
 export function Navbar() {
   const [active, setActive] = useState(0);
+  const router = useRouter();
+
+  const handleTabClick = (idx: number, path: string) => {
+    setActive(idx);
+    router.push(path);
+  };
 
   return (
     <div className="sticky top-0 z-50">
@@ -36,13 +42,13 @@ export function Navbar() {
             </Link>
           </div>
           
-          {/* Center Tab Bar */}
+          {/* Center Tab Bar - navigation */}
           <div className="flex-1 flex justify-center w-full md:w-auto mb-1 md:mb-0">
             <div className="flex flex-row flex-wrap gap-0 px-0 py-0 rounded-lg">
               {NAV_ITEMS.map((item, idx) => (
                 <button
                   key={item.label}
-                  onClick={() => setActive(idx)}
+                  onClick={() => handleTabClick(idx, item.path)}
                   className={`flex items-center px-3 md:px-4 py-2 rounded-md font-medium focus:outline-none transition
                     ${active === idx
                       ? "bg-[#313440] text-white shadow"

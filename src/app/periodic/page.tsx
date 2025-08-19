@@ -6,20 +6,33 @@ const channels = [
   { label: "Webhook", value: "webhook" },
   { label: "Discord Bot", value: "discord" },
 ];
-const coins = ["BTC", "ETH", "USDT"];
-const conditions = ["above", "below"];
-const currencies = ["USD", "EUR"];
-const exchanges = ["CoinGecko", "Uniswap"];
+const coins = [
+  { label: "BTC", value: "BTC" },
+  { label: "ETH", value: "ETH" },
+  { label: "USDT", value: "USDT" },
+];
+const conditions = [
+  { label: "above", value: "above" },
+  { label: "below", value: "below" }
+];
+const currencies = [
+  { label: "USD", value: "USD" },
+  { label: "EUR", value: "EUR" }
+];
+const exchanges = [
+  { label: "CoinGecko", value: "CoinGecko" },
+  { label: "Uniswap", value: "Uniswap" }
+];
 
 export default function PeriodicPage() {
-  const [coin, setCoin] = useState(coins[0]); 
+  const [coin, setCoin] = useState(coins[0].value);
   const [channel, setChannel] = useState(channels[0].value);
   const [webhook, setWebhook] = useState("");
   const [discordBot, setDiscordBot] = useState("");
-  const [condition, setCondition] = useState(conditions[0]);
+  const [condition, setCondition] = useState(conditions[0].value);
   const [price, setPrice] = useState("");
-  const [currency, setCurrency] = useState(currencies[0]);
-  const [exchange, setExchange] = useState(exchanges[0]);
+  const [currency, setCurrency] = useState(currencies[0].value);
+  const [exchange, setExchange] = useState(exchanges[0].value);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +50,7 @@ export default function PeriodicPage() {
           channel={channel} setChannel={setChannel}
           webhook={webhook} setWebhook={setWebhook}
           discordBot={discordBot} setDiscordBot={setDiscordBot}
-          coin={coin} setCoin={setCoin}   
+          coin={coin} setCoin={setCoin}
           condition={condition} setCondition={setCondition}
           price={price} setPrice={setPrice}
           currency={currency} setCurrency={setCurrency}

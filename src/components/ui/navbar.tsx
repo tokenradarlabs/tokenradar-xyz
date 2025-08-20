@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { label: "Percent", icon: <span className="mr-1">%</span>, path: "/percent" },
   { label: "Periodic", icon: <span className="mr-1">⏱️</span>, path: "/periodic" },
   { label: "Volume", icon: <span className="mr-1">📊</span>, path: "/volume" },
+  { label: "Coin Listing", icon: <span className="mr-1">🪙</span>, path: "/coin-listing" }, 
 ];
 
 export function Navbar() {
@@ -53,7 +54,7 @@ export function Navbar() {
                     ${active === idx
                       ? "bg-[#313440] text-white shadow"
                       : "text-[#b2b7be] hover:text-white hover:bg-[#313440]"}
-                  `}
+                    `}
                   style={{ fontWeight: active === idx ? 600 : 400, fontSize: "0.95rem" }}
                 >
                   {item.icon}

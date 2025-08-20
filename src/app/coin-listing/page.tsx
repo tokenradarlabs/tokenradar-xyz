@@ -9,24 +9,32 @@ const channels = [
 const coins = ["Any Coin", "BTC", "ETH", "USDT"];
 const exchanges = ["CoinGecko", "Uniswap"];
 
+type AlertFormState = {
+  channel: string;
+  webhook: string;
+  discordBot: string;
+  coin: string;
+  exchange: string;
+};
+
 export default function CoinListingAlertPage() {
-  const [channel, setChannel] = useState<string>(channels[0].value);
-  const [webhook, setWebhook] = useState<string>("");
-  const [discordBot, setDiscordBot] = useState<string>("");
-  const [coin, setCoin] = useState<string>(coins[0]);
-  const [exchange, setExchange] = useState<string>(exchanges[0]);
+  const [form, setForm] = useState<AlertFormState>({
+    channel: channels[0].value,
+    webhook: "",
+    discordBot: "",
+    coin: coins[0],
+    exchange: exchanges[0],
+  });
+
+  // Generic handler for all fields
+  const handleChange = (key: keyof AlertFormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setForm(prev => ({ ...prev, [key]: e.target.value }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Backend API call or next step here
-    const formData = {
-      channel,
-      webhook,
-      discordBot,
-      coin,
-      exchange,
-    };
-    console.log(formData);
+    console.log(form);
+    // Backend API call here
   };
 
   return (
@@ -46,8 +54,8 @@ export default function CoinListingAlertPage() {
               Send me an
             </label>
             <select
-              value={channel}
-              onChange={e => setChannel(e.target.value)}
+              value={form.channel}
+              onChange={handleChange("channel")}
               className="w-full rounded-lg border-pink-500 focus:border-pink-600 p-2 dark:bg-gray-800 dark:text-white"
             >
               {channels.map((ch) => (
@@ -57,29 +65,29 @@ export default function CoinListingAlertPage() {
           </div>
 
           {/* Webhook/Discord bot input */}
-          {channel === "webhook" && (
+          {form.channel === "webhook" && (
             <div>
               <label className="block font-medium mb-2 text-gray-700 dark:text-gray-300">
                 Webhook URL
               </label>
               <input
                 type="text"
-                value={webhook}
-                onChange={e => setWebhook(e.target.value)}
+                value={form.webhook}
+                onChange={handleChange("webhook")}
                 placeholder="https://webhook.site/..."
                 className="w-full rounded-lg border-pink-300 p-2 dark:bg-gray-800 dark:text-white border"
               />
             </div>
           )}
-          {channel === "discord" && (
+          {form.channel === "discord" && (
             <div>
               <label className="block font-medium mb-2 text-gray-700 dark:text-gray-300">
                 Discord Bot Token
               </label>
               <input
                 type="text"
-                value={discordBot}
-                onChange={e => setDiscordBot(e.target.value)}
+                value={form.discordBot}
+                onChange={handleChange("discordBot")}
                 placeholder="XXXXXX"
                 className="w-full rounded-lg border-pink-300 p-2 dark:bg-gray-800 dark:text-white border"
               />
@@ -92,8 +100,8 @@ export default function CoinListingAlertPage() {
               as soon as
             </label>
             <select
-              value={coin}
-              onChange={e => setCoin(e.target.value)}
+              value={form.coin}
+              onChange={handleChange("coin")}
               className="w-full rounded-lg border-pink-500 p-2 dark:bg-gray-800 dark:text-white"
             >
               {coins.map(c => (
@@ -108,8 +116,8 @@ export default function CoinListingAlertPage() {
               gets listed on
             </label>
             <select
-              value={exchange}
-              onChange={e => setExchange(e.target.value)}
+              value={form.exchange}
+              onChange={handleChange("exchange")}
               className="w-full rounded-lg border-pink-500 p-2 dark:bg-gray-800 dark:text-white"
             >
               {exchanges.map(ex => (
@@ -118,7 +126,7 @@ export default function CoinListingAlertPage() {
             </select>
           </div>
 
-          {/* Last coin detected */}
+          {/* Last coin detected (dummy) */}
           <p className="mt-6 mb-2 text-xs text-green-400 text-center">
             ⚡ Last coin detected: <span className="text-green-300 font-mono">ALKIMI</span> listed on <span className="text-blue-400">Gate.io</span> on <span className="text-green-200">August 20 16:00</span>.
           </p>

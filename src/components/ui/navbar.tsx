@@ -5,24 +5,25 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "./button";
 
+
 const NAV_ITEMS = [
   { label: "Price", icon: <span className="mr-1">📈</span>, path: "/price" },
-  { label: "Percent", icon: <span className="mr-1">%</span>, path: "/percent" },
-  { label: "Periodic", icon: <span className="mr-1">⏱️</span>, path: "/periodic" },
+  { label: "Percentage", icon: <span className="mr-1">%</span>, path: "/priceAlert/percentage" },
+  { label: "Periodic", icon: <span className="mr-1">⏱️</span>, path: "/priceAlert/periodic" },
+  { label: "MarketCap", icon: <span className="mr-1">🏷️</span>, path: "/marketCap" },
   { label: "Volume", icon: <span className="mr-1">📊</span>, path: "/volume" },
-  { label: "Coin Listing", icon: <span className="mr-1">🪙</span>, path: "/coin-listing" }, 
+  { label: "Coin Listing", icon: <span className="mr-1">🪙</span>, path: "/priceAlert/coin-listing" },
 ];
 
 export function Navbar() {
   const [active, setActive] = useState(0);
   const router = useRouter();
-
   const handleTabClick = (idx: number, path: string) => {
     setActive(idx);
     router.push(path);
   };
 
-  return (
+return (
     <div className="sticky top-0 z-50">
       <nav className="w-full border-b border-white/10 bg-gradient-to-r from-[#0f172a] via-[#1e293b] to-[#0f172a] backdrop-blur supports-[backdrop-filter]:bg-opacity-60">
         <div className="

@@ -1,35 +1,40 @@
 'use client';
 import React from 'react';
 
-type AlertFormState = {
+type MarketCapFormState = {
   channel: string;
   webhook: string;
   discordBot: string;
   coin: string;
-  exchange: string;
+  direction: string;
+  cap: string;
 };
+type Option = { label: string; value: string };
+
 type Props = {
-  form: AlertFormState;
+  form: MarketCapFormState;
   handleChange: (
-    key: keyof AlertFormState
+    key: keyof MarketCapFormState
   ) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   handleSubmit: (e: React.FormEvent) => void;
-  channels: { label: string; value: string }[];
-  coins: string[];
-  exchanges: string[];
+  channels: Option[];
+  coins: Option[];
+  directions: Option[];
+  currentMarketCap: string;
 };
 
-export default function CoinListingAlertForm({
+export default function MarketCapAlertForm({
   form,
   handleChange,
   handleSubmit,
   channels,
   coins,
-  exchanges,
+  directions,
+  currentMarketCap,
 }: Props) {
   return (
     <form onSubmit={handleSubmit} className='space-y-5'>
-      {/* Channel select */}
+      {/* Notification channel */}
       <div>
         <label className='mb-2 block font-medium text-gray-700 dark:text-gray-300'>
           Send me an
@@ -46,8 +51,7 @@ export default function CoinListingAlertForm({
           ))}
         </select>
       </div>
-
-      {/* Webhook/Discord bot input */}
+      {/* Webhook/Discord bot */}
       {form.channel === 'webhook' && (
         <div>
           <label className='mb-2 block font-medium text-gray-700 dark:text-gray-300'>
@@ -71,16 +75,15 @@ export default function CoinListingAlertForm({
             type='text'
             value={form.discordBot}
             onChange={handleChange('discordBot')}
-            placeholder='XXXXXX'
+            placeholder='Bot Token'
             className='w-full rounded-lg border border-pink-300 p-2 dark:bg-gray-800 dark:text-white'
           />
         </div>
       )}
-
       {/* Coin select */}
       <div>
         <label className='mb-2 block font-medium text-gray-700 dark:text-gray-300'>
-          as soon as
+          when the
         </label>
         <select
           value={form.coin}
@@ -88,46 +91,55 @@ export default function CoinListingAlertForm({
           className='w-full rounded-lg border-pink-500 p-2 dark:bg-gray-800 dark:text-white'
         >
           {coins.map(c => (
-            <option key={c} value={c}>
-              {c}
+            <option key={c.value} value={c.value}>
+              {c.label}
             </option>
           ))}
         </select>
       </div>
-
-      {/* Exchange select */}
+      {/* Direction + Marketcap */}
       <div>
         <label className='mb-2 block font-medium text-gray-700 dark:text-gray-300'>
-          gets listed on
+          marketcap
         </label>
         <select
-          value={form.exchange}
-          onChange={handleChange('exchange')}
-          className='w-full rounded-lg border-pink-500 p-2 dark:bg-gray-800 dark:text-white'
+          value={form.direction}
+          onChange={handleChange('direction')}
+          className='w-40 rounded-lg border-pink-500 p-2 dark:bg-gray-800 dark:text-white'
         >
-          {exchanges.map(ex => (
-            <option key={ex} value={ex}>
-              {ex}
+          {directions.map(d => (
+            <option key={d.value} value={d.value}>
+              {d.label}
             </option>
           ))}
         </select>
+        <input
+          type='number'
+          inputMode='decimal'
+          value={form.cap}
+          onChange={handleChange('cap')}
+          placeholder='00'
+          className='ml-2 w-24 rounded-lg border border-pink-300 p-2 dark:bg-gray-800 dark:text-white'
+        />
+        <span className='pl-2 text-gray-700 dark:text-gray-300'>
+          billion USD.
+        </span>
       </div>
-
-      {/* Last coin detected */}
+      {/* Current marketcap */}
       <p className='mb-2 mt-6 text-center text-xs text-green-400'>
-        ⚡ Last coin detected:{' '}
-        <span className='font-mono text-green-300'>ALKIMI</span> listed on{' '}
-        <span className='text-blue-400'>Gate.io</span> on{' '}
-        <span className='text-green-200'>August 20 16:00</span>.
+        ⚡ For reference,{' '}
+        <span className='font-mono text-yellow-300'>BTC marketcap</span> is
+        currently{' '}
+        <span className='font-mono text-green-300'>
+          ${currentMarketCap} billion
+        </span>
+        .
       </p>
-
-      {/* Submit Button */}
-      <button
-        type='submit'
-        className='mt-6 w-full rounded-xl bg-gradient-to-r from-pink-600 to-purple-700 py-3 font-bold text-white shadow-lg transition hover:from-purple-700 hover:to-blue-600'
-      >
-        Set Alert
-      </button>
+      {/* Submit button */}
+      <button type="submit"
+      className="w-full py-3 mt-6 bg-gradient-to-r from-pink-600 to-purple-700 hover:from-purple-700 hover:to-blue-600 text-white font-bold rounded-xl shadow-lg transition">
+      Set Alert
+    </button>
     </form>
   );
 }

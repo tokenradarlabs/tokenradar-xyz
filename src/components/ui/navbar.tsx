@@ -54,7 +54,7 @@ export function Navbar() {
                 <svg width='22' height='22' fill='none' viewBox='0 0 24 24'><path stroke='currentColor' strokeWidth='2' d='M6 9l6 6 6-6' /></svg>
               </button>
               {dropdownOpen && (
-                <div className='absolute left-0 top-12 z-50 flex min-w-max flex-col rounded-xl border border-[#313440] bg-[#20232f] shadow-md'>
+                <div className='absolute left-1/2 -translate-x-1/2 top-12 z-50 flex min-w-max flex-col rounded-xl border border-[#313440] bg-[#20232f] shadow-md'>
                   {NAV_ITEMS.map((item, idx) => (
                     <button
                       key={item.label}

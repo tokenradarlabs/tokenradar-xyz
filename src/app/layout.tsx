@@ -1,11 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { Navbar } from "@/components/ui/navbar";
 import "./globals.css";
-import dynamic from "next/dynamic";
-
-const Footer = dynamic(() => import("@/components/common/Footer"), {
-  loading: () => <div className="text-center py-12">Loading Footer...</div>,
-});
+import Footer from "@/components/common/Footer";
 import { Metadata } from "next";
 
 const geistSans = Geist({

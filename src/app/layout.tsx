@@ -40,8 +40,11 @@ export default function RootLayout({
       <body
         className={`dark ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar />
-        <main>{children}</main>
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:z-50 focus:top-0 focus:left-0 focus:bg-white focus:text-black focus:p-3 focus:underline">Skip to main content</a>
+        <header>
+          <Navbar />
+        </header>
+        <main id="main-content">{children}</main>
         <Footer/>
       </body>
     </html>

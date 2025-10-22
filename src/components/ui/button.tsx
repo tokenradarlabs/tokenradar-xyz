@@ -63,9 +63,33 @@ function Button({
       )}
       disabled={asChild ? undefined : isDisabled}
       aria-disabled={isDisabled}
+      aria-busy={loading}
       {...props}
     >
-      {loading ? <Spinner /> : children}
+      <span className={cn(loading && "sr-only")}>
+        {asChild
+          ? React.cloneElement(children as React.ReactElement, {
+              className: cn(
+                (children as React.ReactElement).props.className,
+                loading && "pointer-events-none"
+              ),
+              "aria-hidden": loading ? "true" : undefined,
+            })
+          : children}
+      </span>
+      {loading && (
+        <Spinner
+          className={cn(
+            "absolute",
+            size === "sm" && "size-3",
+            size === "lg" && "size-5",
+            size === "icon" && "size-4",
+            size === "default" && "size-4"
+          )}
+          aria-hidden="true"
+          role="status"
+        />
+      )}
     </Comp>
   );
 }

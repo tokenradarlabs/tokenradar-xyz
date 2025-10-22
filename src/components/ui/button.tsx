@@ -80,7 +80,7 @@ function Button({
           aria-busy={loading}
           {...props}
         >
-          <span className={cn(loading && "invisible")}>{children}</span>
+          <span className={cn(loading && "opacity-0")}>{children}</span>
           {spinner}
         </span>
       );
@@ -117,7 +117,7 @@ function Button({
       child,
       newProps,
       <>
-        <span className={cn(loading && "invisible")}>
+        <span className={cn(loading && "opacity-0")}>
           {childProps.children}
         </span>
         {spinner}
@@ -139,7 +139,7 @@ function Button({
       aria-busy={loading}
       {...props}
     >
-      <span className={cn(loading && "invisible")}>{children}</span>
+      <span className={cn(loading && "opacity-0")}>{children}</span>
       {spinner}
     </button>
   );

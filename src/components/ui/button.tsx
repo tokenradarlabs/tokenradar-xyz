@@ -1,5 +1,4 @@
 import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
@@ -35,25 +34,115 @@ const buttonVariants = cva(
   }
 )
 
+import { Spinner } from "./spinner";
+
+type ButtonProps = React.ComponentProps<"button"> &
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean;
+    loading?: boolean;
+  };
+
 function Button({
   className,
   variant,
   size,
   asChild = false,
+  loading = false,
+  disabled,
+  children,
   ...props
-}: React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean
-  }) {
-  const Comp = asChild ? Slot : "button"
+}: ButtonProps) {
+  const isDisabled = Boolean(disabled || loading);
+
+  const spinner = loading && (
+    <Spinner
+      className={cn(
+        "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
+        size === "sm" && "size-3",
+        size === "lg" && "size-5",
+        (size === "icon" || size === "default") && "size-4"
+      )}
+      aria-hidden="true"
+    />
+  );
+
+  if (asChild) {
+    if (!React.isValidElement(children)) {
+      return (
+        <span
+          data-slot="button"
+          className={cn(
+            buttonVariants({ variant, size, className }),
+            "relative",
+            (isDisabled || loading) && "pointer-events-none"
+          )}
+          aria-disabled={isDisabled}
+          aria-busy={loading}
+          {...props}
+        >
+          <span className={cn(loading && "opacity-0")}>{children}</span>
+          {spinner}
+        </span>
+      );
+    }
+
+    const child = React.Children.only(children);
+    const childProps = child.props as React.ComponentPropsWithoutRef<"button"> &
+      React.ComponentPropsWithoutRef<"a">;
+
+    const newProps: Record<string, any> = {
+      ...props,
+      className: cn(
+        buttonVariants({ variant, size, className }),
+        childProps.className,
+        "relative",
+        (isDisabled || loading) && "pointer-events-none"
+      ),
+      "aria-disabled": isDisabled || undefined,
+      "aria-busy": loading || undefined,
+    };
+
+    if (isDisabled) {
+      newProps.tabIndex = -1;
+      newProps.onClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+      };
+      if (child.type === "a") {
+        newProps.href = undefined;
+      }
+    }
+
+    return React.cloneElement(
+      child,
+      newProps,
+      <>
+        <span className={cn(loading && "opacity-0")}>
+          {childProps.children}
+        </span>
+        {spinner}
+      </>
+    );
+  }
 
   return (
-    <Comp
+    <button
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      type={(props as React.ComponentProps<"button">).type ?? "button"}
+      className={cn(
+        buttonVariants({ variant, size, className }),
+        "relative",
+        (isDisabled || loading) && "pointer-events-none"
+      )}
+      disabled={isDisabled}
+      aria-disabled={isDisabled}
+      aria-busy={loading}
       {...props}
-    />
-  )
+    >
+      <span className={cn(loading && "opacity-0")}>{children}</span>
+      {spinner}
+    </button>
+  );
 }
 
 export { Button, buttonVariants }

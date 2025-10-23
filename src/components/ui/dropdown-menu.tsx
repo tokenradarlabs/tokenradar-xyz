@@ -36,9 +36,38 @@ function DropdownMenuContent({
   sideOffset = 4,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Content>) {
+  const contentRef = React.useRef<HTMLDivElement>(null);
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const items = Array.from(
+      contentRef.current?.querySelectorAll(
+        "[data-slot='dropdown-menu-item'], [data-slot='dropdown-menu-checkbox-item'], [data-slot='dropdown-menu-radio-item'], [data-slot='dropdown-menu-sub-trigger']"
+      ) || []
+    ) as HTMLElement[];
+
+    const focusedItem = document.activeElement as HTMLElement;
+    let focusedIndex = items.indexOf(focusedItem);
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      focusedIndex = (focusedIndex + 1) % items.length;
+      items[focusedIndex]?.focus();
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      focusedIndex = (focusedIndex - 1 + items.length) % items.length;
+      items[focusedIndex]?.focus();
+    } else if (event.key === "Escape") {
+      // Radix UI's DropdownMenuPrimitive.Content should handle closing on Escape by default.
+      // We rely on Radix's default behavior for closing the menu.
+    }
+  };
+
   return (
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content
+        ref={contentRef}
+        tabIndex={-1} // Make the content programmatically focusable
+        onKeyDown={handleKeyDown}
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         className={cn(

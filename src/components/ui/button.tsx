@@ -90,7 +90,7 @@ function Button({
     const childProps = child.props as React.ComponentPropsWithoutRef<"button"> &
       React.ComponentPropsWithoutRef<"a">;
 
-    const newProps: Record<string, any> = {
+    const newProps: React.HTMLAttributes<HTMLElement> & Record<string, unknown> = {
       ...props,
       className: cn(
         buttonVariants({ variant, size, className }),

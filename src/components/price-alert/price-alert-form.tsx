@@ -84,9 +84,9 @@ export function PriceAlertForm() {
         Real-time price tracking with high-precision alerts for your crypto assets.
       </p>
 
-      <div className="grid grid-cols-1 gap-4 w-full max-w-lg mb-4">
-        <div className="flex items-center gap-3">
-          <span className="text-gray-300 min-w-[100px]">Send me an</span>
+      <div className="grid grid-cols-1 gap-6 w-full max-w-lg mb-4">
+        <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
+          <span className="text-gray-300 min-w-[100px] md:min-w-[120px] mb-2 md:mb-0">Send me an</span>
           <Select defaultValue="email">
             <SelectTrigger className="w-full h-10 bg-[#1a1f2e] border-[#2a3042] text-white [&>*]:text-white">
               <SelectValue placeholder="Select notification" />
@@ -100,8 +100,8 @@ export function PriceAlertForm() {
           </Select>
         </div>
 
-        <div className="flex items-center gap-3">
-          <span className="text-gray-300 min-w-[100px]">as soon as</span>
+        <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
+          <span className="text-gray-300 min-w-[100px] md:min-w-[120px] mb-2 md:mb-0">as soon as</span>
           <Select value={selectedToken} onValueChange={handleTokenChange}>
             <SelectTrigger className="w-full h-10 bg-[#1a1f2e] border-[#2a3042] text-white [&>*]:text-white">
               <SelectValue placeholder="Select coin" />
@@ -124,8 +124,8 @@ export function PriceAlertForm() {
           </Select>
         </div>
 
-        <div className="flex items-center gap-3">
-          <span className="text-gray-300 min-w-[100px]">goes</span>
+        <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
+          <span className="text-gray-300 min-w-[100px] md:min-w-[120px] mb-2 md:mb-0">goes</span>
           <Select defaultValue="above">
             <SelectTrigger className="w-full h-10 bg-[#1a1f2e] border-[#2a3042] text-white [&>*]:text-white">
               <SelectValue placeholder="Select direction" />
@@ -137,8 +137,8 @@ export function PriceAlertForm() {
           </Select>
         </div>
 
-        <div className="flex items-center gap-3">
-          <span className="text-gray-300 min-w-[100px]">the price of</span>
+        <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
+          <span className="text-gray-300 min-w-[100px] md:min-w-[120px] mb-2 md:mb-0">the price of</span>
           <div className="flex gap-3 flex-1">
             <div className="flex-1">
               <Input 

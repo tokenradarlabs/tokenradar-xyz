@@ -9,8 +9,8 @@ export default function CoinConditionRow({
   condition: string; setCondition: (val: string) => void;
 }) {
   return (
-    <div className="flex gap-4">
-      <div className="w-1/2">
+    <div className="flex flex-wrap gap-2">
+      <div className="flex-grow min-w-[150px]">
         <label className="block font-medium text-gray-700 dark:text-gray-300">Coin</label>
         <select
           value={coin}
@@ -20,7 +20,7 @@ export default function CoinConditionRow({
           {coins.map(c => <option key={c}>{c}</option>)}
         </select>
       </div>
-      <div className="w-1/2">
+      <div className="flex-grow min-w-[150px]">
         <label className="block font-medium text-gray-700 dark:text-gray-300">Condition</label>
         <select
           value={condition}

@@ -1,15 +1,7 @@
 'use client';
-import React, { useRef, useCallback } from "react";
+import React from "react";
 
-// Debounce utility function
-function debounce<T extends (...args: any[]) => void>(func: T, delay: number) {
-  let timeout: NodeJS.Timeout;
-  return function(this: ThisParameterType<T>, ...args: Parameters<T>) {
-    const context = this;
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(context, args), delay);
-  };
-}
+import { useDebouncedCallback } from 'use-debounce';
 
 type FormState = {
   channel: string;
@@ -36,11 +28,18 @@ type Props = {
 export default function BTCDominanceAlertForm({
   form, handleChange, handleSubmit, channels, directions, btcDominance, debounceTime
 }: Props) {
-  const debouncedHandleChangeLevel = useRef(
-    debounceTime
-      ? debounce(handleChange("level"), debounceTime)
-      : handleChange("level")
-  ).current;
+  const [localLevel, setLocalLevel] = React.useState(form.level);
+  React.useEffect(() => { setLocalLevel(form.level); }, [form.level]);
+
+  const debouncedLevelChange = useDebouncedCallback((value: string) => {
+    handleChange("level")({ target: { value } } as React.ChangeEvent<HTMLInputElement>);
+  }, debounceTime || 0);
+
+  const handleLevelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setLocalLevel(newValue);
+    debouncedLevelChange(newValue);
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -111,8 +110,8 @@ export default function BTCDominanceAlertForm({
           min="0"
           max="100"
           step="0.01"
-          value={form.level}
-          onChange={debouncedHandleChangeLevel}
+          value={localLevel}
+          onChange={handleLevelChange}
           placeholder="00"
           className="w-16 rounded-xl border border-pink-300 bg-gray-900 text-white p-2"
         />

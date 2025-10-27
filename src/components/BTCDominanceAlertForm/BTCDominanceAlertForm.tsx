@@ -1,6 +1,8 @@
 'use client';
 import React from "react";
 
+import { useDebouncedCallback } from 'use-debounce';
+
 type FormState = {
   channel: string;
   discordBot: string;
@@ -20,11 +22,25 @@ type Props = {
   channels: Option[];
   directions: Option[];
   btcDominance: string;
+  debounceTime?: number; // New optional prop for debounce
 };
 
 export default function BTCDominanceAlertForm({
-  form, handleChange, handleSubmit, channels, directions, btcDominance
+  form, handleChange, handleSubmit, channels, directions, btcDominance, debounceTime
 }: Props) {
+  const [localLevel, setLocalLevel] = React.useState(form.level);
+  React.useEffect(() => { setLocalLevel(form.level); }, [form.level]);
+
+  const debouncedLevelChange = useDebouncedCallback((value: string) => {
+    handleChange("level")({ target: { value } } as React.ChangeEvent<HTMLInputElement>);
+  }, debounceTime || 0);
+
+  const handleLevelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setLocalLevel(newValue);
+    debouncedLevelChange(newValue);
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Channel select */}
@@ -94,8 +110,8 @@ export default function BTCDominanceAlertForm({
           min="0"
           max="100"
           step="0.01"
-          value={form.level}
-          onChange={handleChange("level")}
+          value={localLevel}
+          onChange={handleLevelChange}
           placeholder="00"
           className="w-16 rounded-xl border border-pink-300 bg-gray-900 text-white p-2"
         />

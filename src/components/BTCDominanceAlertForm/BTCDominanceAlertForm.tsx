@@ -1,5 +1,15 @@
 'use client';
-import React from "react";
+import React, { useRef, useCallback } from "react";
+
+// Debounce utility function
+function debounce<T extends (...args: any[]) => void>(func: T, delay: number) {
+  let timeout: NodeJS.Timeout;
+  return function(this: ThisParameterType<T>, ...args: Parameters<T>) {
+    const context = this;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), delay);
+  };
+}
 
 type FormState = {
   channel: string;
@@ -20,11 +30,18 @@ type Props = {
   channels: Option[];
   directions: Option[];
   btcDominance: string;
+  debounceTime?: number; // New optional prop for debounce
 };
 
 export default function BTCDominanceAlertForm({
-  form, handleChange, handleSubmit, channels, directions, btcDominance
+  form, handleChange, handleSubmit, channels, directions, btcDominance, debounceTime
 }: Props) {
+  const debouncedHandleChangeLevel = useRef(
+    debounceTime
+      ? debounce(handleChange("level"), debounceTime)
+      : handleChange("level")
+  ).current;
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Channel select */}
@@ -95,7 +112,7 @@ export default function BTCDominanceAlertForm({
           max="100"
           step="0.01"
           value={form.level}
-          onChange={handleChange("level")}
+          onChange={debouncedHandleChangeLevel}
           placeholder="00"
           className="w-16 rounded-xl border border-pink-300 bg-gray-900 text-white p-2"
         />

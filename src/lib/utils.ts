@@ -17,5 +17,19 @@ export function cn(...inputs: ClassValue[]) {
  * formatNumberCompact(1000000); // "1M"
  */
 export function formatNumberCompact(num: number, locale: string = 'en-US'): string {
-  return new Intl.NumberFormat(locale, { notation: 'compact', compactDisplay: 'short' }).format(num);
+  try {
+    return new Intl.NumberFormat(locale, { notation: 'compact', compactDisplay: 'short' }).format(num);
+  } catch (error) {
+    // Only treat invalid-locale (RangeError) as recoverable; rethrow others
+    if (error instanceof RangeError || (error && (error as any).name === 'RangeError')) {
+      // Optional: log a warning so the issue can be diagnosed
+      try {
+        console.warn(`formatNumberCompact: invalid locale "${locale}"; falling back to 'en-US'.`);
+      } catch (_) {
+        // ignore logging errors
+      }
+      return new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(num);
+    }
+    throw error;
+  }
 }

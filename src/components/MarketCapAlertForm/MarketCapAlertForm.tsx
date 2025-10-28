@@ -41,6 +41,7 @@ export default function MarketCapAlertForm({
         </label>
         <select
           id="channel-select"
+          aria-label="Notification channel"
           value={form.channel}
           onChange={handleChange('channel')}
           className='w-full rounded-lg border-pink-500 p-2 focus:border-pink-600 dark:bg-gray-800 dark:text-white'
@@ -90,6 +91,7 @@ export default function MarketCapAlertForm({
         </label>
         <select
           id="coin-select"
+          aria-label="Cryptocurrency"
           value={form.coin}
           onChange={handleChange('coin')}
           className='w-full rounded-lg border-pink-500 p-2 dark:bg-gray-800 dark:text-white'
@@ -108,6 +110,7 @@ export default function MarketCapAlertForm({
         </label>
         <select
           id="direction-select"
+          aria-label="Market cap direction"
           value={form.direction}
           onChange={handleChange('direction')}
           className='w-40 rounded-lg border-pink-500 p-2 dark:bg-gray-800 dark:text-white'

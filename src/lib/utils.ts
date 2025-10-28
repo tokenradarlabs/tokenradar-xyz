@@ -21,11 +21,11 @@ export function formatNumberCompact(num: number, locale: string = 'en-US'): stri
     return new Intl.NumberFormat(locale, { notation: 'compact', compactDisplay: 'short' }).format(num);
   } catch (error) {
     // Only treat invalid-locale (RangeError) as recoverable; rethrow others
-    if (error instanceof RangeError || (error && (error as any).name === 'RangeError')) {
+    if (error instanceof RangeError || (error && typeof error === 'object' && 'name' in error && error.name === 'RangeError')) {
       // Optional: log a warning so the issue can be diagnosed
       try {
         console.warn(`formatNumberCompact: invalid locale "${locale}"; falling back to 'en-US'.`);
-      } catch (_) {
+      } catch {
         // ignore logging errors
       }
       return new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(num);

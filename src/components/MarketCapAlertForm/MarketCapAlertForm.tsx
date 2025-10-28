@@ -36,10 +36,12 @@ export default function MarketCapAlertForm({
     <form onSubmit={handleSubmit} className='space-y-5'>
       {/* Notification channel */}
       <div>
-        <label className='mb-2 block font-medium text-gray-700 dark:text-gray-300'>
+        <label htmlFor="channel-select" className='mb-2 block font-medium text-gray-700 dark:text-gray-300'>
           Send me an
         </label>
         <select
+          id="channel-select"
+          aria-label="Notification channel"
           value={form.channel}
           onChange={handleChange('channel')}
           className='w-full rounded-lg border-pink-500 p-2 focus:border-pink-600 dark:bg-gray-800 dark:text-white'
@@ -54,10 +56,11 @@ export default function MarketCapAlertForm({
       {/* Webhook/Discord bot */}
       {form.channel === 'webhook' && (
         <div>
-          <label className='mb-2 block font-medium text-gray-700 dark:text-gray-300'>
+          <label htmlFor="webhook-url" className='mb-2 block font-medium text-gray-700 dark:text-gray-300'>
             Webhook URL
           </label>
           <input
+            id="webhook-url"
             type='text'
             value={form.webhook}
             onChange={handleChange('webhook')}
@@ -68,10 +71,11 @@ export default function MarketCapAlertForm({
       )}
       {form.channel === 'discord' && (
         <div>
-          <label className='mb-2 block font-medium text-gray-700 dark:text-gray-300'>
+          <label htmlFor="discord-bot-token" className='mb-2 block font-medium text-gray-700 dark:text-gray-300'>
             Discord Bot Token
           </label>
           <input
+            id="discord-bot-token"
             type='text'
             value={form.discordBot}
             onChange={handleChange('discordBot')}
@@ -82,10 +86,12 @@ export default function MarketCapAlertForm({
       )}
       {/* Coin select */}
       <div>
-        <label className='mb-2 block font-medium text-gray-700 dark:text-gray-300'>
+        <label htmlFor="coin-select" className='mb-2 block font-medium text-gray-700 dark:text-gray-300'>
           when the
         </label>
         <select
+          id="coin-select"
+          aria-label="Cryptocurrency"
           value={form.coin}
           onChange={handleChange('coin')}
           className='w-full rounded-lg border-pink-500 p-2 dark:bg-gray-800 dark:text-white'
@@ -99,10 +105,12 @@ export default function MarketCapAlertForm({
       </div>
       {/* Direction + Marketcap */}
       <div>
-        <label className='mb-2 block font-medium text-gray-700 dark:text-gray-300'>
+        <label htmlFor="marketcap-input" className='mb-2 block font-medium text-gray-700 dark:text-gray-300'>
           marketcap
         </label>
         <select
+          id="direction-select"
+          aria-label="Market cap direction"
           value={form.direction}
           onChange={handleChange('direction')}
           className='w-40 rounded-lg border-pink-500 p-2 dark:bg-gray-800 dark:text-white'
@@ -114,19 +122,21 @@ export default function MarketCapAlertForm({
           ))}
         </select>
         <input
+          id="marketcap-input"
           type='number'
           inputMode='decimal'
           value={form.cap}
           onChange={handleChange('cap')}
           placeholder='00'
           className='ml-2 w-24 rounded-lg border border-pink-300 p-2 dark:bg-gray-800 dark:text-white'
+          aria-describedby="current-marketcap-helper"
         />
         <span className='pl-2 text-gray-700 dark:text-gray-300'>
           billion USD.
         </span>
       </div>
       {/* Current marketcap */}
-      <p className='mb-2 mt-6 text-center text-xs text-green-400'>
+      <p id="current-marketcap-helper" className='mb-2 mt-6 text-center text-xs text-green-400'>
         ⚡ For reference,{' '}
         <span className='font-mono text-yellow-300'>BTC marketcap</span> is
         currently{' '}

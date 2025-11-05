@@ -35,13 +35,25 @@ export function LoginForm() {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // Simulate a server-side error
-    if (values.email === "error@example.com") {
-      setFormError("Invalid credentials. Please try again.");
-      return;
+    try {
+      // TODO: replace authenticateUser with your real auth call (e.g. API client, next-auth, etc.)
+      // For now, we'll simulate a successful authentication.
+      const result = { ok: true, message: "Login successful" }; // await authenticateUser(values);
+
+      if (!result || !result.ok) {
+        // Display server-provided error message if available, otherwise a generic message
+        setFormError(result?.message || 'Invalid credentials. Please try again.');
+        return;
+      }
+
+      // Success path: continue with sign-in flow (redirect, set session, etc.)
+      // console.log("Login successful:", values); // Removed to prevent logging sensitive information
+    } catch (err) {
+      console.error('Login error', err);
+      setFormError('An unexpected error occurred. Please try again.');
     }
 
-    console.log("Form submitted:", values);
+    // console.log("Form submitted:", values); // Removed to prevent logging sensitive information
     form.reset();
   }
 
@@ -54,7 +66,7 @@ export function LoginForm() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {formError && (
-              <p className="text-center text-red-600 text-sm">
+              <p role="alert" aria-atomic="true" className="text-center text-red-600 text-sm">
                 {formError}
               </p>
             )}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -17,6 +18,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { loginFormSchema, type LoginFormData } from "@/lib/schemas/auth";
 
 export function LoginForm() {
+  const [formError, setFormError] = useState<string | null>(null);
+
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -28,8 +31,16 @@ export function LoginForm() {
   });
 
   async function onSubmit(values: LoginFormData) {
+    setFormError(null); // Clear previous errors
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Simulate a server-side error
+    if (values.email === "error@example.com") {
+      setFormError("Invalid credentials. Please try again.");
+      return;
+    }
+
     console.log("Form submitted:", values);
     form.reset();
   }
@@ -42,6 +53,11 @@ export function LoginForm() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {formError && (
+              <p className="text-center text-red-600 text-sm">
+                {formError}
+              </p>
+            )}
             <FormField
               control={form.control}
               name="email"
@@ -53,6 +69,7 @@ export function LoginForm() {
                       placeholder="Enter your email" 
                       type="email"
                       disabled={form.formState.isSubmitting}
+                      error={!!form.formState.errors.email}
                       {...field} 
                       onChange={(e) => {
                         field.onChange(e);
@@ -75,6 +92,7 @@ export function LoginForm() {
                       placeholder="Enter your password" 
                       type="password"
                       disabled={form.formState.isSubmitting}
+                      error={!!form.formState.errors.password}
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);

@@ -85,12 +85,12 @@ export function Navbar() {
 
             {/* Login/Signup */}
             <div className='flex flex-col md:flex-row items-center gap-2 mt-4 md:mt-0'>
-              <Link href='/login'>
-                <Button asChild={true} variant='ghost' className='w-full md:w-auto text-sm font-medium text-[#b3b8c5] hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'>Login</Button>
-              </Link>
-              <Link href='/register'>
-                <Button asChild={true} className='w-full md:w-auto bg-[#22d3ee] text-sm font-medium text-white hover:bg-[#0ea5e9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'>Sign up</Button>
-              </Link>
+              <Button asChild variant='ghost' className='w-full md:w-auto text-sm font-medium text-[#b3b8c5] hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'>
+                <Link href='/login'>Login</Link>
+              </Button>
+              <Button asChild className='w-full md:w-auto bg-[#22d3ee] text-sm font-medium text-white hover:bg-[#0ea5e9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'>
+                <Link href='/register'>Sign up</Link>
+              </Button>
             </div>
           </div>
         </div>

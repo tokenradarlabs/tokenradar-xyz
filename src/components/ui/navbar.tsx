@@ -29,7 +29,6 @@ export function Navbar() {
   const handleTabClick = (idx: number, path: string) => {
     setActive(idx);
     setIsMobileMenuOpen(false);
-    router.push(path);
   };
 
   return (

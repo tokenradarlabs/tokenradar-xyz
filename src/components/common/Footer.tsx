@@ -25,8 +25,8 @@ export default function Footer() {
           </div>
 
           {/* Features Column */}
-          <div className="space-y-4">
-            <h3 className="font-medium text-lg text-slate-900 dark:text-white">Features</h3>
+          <nav className="space-y-4" aria-labelledby="features-heading">
+            <h3 id="features-heading" className="font-medium text-lg text-slate-900 dark:text-white">Features</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/features/discord-bot" className="text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 text-sm">
@@ -43,17 +43,12 @@ export default function Footer() {
                   Smart Alerts
                 </Link>
               </li>
-              <li>
-                <Link href="/features/market-analytics" className="text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 text-sm">
-                  Market Analytics
-                </Link>
-              </li>
             </ul>
-          </div>
+          </nav>
 
           {/* Company Column */}
-          <div className="space-y-4">
-            <h3 className="font-medium text-lg text-slate-900 dark:text-white">Company</h3>
+          <nav className="space-y-4" aria-labelledby="company-heading">
+            <h3 id="company-heading" className="font-medium text-lg text-slate-900 dark:text-white">Company</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/about" className="text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 text-sm">
@@ -80,17 +75,12 @@ export default function Footer() {
                   Privacy Policy
                 </Link>
               </li>
-              <li>
-                <Link href="/terms" className="text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 text-sm">
-                  Terms & Conditions
-                </Link>
-              </li>
             </ul>
-          </div>
+          </nav>
 
           {/* Connect Column */}
-          <div className="space-y-4">
-            <h3 className="font-medium text-lg text-slate-900 dark:text-white">Connect</h3>
+          <nav className="space-y-4" aria-labelledby="connect-heading">
+            <h3 id="connect-heading" className="font-medium text-lg text-slate-900 dark:text-white">Connect</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="https://discord.gg/tokenradar" className="text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 text-sm">
@@ -113,7 +103,7 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
-          </div>
+          </nav>
         </div>
 
         <div className="relative mt-10 mb-8 overflow-hidden">

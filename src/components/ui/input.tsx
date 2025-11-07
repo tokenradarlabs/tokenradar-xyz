@@ -5,11 +5,14 @@ import { cn } from "@/lib/utils"
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: boolean;
+  id?: string;
+  "aria-describedby"?: string;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, error, ...props }, ref) => (
+  ({ className, type, error, id, "aria-describedby": ariaDescribedBy, ...props }, ref) => (
     <input
+      id={id}
       type={type}
       data-slot="input"
       className={cn(
@@ -20,6 +23,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       )}
       ref={ref}
       aria-invalid={error}
+      aria-describedby={ariaDescribedBy}
       {...props}
     />
   )

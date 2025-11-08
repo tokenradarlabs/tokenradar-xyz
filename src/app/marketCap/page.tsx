@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import MarketCapAlertForm from "@/components/MarketCapAlertForm/MarketCapAlertForm";
 import { Card } from "@/components/ui/card";
 
@@ -28,8 +28,6 @@ type MarketCapFormState = {
 };
 
 export default function MarketCapAlertPage() {
-
-
   const [form, setForm] = useState<MarketCapFormState>({
     channel: channels[0].value,
     webhook: "",

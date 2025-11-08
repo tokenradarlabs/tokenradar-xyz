@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import VolumeAlertForm from "@/components/VolumeAlertForm/VolumeAlertForm";
 import { Card } from "@/components/ui/card";
 
@@ -14,8 +14,6 @@ const multipliers = ["1x", "2x", "3x", "4x", "5x", "6x"];
 const intervals = ["5 minutes", "15 minutes", "1 hour", "24 hours"];
 
 export default function VolumePage() {
-
-
   const [channel, setChannel] = useState<string>(channels[0].value);
   const [webhook, setWebhook] = useState<string>("");
   const [discordBot, setDiscordBot] = useState<string>("");

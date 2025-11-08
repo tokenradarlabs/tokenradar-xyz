@@ -9,7 +9,9 @@ const channels = [
 export default function ChannelSelect({ value, onChange }: { value: string, onChange: (val: string) => void }) {
   return (
     <div>
-      <label className="block font-medium text-gray-700 dark:text-gray-300 mb-1">Channel</label>
+      <label className="block font-medium text-gray-700 dark:text-gray-300 mb-1">
+        Channel <span className="text-sm text-gray-500 dark:text-gray-400">(Select where to receive alerts)</span>
+      </label>
       {channels.length === 0 ? (
         <div className="text-gray-500 dark:text-gray-400">No channels available.</div>
       ) : (

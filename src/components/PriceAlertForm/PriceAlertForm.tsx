@@ -39,6 +39,7 @@ export default function PriceAlertForm() {
   const [exchange, setExchange] = useState("CoinGecko");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [thresholdInput, setThresholdInput] = useState('0');
 
   const onSubmit = async (data: PriceAlertFormValues) => {
     setIsLoading(true);
@@ -62,6 +63,7 @@ export default function PriceAlertForm() {
       //   description: "Price alert created successfully.",
       // });
       reset(); // Reset form fields
+      setThresholdInput('0'); // Reset threshold input
     } catch (err: any) {
       setError(err.message);
       // toast({
@@ -147,8 +149,18 @@ export default function PriceAlertForm() {
           control={control}
           render={({ field }) => (
             <PriceCurrencyRow
-              price={field.value?.toString() || ""}
-              setPrice={(value: string) => field.onChange(parseFloat(value) || 0)}
+              price={thresholdInput}
+              setPrice={(value: string) => {
+                setThresholdInput(value);
+                if (value === '') {
+                  field.onChange(0, { shouldValidate: true, shouldDirty: true });
+                } else {
+                  const parsedNumber = Number(value);
+                  if (Number.isFinite(parsedNumber)) {
+                    field.onChange(parsedNumber, { shouldValidate: true, shouldDirty: true });
+                  }
+                }
+              }}
               currency={watch("currency")}
               setCurrency={(newCurrency) => {
                 setValue("currency", newCurrency, { shouldValidate: true, shouldDirty: true });

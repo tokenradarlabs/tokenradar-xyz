@@ -8,8 +8,10 @@ export default function WebhookField({ value, onChange }: { value: string, onCha
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
 
-    if (newValue === "" || isValidUrl(newValue)) {
-      onChange(newValue);
+    onChange(newValue);
+    if (newValue === "") {
+      setError(null);
+    } else if (isValidUrl(newValue)) {
       setError(null);
     } else {
       setError("Please enter a valid webhook URL.");

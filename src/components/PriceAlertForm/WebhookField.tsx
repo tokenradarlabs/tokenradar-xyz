@@ -1,25 +1,18 @@
 import React, { useState } from "react";
 import { PlugZap } from "lucide-react";
-
-const isValidUrl = (url: string) => {
-  try {
-    new URL(url);
-    return true;
-  } catch (e) {
-    return false;
-  }
-};
+import { isValidUrl } from "@/utils/validation";
 
 export default function WebhookField({ value, onChange }: { value: string, onChange: (val: string) => void }) {
   const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    onChange(newValue);
-    if (newValue && !isValidUrl(newValue)) {
-      setError("Please enter a valid webhook URL.");
-    } else {
+
+    if (newValue === "" || isValidUrl(newValue)) {
+      onChange(newValue);
       setError(null);
+    } else {
+      setError("Please enter a valid webhook URL.");
     }
   };
 

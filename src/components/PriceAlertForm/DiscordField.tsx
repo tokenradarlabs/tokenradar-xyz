@@ -1,14 +1,6 @@
 import React, { useState } from "react";
 import { Bot } from "lucide-react";
-
-const isValidUrl = (url: string) => {
-  try {
-    new URL(url);
-    return true;
-  } catch (e) {
-    return false;
-  }
-};
+import { isValidUrl } from "@/utils/validation";
 
 export default function DiscordField({ value, onChange }: { value: string, onChange: (val: string) => void }) {
   const [error, setError] = useState<string | null>(null);
@@ -40,5 +32,4 @@ export default function DiscordField({ value, onChange }: { value: string, onCha
       {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </div>
   );
-}
 }

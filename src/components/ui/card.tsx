@@ -2,6 +2,19 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+interface CardProps extends React.ComponentProps<"div"> {
+  isLoading?: boolean;
+}
+
+function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      className={cn("animate-pulse rounded-md bg-muted", className)}
+      {...props}
+    />
+  );
+}
+
 /**
  * Renders a card component with consistent spacing and padding.
  *
@@ -9,7 +22,7 @@ import { cn } from "@/lib/utils"
  * @param {object} props - Additional props to pass to the div element.
  * @returns {JSX.Element} The rendered card component.
  */
-function Card({ className, ...props }: React.ComponentProps<"div">) {
+function Card({ className, isLoading = false, children, ...props }: CardProps) {
   return (
     <div
       data-slot="card"
@@ -18,7 +31,18 @@ function Card({ className, ...props }: React.ComponentProps<"div">) {
         className
       )}
       {...props}
-    />
+    >
+      {isLoading ? (
+        <div className="space-y-4">
+          <Skeleton className="h-6 w-3/4" />
+          <Skeleton className="h-4 w-1/2" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-5/6" />
+        </div>
+      ) : (
+        children
+      )}
+    </div>
   )
 }
 

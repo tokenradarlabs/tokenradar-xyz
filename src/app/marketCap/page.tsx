@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import MarketCapAlertForm from "@/components/MarketCapAlertForm/MarketCapAlertForm";
 import { Card } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
+
 
 const channels = [
   { label: "Webhook", value: "webhook" },
@@ -28,14 +28,7 @@ type MarketCapFormState = {
 };
 
 export default function MarketCapAlertPage() {
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
 
   const [form, setForm] = useState<MarketCapFormState>({
     channel: channels[0].value,
@@ -63,8 +56,7 @@ export default function MarketCapAlertPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-purple-100 to-violet-50 dark:from-gray-900 dark:to-indigo-900 p-8">
-      <Card isLoading={loading} className="max-w-xl w-full">
-        <div className="max-w-xl w-full bg-white dark:bg-gray-950 shadow-xl rounded-3xl p-10 relative border border-pink-600">
+      <Card className="max-w-xl w-full bg-white dark:bg-gray-950 shadow-xl rounded-3xl p-10 relative border border-pink-600">
           <h2 className="text-3xl font-bold mb-6 text-center text-pink-600 dark:text-pink-300">
             Crypto MarketCap Alert
           </h2>
@@ -80,7 +72,6 @@ export default function MarketCapAlertPage() {
             directions={directions}
             currentMarketCap={currentMarketCap}
           />
-        </div>
       </Card>
     </div>
   );

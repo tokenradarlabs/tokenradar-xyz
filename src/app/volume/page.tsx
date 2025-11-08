@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import VolumeAlertForm from "@/components/VolumeAlertForm/VolumeAlertForm";
 import { Card } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
+
 
 const channels = [
   { label: "Webhook", value: "webhook" },
@@ -14,14 +14,7 @@ const multipliers = ["1x", "2x", "3x", "4x", "5x", "6x"];
 const intervals = ["5 minutes", "15 minutes", "1 hour", "24 hours"];
 
 export default function VolumePage() {
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
 
   const [channel, setChannel] = useState<string>(channels[0].value);
   const [webhook, setWebhook] = useState<string>("");
@@ -49,8 +42,7 @@ export default function VolumePage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-purple-100 to-violet-50 dark:from-gray-900 dark:to-indigo-900 p-8">
-      <Card isLoading={loading} className="max-w-xl w-full">
-        <div className="max-w-xl w-full bg-white dark:bg-gray-950 shadow-xl rounded-3xl p-10 relative border border-pink-600">
+      <Card className="max-w-xl w-full bg-white dark:bg-gray-950 shadow-xl rounded-3xl p-10 relative border border-pink-600">
           <h2 className="text-3xl font-bold mb-6 text-center text-pink-600 dark:text-pink-300">
             Volume Alert
           </h2>
@@ -79,7 +71,6 @@ export default function VolumePage() {
             multipliers={multipliers}
             intervals={intervals}
           />
-        </div>
       </Card>
     </div>
   );

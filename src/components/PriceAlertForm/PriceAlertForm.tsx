@@ -17,6 +17,7 @@ export default function PriceAlertForm() {
     handleSubmit,
     watch,
     control,
+    setValue,
     reset,
     formState: { errors },
   } = useForm<PriceAlertFormValues>({
@@ -120,31 +121,17 @@ export default function PriceAlertForm() {
         <Controller
           name="coins.0.coinId"
           control={control}
-          render={({ field }) => (
+          render={({ field: { onChange: setCoinId, value: coinId } }) => (
             <CoinConditionRow
-              coin={field.value}
-              setCoin={field.onChange}
+              coin={coinId}
+              setCoin={(newCoinId) => {
+                setCoinId(newCoinId);
+                setValue("coins.0.coinId", newCoinId, { shouldValidate: true, shouldDirty: true });
+              }}
               condition={coins[0]?.condition || "above"}
               setCondition={(newCondition) => {
-                control.setValue("coins.0.condition", newCondition);
+                setValue("coins.0.condition", newCondition, { shouldValidate: true, shouldDirty: true });
               }}
-            />
-          )}
-        />
-        {errors.coins?.[0]?.coinId && (
-          <p className="text-red-500 text-sm">{errors.coins[0].coinId.message}</p>
-        )}
-        <Controller
-          name="coins.0.condition"
-          control={control}
-          render={({ field }) => (
-            <CoinConditionRow
-              coin={coins[0]?.coinId || ""}
-              setCoin={(newCoinId) => {
-                control.setValue("coins.0.coinId", newCoinId);
-              }}
-              condition={field.value}
-              setCondition={field.onChange}
             />
           )}
         />
@@ -163,7 +150,7 @@ export default function PriceAlertForm() {
               setPrice={(e) => field.onChange(parseFloat(e.target.value) || 0)}
               currency={watch("currency")}
               setCurrency={(newCurrency) => {
-                control.setValue("currency", newCurrency);
+                setValue("currency", newCurrency, { shouldValidate: true, shouldDirty: true });
               }}
             />
           )}
@@ -177,7 +164,7 @@ export default function PriceAlertForm() {
           render={({ field }) => (
             <PriceCurrencyRow
               price={watch("threshold")}
-              setPrice={(e) => control.setValue("threshold", parseFloat(e.target.value) || 0)}
+              setPrice={(e) => setValue("threshold", parseFloat(e.target.value) || 0, { shouldValidate: true, shouldDirty: true })}
               currency={field.value}
               setCurrency={field.onChange}
             />

@@ -9,7 +9,8 @@ import DiscordField from "./DiscordField";
 import CoinConditionRow from "./CoinConditionRow";
 import PriceCurrencyRow from "./PriceCurrencyRow";
 import ExchangeSelect from "./ExchangeSelect";
-import { useToast } from "../ui/use-toast";
+import { Spinner } from "../ui/spinner";
+// import { useToast } from "../ui/use-toast";
 
 export default function PriceAlertForm() {
   const {
@@ -32,9 +33,9 @@ export default function PriceAlertForm() {
     },
   });
 
-  const { toast } = useToast();
+  // const { toast } = useToast();
   const channel = watch("channel");
-  const coins = watch("coins");
+  const coins: PriceAlertFormValues['coins'] = watch("coins");
   const [exchange, setExchange] = useState("CoinGecko");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,18 +57,18 @@ export default function PriceAlertForm() {
         throw new Error(errorData.message || "Failed to create price alert.");
       }
 
-      toast({
-        title: "Success!",
-        description: "Price alert created successfully.",
-      });
+      // toast({
+      //   title: "Success!",
+      //   description: "Price alert created successfully.",
+      // });
       reset(); // Reset form fields
     } catch (err: any) {
       setError(err.message);
-      toast({
-        title: "Error",
-        description: err.message,
-        variant: "destructive",
-      });
+      // toast({
+      //   title: "Error",
+      //   description: err.message,
+      //   variant: "destructive",
+      // });
       console.error("Failed to create price alert:", err);
     } finally {
       setIsLoading(false);
@@ -84,7 +85,7 @@ export default function PriceAlertForm() {
           name="channel"
           control={control}
           render={({ field }) => (
-            <ChannelSelect value={field.value} onChange={field.onChange} />
+            <ChannelSelect value={field.value || ""} onChange={field.onChange} />
           )}
         />
         {errors.channel && (
@@ -96,7 +97,7 @@ export default function PriceAlertForm() {
               name="webhookUrl"
               control={control}
               render={({ field }) => (
-                <WebhookField value={field.value} onChange={field.onChange} />
+                <WebhookField value={field.value || ""} onChange={field.onChange} />
               )}
             />
             {errors.webhookUrl && (
@@ -110,7 +111,7 @@ export default function PriceAlertForm() {
               name="discordWebhookUrl"
               control={control}
               render={({ field }) => (
-                <DiscordField value={field.value} onChange={field.onChange} />
+                <DiscordField value={field.value || ""} onChange={field.onChange} />
               )}
             />
             {errors.discordWebhookUrl && (
@@ -128,7 +129,7 @@ export default function PriceAlertForm() {
                 setCoinId(newCoinId);
                 setValue("coins.0.coinId", newCoinId, { shouldValidate: true, shouldDirty: true });
               }}
-              condition={coins[0]?.condition || "above"}
+              condition={coins[0] && (coins[0].condition === "above" || coins[0].condition === "below") ? coins[0].condition : "above"}
               setCondition={(newCondition) => {
                 setValue("coins.0.condition", newCondition, { shouldValidate: true, shouldDirty: true });
               }}
@@ -146,8 +147,8 @@ export default function PriceAlertForm() {
           control={control}
           render={({ field }) => (
             <PriceCurrencyRow
-              price={field.value}
-              setPrice={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+              price={field.value?.toString() || ""}
+              setPrice={(value: string) => field.onChange(parseFloat(value) || 0)}
               currency={watch("currency")}
               setCurrency={(newCurrency) => {
                 setValue("currency", newCurrency, { shouldValidate: true, shouldDirty: true });
@@ -158,18 +159,7 @@ export default function PriceAlertForm() {
         {errors.threshold && (
           <p className="text-red-500 text-sm">{errors.threshold.message}</p>
         )}
-        <Controller
-          name="currency"
-          control={control}
-          render={({ field }) => (
-            <PriceCurrencyRow
-              price={watch("threshold")}
-              setPrice={(e) => setValue("threshold", parseFloat(e.target.value) || 0, { shouldValidate: true, shouldDirty: true })}
-              currency={field.value}
-              setCurrency={field.onChange}
-            />
-          )}
-        />
+
         <ExchangeSelect value={exchange} onChange={setExchange} />
         <button
           type="submit"

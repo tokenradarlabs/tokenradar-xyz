@@ -5,10 +5,10 @@ import React from "react";
 
 // Mock use-debounce to avoid actual debouncing in tests
 jest.mock('use-debounce', () => ({
-  useDebouncedCallback: (callback: (...args: any[]) => void, delay: number) => {
+  useDebouncedCallback: (callback: (...args: unknown[]) => void, _delay: number) => {
     const ref = React.useRef(callback);
     React.useEffect(() => { ref.current = callback; }, [callback]);
-    return React.useCallback((...args: any[]) => {
+    return React.useCallback((...args: unknown[]) => {
       ref.current(...args);
     }, []);
   },

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from './button';
+import { ThemeToggle } from './theme-toggle';
 
 type NavItem = {
   label: string;
@@ -87,6 +88,7 @@ export function Navbar() {
 
             {/* Login/Signup */}
             <div className='flex flex-col md:flex-row items-center gap-2 mt-4 md:mt-0'>
+              <ThemeToggle />
               <Button asChild variant='ghost' className='w-full md:w-auto text-sm font-medium text-[#b3b8c5] hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'>
                 <Link href='/login'>Login</Link>
               </Button>

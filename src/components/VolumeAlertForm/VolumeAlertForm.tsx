@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { PlugZap, Bot } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 
 type Props = {
   channel: string; setChannel: (v: string) => void;
@@ -13,6 +14,8 @@ type Props = {
   onSubmit: (e: React.FormEvent) => void;
   channels: { label: string; value: string }[]; coins: string[];
   exchanges: string[]; multipliers: string[]; intervals: string[];
+  isLoading: boolean;
+  error: string | null;
 };
 
 const selectClass =
@@ -24,7 +27,7 @@ const labelClass =
 const VolumeAlertForm: React.FC<Props> = ({
   channel, setChannel, webhook, setWebhook, discordBot, setDiscordBot,
   coin, setCoin, exchange, setExchange, multiplier, setMultiplier, interval, setInterval,
-  onSubmit, channels, coins, exchanges, multipliers, intervals
+  onSubmit, channels, coins, exchanges, multipliers, intervals, isLoading, error
 }) => {
   return (
     <form className="space-y-7" onSubmit={onSubmit}>
@@ -91,9 +94,11 @@ const VolumeAlertForm: React.FC<Props> = ({
           </select>
         </div>
       </div>
+      {error && <p className="text-red-500 text-center">{error}</p>}
       <button type="submit"
-        className="w-full py-3 mt-6 bg-gradient-to-r from-pink-600 to-purple-700 hover:from-purple-700 hover:to-blue-600 text-white font-bold rounded-xl shadow-lg transition">
-        Set Alert
+        className="w-full py-3 mt-6 bg-gradient-to-r from-pink-600 to-purple-700 hover:from-purple-700 hover:to-blue-600 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center"
+        disabled={isLoading}>
+        {isLoading ? <Spinner /> : "Set Alert"}
       </button>
     </form>
   );

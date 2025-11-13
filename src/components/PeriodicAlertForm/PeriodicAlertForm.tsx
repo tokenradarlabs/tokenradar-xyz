@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { PlugZap, Bot, DollarSign } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 
 type Option = { label: string; value: string };
 
@@ -19,6 +20,8 @@ type Props = {
   currencies: Option[];
   exchanges: Option[];
   onSubmit: (e: React.FormEvent) => void;
+  isLoading: boolean;
+  error: string | null;
 };
 
 const selectClass = "w-full rounded-lg bg-[#23263c] py-2 px-3 text-gray-100 outline-none";
@@ -76,7 +79,7 @@ const PeriodicAlertForm: React.FC<Props> = ({
   channel, setChannel, webhook, setWebhook, discordBot, setDiscordBot,
   coin, setCoin, condition, setCondition, price, setPrice,
   currency, setCurrency, exchange, setExchange,
-  channels, coins, conditions, currencies, exchanges, onSubmit,
+  channels, coins, conditions, currencies, exchanges, onSubmit, isLoading, error,
 }) => (
   <form className="space-y-6" onSubmit={onSubmit}>
     <SelectField label="Channel" value={channel} setValue={setChannel} options={channels} />
@@ -117,8 +120,10 @@ const PeriodicAlertForm: React.FC<Props> = ({
       <SelectField label="Currency" value={currency} setValue={setCurrency} options={currencies} />
     </div>
     <SelectField label="Exchange" value={exchange} setValue={setExchange} options={exchanges} />
-    <button type="submit" className="w-full py-3 mt-3 rounded-lg font-bold text-white bg-gradient-to-r from-purple-500 to-blue-600 hover:brightness-110 shadow transition">
-      Set Alert
+    {error && <p className="text-red-500 text-center">{error}</p>}
+    <button type="submit" className="w-full py-3 mt-3 rounded-lg font-bold text-white bg-gradient-to-r from-purple-500 to-blue-600 hover:brightness-110 shadow transition flex items-center justify-center"
+      disabled={isLoading}>
+      {isLoading ? <Spinner /> : "Set Alert"}
     </button>
   </form>
 );

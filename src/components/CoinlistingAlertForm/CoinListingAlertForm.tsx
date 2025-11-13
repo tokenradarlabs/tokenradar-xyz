@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { Spinner } from "@/components/ui/spinner";
 
 type AlertFormState = {
   channel: string;
@@ -17,6 +18,8 @@ type Props = {
   channels: { label: string; value: string }[];
   coins: string[];
   exchanges: string[];
+  isLoading: boolean;
+  error: string | null;
 };
 
 export default function CoinListingAlertForm({
@@ -26,6 +29,8 @@ export default function CoinListingAlertForm({
   channels,
   coins,
   exchanges,
+  isLoading,
+  error,
 }: Props) {
   return (
     <form onSubmit={handleSubmit} className='space-y-5'>
@@ -38,6 +43,7 @@ export default function CoinListingAlertForm({
           value={form.channel}
           onChange={handleChange('channel')}
           className='w-full rounded-lg border-pink-500 p-2 focus:border-pink-600 dark:bg-gray-800 dark:text-white'
+          disabled={isLoading}
         >
           {channels.map(ch => (
             <option key={ch.value} value={ch.value}>
@@ -59,6 +65,7 @@ export default function CoinListingAlertForm({
             onChange={handleChange('webhook')}
             placeholder='https://webhook.site/...'
             className='w-full rounded-lg border border-pink-300 p-2 dark:bg-gray-800 dark:text-white'
+            disabled={isLoading}
           />
         </div>
       )}
@@ -73,6 +80,7 @@ export default function CoinListingAlertForm({
             onChange={handleChange('discordBot')}
             placeholder='XXXXXX'
             className='w-full rounded-lg border border-pink-300 p-2 dark:bg-gray-800 dark:text-white'
+            disabled={isLoading}
           />
         </div>
       )}
@@ -86,6 +94,7 @@ export default function CoinListingAlertForm({
           value={form.coin}
           onChange={handleChange('coin')}
           className='w-full rounded-lg border-pink-500 p-2 dark:bg-gray-800 dark:text-white'
+          disabled={isLoading}
         >
           {coins.map(c => (
             <option key={c} value={c}>
@@ -104,6 +113,7 @@ export default function CoinListingAlertForm({
           value={form.exchange}
           onChange={handleChange('exchange')}
           className='w-full rounded-lg border-pink-500 p-2 dark:bg-gray-800 dark:text-white'
+          disabled={isLoading}
         >
           {exchanges.map(ex => (
             <option key={ex} value={ex}>
@@ -122,11 +132,14 @@ export default function CoinListingAlertForm({
       </p>
 
       {/* Submit Button */}
+      {error && <p role="alert" aria-live="polite" className="text-red-500 text-center">{error}</p>}
       <button
         type='submit'
-        className='mt-6 w-full rounded-xl bg-gradient-to-r from-pink-600 to-purple-700 py-3 font-bold text-white shadow-lg transition hover:from-purple-700 hover:to-blue-600'
+        className='mt-6 w-full rounded-xl bg-gradient-to-r from-pink-600 to-purple-700 py-3 font-bold text-white shadow-lg transition hover:from-purple-700 hover:to-blue-600 flex items-center justify-center'
+        disabled={isLoading}
+        aria-busy={isLoading}
       >
-        Set Alert
+        {isLoading ? <Spinner /> : "Set Alert"}
       </button>
     </form>
   );

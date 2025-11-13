@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { PlugZap, Bot, Percent } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 
 type SelectOption = { label: string; value: string };
 
@@ -20,6 +21,8 @@ type Props = {
   exchanges: SelectOption[];
   onSubmit: (e: React.FormEvent) => void;
   price?: string;
+  isLoading: boolean;
+  error: string | null;
 };
 
 const selectClass = "w-full px-4 py-2 rounded-lg bg-gray-800 text-gray-100 focus:ring-2 focus:ring-pink-500 border border-gray-700 outline-none transition";
@@ -29,7 +32,7 @@ const PercentAlertForm: React.FC<Props> = ({
   channel, setChannel, webhook, setWebhook, discordBot, setDiscordBot,
   coin, setCoin, direction, setDirection, percent, setPercent,
   interval, setInterval, exchange, setExchange,
-  channels, coins, directions, intervals, exchanges, onSubmit, price,
+  channels, coins, directions, intervals, exchanges, onSubmit, price, isLoading, error,
 }) => (
   <form className="space-y-7" onSubmit={onSubmit}>
     {/* Channel */}
@@ -116,9 +119,11 @@ const PercentAlertForm: React.FC<Props> = ({
     <div className="text-sm mt-3 text-gray-400">
       ⚡ The price of {coin} is currently <span className="text-green-400 font-bold">{price ?? '...'}</span>.
     </div>
+    {error && <p className="text-red-500 text-center">{error}</p>}
     <button type="submit"
-      className="w-full py-3 mt-6 bg-gradient-to-r from-pink-600 to-purple-700 hover:from-purple-700 hover:to-blue-600 text-white font-bold rounded-xl shadow-lg transition">
-      Set Alert
+      className="w-full py-3 mt-6 bg-gradient-to-r from-pink-600 to-purple-700 hover:from-purple-700 hover:to-blue-600 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center"
+      disabled={isLoading}>
+      {isLoading ? <Spinner /> : "Set Alert"}
     </button>
   </form>
 );

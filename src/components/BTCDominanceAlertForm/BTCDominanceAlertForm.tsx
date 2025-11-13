@@ -2,6 +2,7 @@
 import React from "react";
 
 import { useDebouncedCallback } from 'use-debounce';
+import { Spinner } from "@/components/ui/spinner";
 
 type FormState = {
   channel: string;
@@ -23,10 +24,12 @@ type Props = {
   directions: Option[];
   btcDominance: string;
   debounceTime?: number; // New optional prop for debounce
+  isLoading: boolean;
+  error: string | null;
 };
 
 export default function BTCDominanceAlertForm({
-  form, handleChange, handleSubmit, channels, directions, btcDominance, debounceTime
+  form, handleChange, handleSubmit, channels, directions, btcDominance, debounceTime, isLoading, error
 }: Props) {
   const [localLevel, setLocalLevel] = React.useState(form.level);
   React.useEffect(() => { setLocalLevel(form.level); }, [form.level]);
@@ -124,11 +127,14 @@ export default function BTCDominanceAlertForm({
         <span className="text-green-400 font-mono">BTC Dominance</span> is currently <span className="text-green-300 font-mono">{btcDominance}%</span>.
       </p>
 
+      {error && <p role="alert" aria-live="polite" className="text-red-500 text-center">{error}</p>}
       <button
         type="submit"
-        className="w-full py-3 mt-6 bg-gradient-to-r from-pink-600 to-purple-700 hover:from-purple-700 hover:to-blue-600 text-white font-bold rounded-xl shadow-lg transition"
+        className="w-full py-3 mt-6 bg-gradient-to-r from-pink-600 to-purple-700 hover:from-purple-700 hover:to-blue-600 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center"
+        disabled={isLoading}
+        aria-busy={isLoading}
       >
-        SET ALERT
+        {isLoading ? <Spinner /> : "Set Alert"}
       </button>
     </form>
   );

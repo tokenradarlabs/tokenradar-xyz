@@ -154,7 +154,8 @@ export default function MarketCapAlertForm({
       {error && <p role="alert" aria-live="polite" className="text-red-500 text-center">{error}</p>}
       <button type="submit"
       className="w-full py-3 mt-6 bg-gradient-to-r from-pink-600 to-purple-700 hover:from-purple-700 hover:to-blue-600 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center"
-      disabled={isLoading}>
+      disabled={isLoading}
+      aria-busy={isLoading}>
       {isLoading ? <Spinner /> : "Set Alert"}
     </button>
     </form>

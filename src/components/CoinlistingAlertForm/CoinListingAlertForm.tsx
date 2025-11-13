@@ -43,6 +43,7 @@ export default function CoinListingAlertForm({
           value={form.channel}
           onChange={handleChange('channel')}
           className='w-full rounded-lg border-pink-500 p-2 focus:border-pink-600 dark:bg-gray-800 dark:text-white'
+          disabled={isLoading}
         >
           {channels.map(ch => (
             <option key={ch.value} value={ch.value}>
@@ -64,6 +65,7 @@ export default function CoinListingAlertForm({
             onChange={handleChange('webhook')}
             placeholder='https://webhook.site/...'
             className='w-full rounded-lg border border-pink-300 p-2 dark:bg-gray-800 dark:text-white'
+            disabled={isLoading}
           />
         </div>
       )}
@@ -78,6 +80,7 @@ export default function CoinListingAlertForm({
             onChange={handleChange('discordBot')}
             placeholder='XXXXXX'
             className='w-full rounded-lg border border-pink-300 p-2 dark:bg-gray-800 dark:text-white'
+            disabled={isLoading}
           />
         </div>
       )}
@@ -91,6 +94,7 @@ export default function CoinListingAlertForm({
           value={form.coin}
           onChange={handleChange('coin')}
           className='w-full rounded-lg border-pink-500 p-2 dark:bg-gray-800 dark:text-white'
+          disabled={isLoading}
         >
           {coins.map(c => (
             <option key={c} value={c}>
@@ -109,6 +113,7 @@ export default function CoinListingAlertForm({
           value={form.exchange}
           onChange={handleChange('exchange')}
           className='w-full rounded-lg border-pink-500 p-2 dark:bg-gray-800 dark:text-white'
+          disabled={isLoading}
         >
           {exchanges.map(ex => (
             <option key={ex} value={ex}>

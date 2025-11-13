@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from './button';
 
@@ -33,6 +33,7 @@ export function Navbar() {
 
   return (
     <div className='sticky top-0 z-50'>
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-[999] focus:bg-white focus:text-black focus:p-3 focus:rounded-br-lg">Skip to main content</a>
       <nav className='w-full border-b border-white/10 bg-gradient-to-r from-[#0f172a] via-[#1e293b] to-[#0f172a] backdrop-blur supports-[backdrop-filter]:bg-opacity-60' role="navigation" aria-label="Main navigation">
         <div className='mx-auto flex max-w-7xl flex-wrap items-center justify-between px-3 sm:px-6 md:h-16 md:px-12 lg:px-20 py-2'>
           {/* Logo */}
@@ -67,21 +68,22 @@ export function Navbar() {
             id="mobile-menu"
             className={`w-full md:flex md:items-center md:w-auto ${isMobileMenuOpen ? 'block' : 'hidden'}`}
           >
-            <div className='flex flex-col md:flex-row md:space-x-4 mt-4 md:mt-0 items-center flex-1 justify-center'>
+            <ul className='flex flex-col md:flex-row md:space-x-4 mt-4 md:mt-0 items-center flex-1 justify-center' role="list">
               {NAV_ITEMS.map((item, idx) => (
-                <Link
-                  key={item.label}
-                  href={item.path}
-                  onClick={() => handleTabClick(idx, item.path)}
-                  className={`flex items-center px-3 py-2 rounded-md text-left font-medium text-[0.95rem] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
-                    ${active === idx ? 'bg-[#313440] text-white shadow font-semibold' : 'text-[#b2b7be] hover:bg-[#282b38] hover:text-white font-normal'}`}
-                  aria-current={active === idx ? 'page' : undefined}
-                >
-                  {item.icon}
-                  {item.label}
-                </Link>
+                <li key={item.label}>
+                  <Link
+                    href={item.path}
+                    onClick={() => handleTabClick(idx, item.path)}
+                    className={`flex items-center px-3 py-2 rounded-md text-left font-medium text-[0.95rem] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
+                      ${active === idx ? 'bg-[#313440] text-white shadow font-semibold' : 'text-[#b2b7be] hover:bg-[#282b38] hover:text-white font-normal'}`}
+                    aria-current={active === idx ? 'page' : undefined}
+                  >
+                    {item.icon}
+                    {item.label}
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ul>
 
             {/* Login/Signup */}
             <div className='flex flex-col md:flex-row items-center gap-2 mt-4 md:mt-0'>

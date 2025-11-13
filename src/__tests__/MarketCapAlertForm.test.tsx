@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import MarketCapAlertForm from "../components/MarketCapAlertForm/MarketCapAlertForm";
 import "@testing-library/jest-dom";
 import React from "react";
@@ -136,7 +137,7 @@ describe("MarketCapAlertForm", () => {
     const handleSubmit = jest.fn();
     setup(initialFormState, jest.fn(() => () => {}), handleSubmit);
 
-    fireEvent.submit(screen.getByRole("button", { name: /set alert/i }));
+    userEvent.click(screen.getByRole("button", { name: /set alert/i }));
     expect(handleSubmit).toHaveBeenCalledTimes(1);
   });
 

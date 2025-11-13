@@ -133,7 +133,7 @@ describe("BTCDominanceAlertForm", () => {
     const handleSubmit = jest.fn();
     setup(initialFormState, jest.fn(() => () => {}), handleSubmit);
 
-    fireEvent.submit(screen.getByRole("button", { name: /set alert/i }));
+    fireEvent.submit(screen.getByRole("form"));
     expect(handleSubmit).toHaveBeenCalledTimes(1);
   });
 

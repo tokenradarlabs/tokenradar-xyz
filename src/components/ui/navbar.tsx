@@ -77,7 +77,6 @@ export function Navbar() {
                     className={`flex items-center px-3 py-2 rounded-md text-left font-medium text-[0.95rem] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2
                       ${active === idx ? 'bg-[#313440] text-white shadow font-semibold' : 'text-[#b2b7be] hover:bg-[#282b38] hover:text-white font-normal'}`}
                     aria-current={active === idx ? 'page' : undefined}
-                    role="menuitem"
                   >
                     {item.icon}
                     {item.label}

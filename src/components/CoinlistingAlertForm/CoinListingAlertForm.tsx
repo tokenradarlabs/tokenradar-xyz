@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { Spinner } from "@/components/ui/spinner";
 
 type AlertFormState = {
   channel: string;
@@ -17,6 +18,8 @@ type Props = {
   channels: { label: string; value: string }[];
   coins: string[];
   exchanges: string[];
+  isLoading: boolean;
+  error: string | null;
 };
 
 export default function CoinListingAlertForm({
@@ -26,6 +29,8 @@ export default function CoinListingAlertForm({
   channels,
   coins,
   exchanges,
+  isLoading,
+  error,
 }: Props) {
   return (
     <form onSubmit={handleSubmit} className='space-y-5'>
@@ -122,11 +127,13 @@ export default function CoinListingAlertForm({
       </p>
 
       {/* Submit Button */}
+      {error && <p className="text-red-500 text-center">{error}</p>}
       <button
         type='submit'
-        className='mt-6 w-full rounded-xl bg-gradient-to-r from-pink-600 to-purple-700 py-3 font-bold text-white shadow-lg transition hover:from-purple-700 hover:to-blue-600'
+        className='mt-6 w-full rounded-xl bg-gradient-to-r from-pink-600 to-purple-700 py-3 font-bold text-white shadow-lg transition hover:from-purple-700 hover:to-blue-600 flex items-center justify-center'
+        disabled={isLoading}
       >
-        Set Alert
+        {isLoading ? <Spinner /> : "Set Alert"}
       </button>
     </form>
   );

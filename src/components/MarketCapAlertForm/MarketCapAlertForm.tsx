@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { Spinner } from "@/components/ui/spinner";
 
 type MarketCapFormState = {
   channel: string;
@@ -21,6 +22,8 @@ type Props = {
   coins: Option[];
   directions: Option[];
   currentMarketCap: string;
+  isLoading: boolean;
+  error: string | null;
 };
 
 export default function MarketCapAlertForm({
@@ -31,6 +34,8 @@ export default function MarketCapAlertForm({
   coins,
   directions,
   currentMarketCap,
+  isLoading,
+  error,
 }: Props) {
   return (
     <form onSubmit={handleSubmit} className='space-y-5'>
@@ -146,9 +151,11 @@ export default function MarketCapAlertForm({
         .
       </p>
       {/* Submit button */}
+      {error && <p className="text-red-500 text-center">{error}</p>}
       <button type="submit"
-      className="w-full py-3 mt-6 bg-gradient-to-r from-pink-600 to-purple-700 hover:from-purple-700 hover:to-blue-600 text-white font-bold rounded-xl shadow-lg transition">
-      Set Alert
+      className="w-full py-3 mt-6 bg-gradient-to-r from-pink-600 to-purple-700 hover:from-purple-700 hover:to-blue-600 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center"
+      disabled={isLoading}>
+      {isLoading ? <Spinner /> : "Set Alert"}
     </button>
     </form>
   );

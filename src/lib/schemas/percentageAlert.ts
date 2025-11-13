@@ -4,7 +4,7 @@ import { z } from 'zod';
 export const percentageAlertSchema = z.object({
   coins: z.array(
     z.object({
-      coinId: z.string().min(1, { message: 'Coin ID is required.' }),
+      coinId: z.string().trim().min(1, { message: 'Coin ID is required.' }),
     })
   ).min(1, { message: 'At least one coin is required.' }),
   percentage: z.coerce.number().min(0, { message: 'Percentage must be a non-negative number.' }).max(100, { message: 'Percentage cannot exceed 100.' }),

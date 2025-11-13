@@ -4,7 +4,7 @@ import { z } from 'zod';
 export const periodicAlertSchema = z.object({
   coins: z.array(
     z.object({
-      coinId: z.string().min(1, { message: 'Coin ID is required.' }),
+      coinId: z.string().trim().min(1, { message: 'Coin ID is required.' }),
     })
   ).min(1, { message: 'At least one coin is required.' }),
   frequency: z.enum(['15m', '30m', '1h', '4h', '12h', '24h'], { message: 'Frequency is required.' }),

@@ -127,11 +127,12 @@ export default function CoinListingAlertForm({
       </p>
 
       {/* Submit Button */}
-      {error && <p className="text-red-500 text-center">{error}</p>}
+      {error && <p role="alert" aria-live="polite" className="text-red-500 text-center">{error}</p>}
       <button
         type='submit'
         className='mt-6 w-full rounded-xl bg-gradient-to-r from-pink-600 to-purple-700 py-3 font-bold text-white shadow-lg transition hover:from-purple-700 hover:to-blue-600 flex items-center justify-center'
         disabled={isLoading}
+        aria-busy={isLoading}
       >
         {isLoading ? <Spinner /> : "Set Alert"}
       </button>

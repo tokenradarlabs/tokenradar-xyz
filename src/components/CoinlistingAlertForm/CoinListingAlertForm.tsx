@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 import { Spinner } from "@/components/ui/spinner";
 
 type AlertFormState = {
@@ -41,7 +42,7 @@ export default function CoinListingAlertForm({
         </label>
         <select
           value={form.channel}
-          onChange={handleChange('channel')}
+          onChange={useDebouncedCallback(handleChange('channel'), 300)}
           className='w-full rounded-lg border-pink-500 p-2 focus:border-pink-600 dark:bg-gray-800 dark:text-white'
           disabled={isLoading}
         >
@@ -62,7 +63,7 @@ export default function CoinListingAlertForm({
           <input
             type='text'
             value={form.webhook}
-            onChange={handleChange('webhook')}
+            onChange={useDebouncedCallback(handleChange('webhook'), 300)}
             placeholder='https://webhook.site/...'
             className='w-full rounded-lg border border-pink-300 p-2 dark:bg-gray-800 dark:text-white'
             disabled={isLoading}
@@ -77,7 +78,7 @@ export default function CoinListingAlertForm({
           <input
             type='text'
             value={form.discordBot}
-            onChange={handleChange('discordBot')}
+            onChange={useDebouncedCallback(handleChange('discordBot'), 300)}
             placeholder='XXXXXX'
             className='w-full rounded-lg border border-pink-300 p-2 dark:bg-gray-800 dark:text-white'
             disabled={isLoading}
@@ -92,7 +93,7 @@ export default function CoinListingAlertForm({
         </label>
         <select
           value={form.coin}
-          onChange={handleChange('coin')}
+          onChange={useDebouncedCallback(handleChange('coin'), 300)}
           className='w-full rounded-lg border-pink-500 p-2 dark:bg-gray-800 dark:text-white'
           disabled={isLoading}
         >
@@ -111,7 +112,7 @@ export default function CoinListingAlertForm({
         </label>
         <select
           value={form.exchange}
-          onChange={handleChange('exchange')}
+          onChange={useDebouncedCallback(handleChange('exchange'), 300)}
           className='w-full rounded-lg border-pink-500 p-2 dark:bg-gray-800 dark:text-white'
           disabled={isLoading}
         >

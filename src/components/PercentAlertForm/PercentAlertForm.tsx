@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { useDebouncedCallback } from 'use-debounce';
 import { PlugZap, Bot, Percent } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 
@@ -38,7 +39,7 @@ const PercentAlertForm: React.FC<Props> = ({
     {/* Channel */}
     <div>
       <label className={labelClass}>Channel</label>
-      <select value={channel} onChange={e => setChannel(e.target.value)} className={selectClass}>
+      <select value={channel} onChange={useDebouncedCallback(e => setChannel(e.target.value), 300)} className={selectClass}>
         {channels.map(ch => (
           <option key={ch.value} value={ch.value}>{ch.label}</option>
         ))}
@@ -50,7 +51,7 @@ const PercentAlertForm: React.FC<Props> = ({
         <label className={labelClass}>Webhook URL</label>
         <div className="flex items-center bg-gray-800 rounded-lg px-4 py-2 border border-gray-700">
           <PlugZap className="mr-2 text-pink-400" />
-          <input type="url" value={webhook} onChange={e => setWebhook(e.target.value)}
+          <input type="url" value={webhook} onChange={useDebouncedCallback(e => setWebhook(e.target.value), 300)}
             placeholder="https://webhook.site/..." required
             className="bg-transparent outline-none w-full text-gray-100 placeholder-gray-400" />
         </div>
@@ -61,7 +62,7 @@ const PercentAlertForm: React.FC<Props> = ({
         <label className={labelClass}>Discord Bot Token</label>
         <div className="flex items-center bg-gray-800 rounded-lg px-4 py-2 border border-gray-700">
           <Bot className="mr-2 text-purple-400" />
-          <input type="text" value={discordBot} onChange={e => setDiscordBot(e.target.value)}
+          <input type="text" value={discordBot} onChange={useDebouncedCallback(e => setDiscordBot(e.target.value), 300)}
             placeholder="Paste Discord Bot Token"
             className="bg-transparent outline-none w-full text-gray-100 placeholder-gray-400" />
         </div>
@@ -71,7 +72,7 @@ const PercentAlertForm: React.FC<Props> = ({
     <div className="grid grid-cols-2 gap-5">
       <div>
         <label className={labelClass}>Coin</label>
-        <select value={coin} onChange={e => setCoin(e.target.value)} className={selectClass}>
+        <select value={coin} onChange={useDebouncedCallback(e => setCoin(e.target.value), 300)} className={selectClass}>
           {coins.map(c => (
             <option key={c.value} value={c.value}>{c.label}</option>
           ))}
@@ -79,7 +80,7 @@ const PercentAlertForm: React.FC<Props> = ({
       </div>
       <div>
         <label className={labelClass}>Direction</label>
-        <select value={direction} onChange={e => setDirection(e.target.value)} className={selectClass}>
+        <select value={direction} onChange={useDebouncedCallback(e => setDirection(e.target.value), 300)} className={selectClass}>
           {directions.map(dir => (
             <option key={dir.value} value={dir.value}>{dir.label}</option>
           ))}
@@ -92,14 +93,14 @@ const PercentAlertForm: React.FC<Props> = ({
         <label className={labelClass}>Percent (%)</label>
         <div className="flex items-center bg-gray-800 rounded-lg px-4 py-2 border border-gray-700">
           <Percent className="mr-2 text-pink-400" />
-          <input type="number" value={percent} onChange={e => setPercent(e.target.value)}
+          <input type="number" value={percent} onChange={useDebouncedCallback(e => setPercent(e.target.value), 300)}
             min="0" max="100" required placeholder="00"
             className="bg-transparent outline-none w-full text-gray-100 placeholder-gray-400" />
         </div>
       </div>
       <div>
         <label className={labelClass}>Interval</label>
-        <select value={interval} onChange={e => setInterval(e.target.value)} className={selectClass}>
+        <select value={interval} onChange={useDebouncedCallback(e => setInterval(e.target.value), 300)} className={selectClass}>
           {intervals.map(i => (
             <option key={i.value} value={i.value}>{i.label}</option>
           ))}
@@ -109,7 +110,7 @@ const PercentAlertForm: React.FC<Props> = ({
     {/* Exchange */}
     <div>
       <label className={labelClass}>Exchange</label>
-      <select value={exchange} onChange={e => setExchange(e.target.value)} className={selectClass}>
+      <select value={exchange} onChange={useDebouncedCallback(e => setExchange(e.target.value), 300)} className={selectClass}>
         {exchanges.map(ex => (
           <option key={ex.value} value={ex.value}>{ex.label}</option>
         ))}

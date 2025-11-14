@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 import { Spinner } from "@/components/ui/spinner";
 
 type MarketCapFormState = {
@@ -48,7 +49,7 @@ export default function MarketCapAlertForm({
           id="channel-select"
           aria-label="Notification channel"
           value={form.channel}
-          onChange={handleChange('channel')}
+          onChange={useDebouncedCallback(handleChange('channel'), 300)}
           className='w-full rounded-lg border-pink-500 p-2 focus:border-pink-600 dark:bg-gray-800 dark:text-white'
         >
           {channels.map(ch => (
@@ -68,7 +69,7 @@ export default function MarketCapAlertForm({
             id="webhook-url"
             type='text'
             value={form.webhook}
-            onChange={handleChange('webhook')}
+            onChange={useDebouncedCallback(handleChange('webhook'), 300)}
             placeholder='https://webhook.site/...'
             className='w-full rounded-lg border border-pink-300 p-2 dark:bg-gray-800 dark:text-white'
           />
@@ -83,7 +84,7 @@ export default function MarketCapAlertForm({
             id="discord-bot-token"
             type='text'
             value={form.discordBot}
-            onChange={handleChange('discordBot')}
+            onChange={useDebouncedCallback(handleChange('discordBot'), 300)}
             placeholder='Bot Token'
             className='w-full rounded-lg border border-pink-300 p-2 dark:bg-gray-800 dark:text-white'
           />
@@ -98,7 +99,7 @@ export default function MarketCapAlertForm({
           id="coin-select"
           aria-label="Cryptocurrency"
           value={form.coin}
-          onChange={handleChange('coin')}
+          onChange={useDebouncedCallback(handleChange('coin'), 300)}
           className='w-full rounded-lg border-pink-500 p-2 dark:bg-gray-800 dark:text-white'
         >
           {coins.map(c => (
@@ -117,7 +118,7 @@ export default function MarketCapAlertForm({
           id="direction-select"
           aria-label="Market cap direction"
           value={form.direction}
-          onChange={handleChange('direction')}
+          onChange={useDebouncedCallback(handleChange('direction'), 300)}
           className='w-40 rounded-lg border-pink-500 p-2 dark:bg-gray-800 dark:text-white'
         >
           {directions.map(d => (
@@ -131,7 +132,7 @@ export default function MarketCapAlertForm({
           type='number'
           inputMode='decimal'
           value={form.cap}
-          onChange={handleChange('cap')}
+          onChange={useDebouncedCallback(handleChange('cap'), 300)}
           placeholder='00'
           className='ml-2 w-24 rounded-lg border border-pink-300 p-2 dark:bg-gray-800 dark:text-white'
           aria-describedby="current-marketcap-helper"

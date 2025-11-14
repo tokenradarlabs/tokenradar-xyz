@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { useDebouncedCallback } from 'use-debounce';
 import { PlugZap, Bot, DollarSign } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 
@@ -34,10 +35,11 @@ function SelectField({ label, value, setValue, options }: {
   setValue: (v: string) => void;
   options: Option[];
 }) {
+  const debouncedSetValue = useDebouncedCallback(setValue, 300);
   return (
     <div className="w-full">
       <label className={labelClass}>{label}</label>
-      <select value={value} onChange={e => setValue(e.target.value)} className={selectClass}>
+      <select value={value} onChange={e => debouncedSetValue(e.target.value)} className={selectClass}>
         {options.map(opt =>
           <option key={opt.value} value={opt.value}>{opt.label}</option>
         )}
@@ -56,6 +58,7 @@ function InputField({ label, type, value, onChange, icon, placeholder, min }: {
   placeholder?: string;
   min?: string | number;
 }) {
+  const debouncedOnChange = useDebouncedCallback(onChange, 300);
   return (
     <div className="w-full">
       <label className={labelClass}>{label}</label>
@@ -64,7 +67,7 @@ function InputField({ label, type, value, onChange, icon, placeholder, min }: {
         <input
           type={type}
           value={value}
-          onChange={e => onChange(e.target.value)}
+          onChange={e => debouncedOnChange(e.target.value)}
           placeholder={placeholder}
           min={min}
           required

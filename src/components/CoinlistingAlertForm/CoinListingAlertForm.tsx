@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 import { Spinner } from "@/components/ui/spinner";
 
 type AlertFormState = {
@@ -32,6 +33,12 @@ export default function CoinListingAlertForm({
   isLoading,
   error,
 }: Props) {
+  const debouncedChannelChange = useDebouncedCallback(handleChange('channel'), 500);
+  const debouncedWebhookChange = useDebouncedCallback(handleChange('webhook'), 500);
+  const debouncedDiscordBotChange = useDebouncedCallback(handleChange('discordBot'), 500);
+  const debouncedCoinChange = useDebouncedCallback(handleChange('coin'), 500);
+  const debouncedExchangeChange = useDebouncedCallback(handleChange('exchange'), 500);
+
   return (
     <form onSubmit={handleSubmit} className='space-y-5'>
       {/* Channel select */}
@@ -41,7 +48,7 @@ export default function CoinListingAlertForm({
         </label>
         <select
           value={form.channel}
-          onChange={handleChange('channel')}
+          onChange={debouncedChannelChange}
           className='w-full rounded-lg border-pink-500 p-2 focus:border-pink-600 dark:bg-gray-800 dark:text-white'
           disabled={isLoading}
         >
@@ -62,7 +69,7 @@ export default function CoinListingAlertForm({
           <input
             type='text'
             value={form.webhook}
-            onChange={handleChange('webhook')}
+            onChange={debouncedWebhookChange}
             placeholder='https://webhook.site/...'
             className='w-full rounded-lg border border-pink-300 p-2 dark:bg-gray-800 dark:text-white'
             disabled={isLoading}
@@ -77,7 +84,7 @@ export default function CoinListingAlertForm({
           <input
             type='text'
             value={form.discordBot}
-            onChange={handleChange('discordBot')}
+            onChange={debouncedDiscordBotChange}
             placeholder='XXXXXX'
             className='w-full rounded-lg border border-pink-300 p-2 dark:bg-gray-800 dark:text-white'
             disabled={isLoading}
@@ -92,7 +99,7 @@ export default function CoinListingAlertForm({
         </label>
         <select
           value={form.coin}
-          onChange={handleChange('coin')}
+          onChange={debouncedCoinChange}
           className='w-full rounded-lg border-pink-500 p-2 dark:bg-gray-800 dark:text-white'
           disabled={isLoading}
         >
@@ -111,7 +118,7 @@ export default function CoinListingAlertForm({
         </label>
         <select
           value={form.exchange}
-          onChange={handleChange('exchange')}
+          onChange={debouncedExchangeChange}
           className='w-full rounded-lg border-pink-500 p-2 dark:bg-gray-800 dark:text-white'
           disabled={isLoading}
         >

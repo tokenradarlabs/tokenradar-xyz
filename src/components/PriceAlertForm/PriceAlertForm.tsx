@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useDebouncedCallback } from 'use-debounce';
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { priceAlertSchema, PriceAlertFormValues } from "../../lib/schemas/priceAlert";
@@ -86,9 +87,15 @@ export default function PriceAlertForm() {
         <Controller
           name="channel"
           control={control}
-          render={({ field }) => (
-            <ChannelSelect value={field.value || ""} onChange={field.onChange} />
-          )}
+          render={({ field }) => {
+            const debouncedOnChange = useDebouncedCallback(
+              (value) => field.onChange(value),
+              300
+            );
+            return (
+              <ChannelSelect value={field.value || ""} onChange={debouncedOnChange} />
+            );
+          }}
         />
         {errors.channel && (
           <p className="text-red-500 text-sm">{errors.channel.message}</p>
@@ -98,9 +105,15 @@ export default function PriceAlertForm() {
             <Controller
               name="webhookUrl"
               control={control}
-              render={({ field }) => (
-                <WebhookField value={field.value || ""} onChange={field.onChange} />
-              )}
+              render={({ field }) => {
+                const debouncedOnChange = useDebouncedCallback(
+                  (value) => field.onChange(value),
+                  300
+                );
+                return (
+                  <WebhookField value={field.value || ""} onChange={debouncedOnChange} />
+                );
+              }}
             />
             {errors.webhookUrl && (
               <p className="text-red-500 text-sm">{errors.webhookUrl.message}</p>
@@ -112,9 +125,15 @@ export default function PriceAlertForm() {
             <Controller
               name="discordWebhookUrl"
               control={control}
-              render={({ field }) => (
-                <DiscordField value={field.value || ""} onChange={field.onChange} />
-              )}
+              render={({ field }) => {
+                const debouncedOnChange = useDebouncedCallback(
+                  (value) => field.onChange(value),
+                  300
+                );
+                return (
+                  <DiscordField value={field.value || ""} onChange={debouncedOnChange} />
+                );
+              }}
             />
             {errors.discordWebhookUrl && (
               <p className="text-red-500 text-sm">{errors.discordWebhookUrl.message}</p>
@@ -124,19 +143,22 @@ export default function PriceAlertForm() {
         <Controller
           name="coins.0.coinId"
           control={control}
-          render={({ field: { onChange: setCoinId, value: coinId } }) => (
-            <CoinConditionRow
-              coin={coinId}
-              setCoin={(newCoinId) => {
-                setCoinId(newCoinId);
-                setValue("coins.0.coinId", newCoinId, { shouldValidate: true, shouldDirty: true });
-              }}
-              condition={coins[0] && (coins[0].condition === "above" || coins[0].condition === "below") ? coins[0].condition : "above"}
-              setCondition={(newCondition) => {
-                setValue("coins.0.condition", newCondition, { shouldValidate: true, shouldDirty: true });
-              }}
-            />
-          )}
+          render={({ field: { onChange: setCoinId, value: coinId } }) => {
+            const debouncedSetCoin = useDebouncedCallback((newCoinId) => {
+              setCoinId(newCoinId);
+              setValue("coins.0.coinId", newCoinId, { shouldValidate: true, shouldDirty: true });
+            }, 300);
+            return (
+              <CoinConditionRow
+                coin={coinId}
+                setCoin={debouncedSetCoin}
+                condition={coins[0] && (coins[0].condition === "above" || coins[0].condition === "below") ? coins[0].condition : "above"}
+                setCondition={(newCondition) => {
+                  setValue("coins.0.condition", newCondition, { shouldValidate: true, shouldDirty: true });
+                }}
+              />
+            );
+          }}
         />
         {errors.coins?.[0]?.coinId && (
           <p className="text-red-500 text-sm">{errors.coins[0].coinId.message}</p>
@@ -147,32 +169,35 @@ export default function PriceAlertForm() {
         <Controller
           name="threshold"
           control={control}
-          render={({ field }) => (
-            <PriceCurrencyRow
-              price={thresholdInput}
-              setPrice={(value: string) => {
-                setThresholdInput(value);
-                if (value === '') {
-                  field.onChange(0, { shouldValidate: true, shouldDirty: true });
-                } else {
-                  const parsedNumber = Number(value);
-                  if (Number.isFinite(parsedNumber)) {
-                    field.onChange(parsedNumber, { shouldValidate: true, shouldDirty: true });
-                  }
+          render={({ field }) => {
+            const debouncedSetPrice = useDebouncedCallback((value: string) => {
+              setThresholdInput(value);
+              if (value === '') {
+                field.onChange(0, { shouldValidate: true, shouldDirty: true });
+              } else {
+                const parsedNumber = Number(value);
+                if (Number.isFinite(parsedNumber)) {
+                  field.onChange(parsedNumber, { shouldValidate: true, shouldDirty: true });
                 }
-              }}
-              currency={watch("currency")}
-              setCurrency={(newCurrency) => {
-                setValue("currency", newCurrency, { shouldValidate: true, shouldDirty: true });
-              }}
-            />
-          )}
+              }
+            }, 300);
+            return (
+              <PriceCurrencyRow
+                price={thresholdInput}
+                setPrice={debouncedSetPrice}
+                currency={watch("currency")}
+                setCurrency={useDebouncedCallback((newCurrency) => {
+                  setValue("currency", newCurrency, { shouldValidate: true, shouldDirty: true });
+                }, 300)}
+              />
+            );
+          }}
         />
         {errors.threshold && (
           <p className="text-red-500 text-sm">{errors.threshold.message}</p>
         )}
 
-        <ExchangeSelect value={exchange} onChange={setExchange} />
+        <ExchangeSelect value={exchange} onChange={useDebouncedCallback(setExchange, 300)} />
         <button
           type="submit"
           className="w-full py-3 mt-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-600 hover:to-blue-600 text-white font-bold rounded-xl shadow-lg transition-all duration-200"

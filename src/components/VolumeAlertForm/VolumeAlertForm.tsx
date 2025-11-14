@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { useDebouncedCallback } from 'use-debounce';
 import { PlugZap, Bot } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 
@@ -34,7 +35,7 @@ const VolumeAlertForm: React.FC<Props> = ({
       {/* Channel Selector */}
       <div>
         <label className={labelClass}>Channel</label>
-        <select value={channel} onChange={e => setChannel(e.target.value)}
+        <select value={channel} onChange={useDebouncedCallback(e => setChannel(e.target.value), 300)}
           className={selectClass}>
           {channels.map(ch => <option key={ch.value} value={ch.value}>{ch.label}</option>)}
         </select>
@@ -46,7 +47,7 @@ const VolumeAlertForm: React.FC<Props> = ({
           <div className="flex items-center bg-gray-800 rounded-lg px-4 py-2 border border-gray-700">
             <PlugZap className="mr-2 text-blue-400" />
             <input
-              type="url" value={webhook} onChange={e => setWebhook(e.target.value)}
+              type="url" value={webhook} onChange={useDebouncedCallback(e => setWebhook(e.target.value), 300)}
               placeholder="https://webhook.site/..." required
               className="bg-transparent outline-none w-full text-gray-100 placeholder-gray-400" />
           </div>
@@ -58,7 +59,7 @@ const VolumeAlertForm: React.FC<Props> = ({
           <div className="flex items-center bg-gray-800 rounded-lg px-4 py-2 border border-gray-700">
             <Bot className="mr-2 text-purple-400" />
             <input
-              type="text" value={discordBot} onChange={e => setDiscordBot(e.target.value)}
+              type="text" value={discordBot} onChange={useDebouncedCallback(e => setDiscordBot(e.target.value), 300)}
               placeholder="Paste Discord Bot Token"
               className="bg-transparent outline-none w-full text-gray-100 placeholder-gray-400"
             />
@@ -69,13 +70,13 @@ const VolumeAlertForm: React.FC<Props> = ({
       <div className="grid grid-cols-2 gap-5">
         <div>
           <label className={labelClass}>Coin</label>
-          <select value={coin} onChange={e => setCoin(e.target.value)} className={selectClass}>
+          <select value={coin} onChange={useDebouncedCallback(e => setCoin(e.target.value), 300)} className={selectClass}>
             {coins.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
         <div>
           <label className={labelClass}>Exchange</label>
-          <select value={exchange} onChange={e => setExchange(e.target.value)} className={selectClass}>
+          <select value={exchange} onChange={useDebouncedCallback(e => setExchange(e.target.value), 300)} className={selectClass}>
             {exchanges.map(ex => <option key={ex} value={ex}>{ex}</option>)}
           </select>
         </div>
@@ -83,13 +84,13 @@ const VolumeAlertForm: React.FC<Props> = ({
       <div className="grid grid-cols-2 gap-5">
         <div>
           <label className={labelClass}>Multiplier</label>
-          <select value={multiplier} onChange={e => setMultiplier(e.target.value)} className={selectClass}>
+          <select value={multiplier} onChange={useDebouncedCallback(e => setMultiplier(e.target.value), 300)} className={selectClass}>
             {multipliers.map(m => <option key={m} value={m}>{m}</option>)}
           </select>
         </div>
         <div>
           <label className={labelClass}>Interval</label>
-          <select value={interval} onChange={e => setInterval(e.target.value)} className={selectClass}>
+          <select value={interval} onChange={useDebouncedCallback(e => setInterval(e.target.value), 300)} className={selectClass}>
             {intervals.map(i => <option key={i} value={i}>{i}</option>)}
           </select>
         </div>

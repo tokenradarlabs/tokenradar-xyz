@@ -27,7 +27,7 @@ export default function BTCDominanceAlertForm() {
     defaultValues: {
       channel: "webhook",
       webhook: "",
-      discordBot: "",
+      discordWebhookUrl: "",
       direction: "above",
       level: 0,
     },
@@ -76,7 +76,7 @@ export default function BTCDominanceAlertForm() {
 
         {channel === "discord" && (
           <UrlField
-            name="discordBot"
+            name="discordWebhookUrl"
             label="Discord Bot Webhook URL"
             placeholder="https://discord.com/api/webhooks/..."
             disabled={isLoading}
@@ -87,6 +87,7 @@ export default function BTCDominanceAlertForm() {
           <span className="text-gray-300 font-medium">when the Bitcoin dominance level</span>
           <SelectField
             name="direction"
+            label="Direction"
             options={directions}
             disabled={isLoading}
           />

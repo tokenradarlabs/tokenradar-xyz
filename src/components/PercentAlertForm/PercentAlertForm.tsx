@@ -1,124 +1,146 @@
 "use client";
-import React from "react";
-import { useDebouncedCallback } from 'use-debounce';
-import { PlugZap, Bot, Percent } from "lucide-react";
+import React, { useState } from "react";
+import { useForm, FormProvider } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Spinner } from "@/components/ui/spinner";
+import { SelectField } from "@/components/ui/select-field";
+import { UrlField } from "@/components/ui/url-field";
+import { NumberField } from "@/components/ui/number-field";
+import { percentageAlertSchema, PercentageAlertFormValues } from "@/lib/schemas/percentageAlert";
 
-type SelectOption = { label: string; value: string };
+const channels = [
+  { label: "Webhook", value: "webhook" },
+  { label: "Discord Bot", value: "discord" },
+];
 
-type Props = {
-  channel: string; setChannel: (v: string) => void;
-  webhook: string; setWebhook: (v: string) => void;
-  discordBot: string; setDiscordBot: (v: string) => void;
-  coin: string; setCoin: (v: string) => void;
-  direction: string; setDirection: (v: string) => void;
-  percent: string; setPercent: (v: string) => void;
-  interval: string; setInterval: (v: string) => void;
-  exchange: string; setExchange: (v: string) => void;
-  channels: SelectOption[];
-  coins: SelectOption[];
-  directions: SelectOption[];
-  intervals: SelectOption[];
-  exchanges: SelectOption[];
-  onSubmit: (e: React.FormEvent) => void;
-  price?: string;
-  isLoading: boolean;
-  error: string | null;
-};
+const coins = [
+  { label: "Bitcoin", value: "bitcoin" },
+  { label: "Ethereum", value: "ethereum" },
+  { label: "Ripple", value: "ripple" },
+];
 
-const selectClass = "w-full px-4 py-2 rounded-lg bg-gray-800 text-gray-100 focus:ring-2 focus:ring-pink-500 border border-gray-700 outline-none transition";
-const labelClass = "block font-medium text-gray-300 mb-1 text-sm";
+const directions = [
+  { label: "rises", value: "rises" },
+  { label: "drops", value: "drops" },
+];
 
-const PercentAlertForm: React.FC<Props> = ({
-  channel, setChannel, webhook, setWebhook, discordBot, setDiscordBot,
-  coin, setCoin, direction, setDirection, percent, setPercent,
-  interval, setInterval, exchange, setExchange,
-  channels, coins, directions, intervals, exchanges, onSubmit, price, isLoading, error,
-}) => (
-  <form className="space-y-7" onSubmit={onSubmit}>
-    {/* Channel */}
-    <div>
-      <label className={labelClass}>Channel</label>
-      <select value={channel} onChange={useDebouncedCallback(e => setChannel(e.target.value), 300)} className={selectClass}>
-        {channels.map(ch => (
-          <option key={ch.value} value={ch.value}>{ch.label}</option>
-        ))}
-      </select>
-    </div>
-    {/* Conditional */}
-    {channel === "webhook" && (
-      <div>
-        <label className={labelClass}>Webhook URL</label>
-        <div className="flex items-center bg-gray-800 rounded-lg px-4 py-2 border border-gray-700">
-          <PlugZap className="mr-2 text-pink-400" />
-          <input type="url" value={webhook} onChange={useDebouncedCallback(e => setWebhook(e.target.value), 300)}
-            placeholder="https://webhook.site/..." required
-            className="bg-transparent outline-none w-full text-gray-100 placeholder-gray-400" />
-        </div>
-      </div>
-    )}
-    {channel === "discord" && (
-      <div>
-        <label className={labelClass}>Discord Bot Token</label>
-        <div className="flex items-center bg-gray-800 rounded-lg px-4 py-2 border border-gray-700">
-          <Bot className="mr-2 text-purple-400" />
-          <input type="text" value={discordBot} onChange={useDebouncedCallback(e => setDiscordBot(e.target.value), 300)}
-            placeholder="Paste Discord Bot Token"
-            className="bg-transparent outline-none w-full text-gray-100 placeholder-gray-400" />
-        </div>
-      </div>
-    )}
-    {/* Coin + Direction */}
+const intervals = [
+  { label: "1h", value: "1h" },
+  { label: "24h", value: "24h" },
+  { label: "7d", value: "7d" },
+];
+
+const exchanges = [
+  { label: "CoinGecko", value: "CoinGecko" },
+  { label: "Uniswap", value: "Uniswap" },
+];
+
+export default function PercentAlertForm() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const form = useForm<PercentageAlertFormValues>({
+    resolver: zodResolver(percentageAlertSchema),
+    defaultValues: {
+      channel: "webhook",
+      webhookUrl: "",
+      discordWebhookUrl: "",
+      coin: "bitcoin",
+      direction: "rises",
+      percentage: 0,
+      interval: "24h",
+      exchange: "CoinGecko",
+    },
+    mode: "onChange",
+    criteriaMode: "all",
+  });
+
+  const { watch, handleSubmit } = form;
+  const channel = watch("channel");
+  const coin = watch("coin");
+
+  const onSubmit = async (data: PercentageAlertFormValues) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log("Form submitted:", data);
+      // TODO: Implement actual API call to set Percentage alert
+      form.reset();
+    } catch (err: any) {
+      setError(err.message || "Failed to set Percentage alert.");
+      console.error("Failed to set Percentage alert:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <FormProvider {...form}>
+      <form className="space-y-7" onSubmit={handleSubmit(onSubmit)}>
+        <SelectField
+          name="channel"
+          label="Channel"
+          options={channels}
+          disabled={isLoading}
+        />
+        {channel === "webhook" && (
+          <UrlField
+            name="webhookUrl"
+            label="Webhook URL"
+            placeholder="https://webhook.site/..."
+            disabled={isLoading}
+          />
+        )}
+        {channel === "discord" && (
+          <UrlField
+            name="discordWebhookUrl"
+            label="Discord Bot Webhook URL"
+            placeholder="https://discord.com/api/webhooks/..."
+            disabled={isLoading}
+          />
+        )}
     <div className="grid grid-cols-2 gap-5">
-      <div>
-        <label className={labelClass}>Coin</label>
-        <select value={coin} onChange={useDebouncedCallback(e => setCoin(e.target.value), 300)} className={selectClass}>
-          {coins.map(c => (
-            <option key={c.value} value={c.value}>{c.label}</option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label className={labelClass}>Direction</label>
-        <select value={direction} onChange={useDebouncedCallback(e => setDirection(e.target.value), 300)} className={selectClass}>
-          {directions.map(dir => (
-            <option key={dir.value} value={dir.value}>{dir.label}</option>
-          ))}
-        </select>
-      </div>
+      <SelectField
+        name="coin"
+        label="Coin"
+        options={coins}
+        disabled={isLoading}
+      />
+      <SelectField
+        name="direction"
+        label="Direction"
+        options={directions}
+        disabled={isLoading}
+      />
     </div>
-    {/* Percent + Interval */}
     <div className="grid grid-cols-2 gap-5">
-      <div>
-        <label className={labelClass}>Percent (%)</label>
-        <div className="flex items-center bg-gray-800 rounded-lg px-4 py-2 border border-gray-700">
-          <Percent className="mr-2 text-pink-400" />
-          <input type="number" value={percent} onChange={useDebouncedCallback(e => setPercent(e.target.value), 300)}
-            min="0" max="100" required placeholder="00"
-            className="bg-transparent outline-none w-full text-gray-100 placeholder-gray-400" />
-        </div>
-      </div>
-      <div>
-        <label className={labelClass}>Interval</label>
-        <select value={interval} onChange={useDebouncedCallback(e => setInterval(e.target.value), 300)} className={selectClass}>
-          {intervals.map(i => (
-            <option key={i.value} value={i.value}>{i.label}</option>
-          ))}
-        </select>
-      </div>
+      <NumberField
+        name="percentage"
+        label="Percent (%)"
+        placeholder="00"
+        min={0}
+        max={100}
+        step={0.01}
+        disabled={isLoading}
+      />
+      <SelectField
+        name="interval"
+        label="Interval"
+        options={intervals}
+        disabled={isLoading}
+      />
     </div>
-    {/* Exchange */}
-    <div>
-      <label className={labelClass}>Exchange</label>
-      <select value={exchange} onChange={useDebouncedCallback(e => setExchange(e.target.value), 300)} className={selectClass}>
-        {exchanges.map(ex => (
-          <option key={ex.value} value={ex.value}>{ex.label}</option>
-        ))}
-      </select>
-    </div>
+    <SelectField
+      name="exchange"
+      label="Exchange"
+      options={exchanges}
+      disabled={isLoading}
+    />
     {/* Price Note */}
     <div className="text-sm mt-3 text-gray-400">
-      ⚡ The price of {coin} is currently <span className="text-green-400 font-bold">{price ?? '...'}</span>.
+      ⚡ The price of {coin} is currently <span className="text-green-400 font-bold">--</span>.
     </div>
     {error && <p className="text-red-500 text-center">{error}</p>}
     <button type="submit"

@@ -16,9 +16,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { loginFormSchema, type LoginFormData } from "@/lib/schemas/auth";
+import { useToast } from "@/lib/contexts/toast-context";
 
 export function LoginForm() {
-  const [formError, setFormError] = useState<string | null>(null);
+  const { showToast } = useToast();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginFormSchema),
@@ -31,7 +32,6 @@ export function LoginForm() {
   });
 
   async function onSubmit(values: LoginFormData) {
-    setFormError(null); // Clear previous errors
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -41,16 +41,16 @@ export function LoginForm() {
       const result = { ok: true, message: "Login successful" }; // await authenticateUser(values);
 
       if (!result || !result.ok) {
-        // Display server-provided error message if available, otherwise a generic message
-        setFormError(result?.message || 'Invalid credentials. Please try again.');
+        showToast(result?.message || 'Invalid credentials. Please try again.', 'error');
         return;
       }
 
+      showToast('Login successful!', 'success');
       // Success path: continue with sign-in flow (redirect, set session, etc.)
       // console.log("Login successful:", values); // Removed to prevent logging sensitive information
     } catch (err) {
       console.error('Login error', err);
-      setFormError('An unexpected error occurred. Please try again.');
+      showToast('An unexpected error occurred. Please try again.', 'error');
     }
 
     // console.log("Form submitted:", values); // Removed to prevent logging sensitive information
@@ -65,11 +65,6 @@ export function LoginForm() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {formError && (
-              <p role="alert" aria-atomic="true" className="text-center text-red-600 text-sm">
-                {formError}
-              </p>
-            )}
             <FormField
               control={form.control}
               name="email"
@@ -127,11 +122,6 @@ export function LoginForm() {
                 "Login"
               )}
             </Button>
-            {form.formState.isSubmitSuccessful && (
-              <p className="text-center text-green-600">
-                Successfully logged in! ✅
-              </p>
-            )}
           </form>
         </Form>
       </CardContent>

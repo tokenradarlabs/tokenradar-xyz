@@ -15,8 +15,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { registerFormSchema, type RegisterFormData } from "@/lib/schemas/auth";
+import { useToast } from "@/lib/contexts/toast-context";
 
 export function RegisterForm() {
+  const { showToast } = useToast();
+
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
@@ -32,7 +35,21 @@ export function RegisterForm() {
   async function onSubmit(values: RegisterFormData) {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log("Form submitted:", values);
+    try {
+      // Simulate successful registration
+      const result = { ok: true, message: "Account created successfully!" };
+
+      if (!result.ok) {
+        showToast(result.message || "Registration failed. Please try again.", "error");
+        return;
+      }
+
+      showToast("Account created successfully!", "success");
+      // console.log("Form submitted:", values);
+    } catch (err) {
+      console.error("Registration error", err);
+      showToast("An unexpected error occurred during registration. Please try again.", "error");
+    }
     form.reset();
   }
 
@@ -142,11 +159,6 @@ export function RegisterForm() {
                 "Create Account"
               )}
             </Button>
-            {form.formState.isSubmitSuccessful && (
-              <p className="text-center text-green-600">
-                Account created successfully! ✅
-              </p>
-            )}
           </form>
         </Form>
       </CardContent>

@@ -93,6 +93,7 @@ export default function BTCDominanceAlertForm() {
           />
           <NumberField
             name="level"
+            label="Dominance Level (%)"
             placeholder="00"
             min={0}
             max={100}

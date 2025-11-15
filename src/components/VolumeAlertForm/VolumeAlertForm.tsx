@@ -32,13 +32,13 @@ const VolumeAlertForm: React.FC<Props> = ({
 }) => {
   const { showToast } = useToast();
 
-  const debouncedSetChannel = useDebouncedCallback(e => setChannel(e.target.value), 300);
-  const debouncedSetWebhook = useDebouncedCallback(e => setWebhook(e.target.value), 300);
-  const debouncedSetDiscordBot = useDebouncedCallback(e => setDiscordBot(e.target.value), 300);
-  const debouncedSetCoin = useDebouncedCallback(e => setCoin(e.target.value), 300);
-  const debouncedSetExchange = useDebouncedCallback(e => setExchange(e.target.value), 300);
-  const debouncedSetMultiplier = useDebouncedCallback(e => setMultiplier(e.target.value), 300);
-  const debouncedSetInterval = useDebouncedCallback(e => setInterval(e.target.value), 300);
+  const debouncedSetChannel = useDebouncedCallback((value: string) => setChannel(value), 300);
+  const debouncedSetWebhook = useDebouncedCallback((value: string) => setWebhook(value), 300);
+  const debouncedSetDiscordBot = useDebouncedCallback((value: string) => setDiscordBot(value), 300);
+  const debouncedSetCoin = useDebouncedCallback((value: string) => setCoin(value), 300);
+  const debouncedSetExchange = useDebouncedCallback((value: string) => setExchange(value), 300);
+  const debouncedSetMultiplier = useDebouncedCallback((value: string) => setMultiplier(value), 300);
+  const debouncedSetInterval = useDebouncedCallback((value: string) => setInterval(value), 300);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,7 +65,7 @@ const VolumeAlertForm: React.FC<Props> = ({
       {/* Channel Selector */}
       <div>
         <label className={labelClass}>Channel</label>
-        <select value={channel} onChange={debouncedSetChannel}
+        <select value={channel} onChange={e => debouncedSetChannel(e.target.value)}
           className={selectClass}>
           {channels.map(ch => <option key={ch.value} value={ch.value}>{ch.label}</option>)}
         </select>

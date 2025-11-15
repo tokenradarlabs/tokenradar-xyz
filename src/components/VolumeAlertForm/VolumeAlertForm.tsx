@@ -3,11 +3,6 @@ import React from "react";
 import { useDebouncedCallback } from 'use-debounce';
 import { PlugZap, Bot } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
-
-import React from "react";
-import { useDebouncedCallback } from 'use-debounce';
-import { PlugZap, Bot } from "lucide-react";
-import { Spinner } from "@/components/ui/spinner";
 import { useToast } from "@/lib/contexts/toast-context";
 
 type Props = {

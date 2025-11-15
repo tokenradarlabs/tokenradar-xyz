@@ -24,6 +24,8 @@ const toastVariants = {
 const Toast: React.FC<ToastProps> = ({ id, message, type, onDismiss }) => {
   return (
     <motion.div
+      role="status"
+      aria-live="polite"
       layout
       initial={{ opacity: 0, y: 50, scale: 0.3 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -37,6 +39,7 @@ const Toast: React.FC<ToastProps> = ({ id, message, type, onDismiss }) => {
       <button
         onClick={() => onDismiss(id)}
         className="ml-4 p-1 rounded-full hover:bg-opacity-80 transition-opacity"
+        aria-label={`Dismiss notification: ${message}`}
       >
         <X className="h-4 w-4" />
       </button>

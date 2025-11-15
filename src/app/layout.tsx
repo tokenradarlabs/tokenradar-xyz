@@ -1,4 +1,5 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import { Navbar } from "@/components/ui/navbar";
 import "./globals.css";
 import Footer from "@/components/common/Footer";
@@ -6,15 +7,7 @@ import { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { ToastProvider } from "@/lib/contexts/toast-context";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Tokenradar-xyz",
@@ -39,7 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}>
                   <ToastProvider>
                     <ThemeProvider
                       attribute="class"

@@ -155,7 +155,3 @@ export default function PriceAlertForm() {
     </div>
   );
 }
-      </form>
-    </div>
-  );
-}

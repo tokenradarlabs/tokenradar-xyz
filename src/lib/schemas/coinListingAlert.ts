@@ -1,17 +1,17 @@
-
 import { z } from 'zod';
 
-export const CoinListingAlertSchema = z.object({
-  exchange: z.string().trim().min(1, { message: 'Exchange is required.' }),
+export const coinListingAlertSchema = z.object({
   channel: z.enum(['discord', 'webhook'], { message: 'Channel is required.' }),
-  discordWebhookUrl: z.string().url({ message: 'Invalid Discord webhook URL.' }).optional().or(z.literal('')),
-  webhookUrl: z.string().url({ message: 'Invalid webhook URL.' }).optional().or(z.literal('')),
+  webhook: z.string().url({ message: 'Invalid webhook URL.' }).optional().or(z.literal('')),
+  discordBot: z.string().url({ message: 'Invalid Discord webhook URL.' }).optional().or(z.literal('')),
+  coin: z.string().min(1, { message: 'Coin is required.' }),
+  exchange: z.string().min(1, { message: 'Exchange is required.' }),
 }).refine((data) =>
-  (data.channel === 'discord' ? Boolean(data.discordWebhookUrl && data.discordWebhookUrl.trim()) : true),
-  { message: "Discord webhook URL is required for discord channel", path: ["discordWebhookUrl"] }
+  (data.channel === 'webhook' ? Boolean(data.webhook && data.webhook.trim()) : true),
+  { message: "Webhook URL is required for webhook channel", path: ["webhook"] }
 ).refine((data) =>
-  (data.channel === 'webhook' ? Boolean(data.webhookUrl && data.webhookUrl.trim()) : true),
-  { message: "Webhook URL is required for webhook channel", path: ["webhookUrl"] }
+  (data.channel === 'discord' ? Boolean(data.discordBot && data.discordBot.trim()) : true),
+  { message: "Discord webhook URL is required for discord channel", path: ["discordBot"] }
 );
 
 export type CoinListingAlertFormValues = z.infer<typeof coinListingAlertSchema>;

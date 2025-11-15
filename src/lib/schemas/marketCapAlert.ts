@@ -1,24 +1,18 @@
-
 import { z } from 'zod';
 
 export const marketCapAlertSchema = z.object({
-  coins: z.array(
-    z.object({
-      coinId: z.string().trim().min(1, { message: 'Coin ID is required.' }),
-    })
-  ).min(1, { message: 'At least one coin is required.' }),
-  threshold: z.coerce.number().min(0, { message: 'Threshold must be a non-negative number.' }),
-  condition: z.enum(['above', 'below'], { message: 'Condition is required.' }),
-  currency: z.string().trim().min(1, { message: 'Currency is required.' }),
   channel: z.enum(['discord', 'webhook'], { message: 'Channel is required.' }),
-  discordWebhookUrl: z.string().url({ message: 'Invalid Discord webhook URL.' }).optional().or(z.literal('')),
-  webhookUrl: z.string().url({ message: 'Invalid webhook URL.' }).optional().or(z.literal('')),
+  webhook: z.string().url({ message: 'Invalid webhook URL.' }).optional().or(z.literal('')),
+  discordBot: z.string().url({ message: 'Invalid Discord webhook URL.' }).optional().or(z.literal('')),
+  coin: z.string().min(1, { message: 'Coin is required.' }),
+  direction: z.enum(['above', 'below'], { message: 'Direction is required.' }),
+  cap: z.coerce.number().min(0, { message: 'Market cap must be non-negative.' }),
 }).refine((data) =>
-  (data.channel === 'discord' ? Boolean(data.discordWebhookUrl && data.discordWebhookUrl.trim()) : true),
-  { message: "Discord webhook URL is required for discord channel", path: ["discordWebhookUrl"] }
+  (data.channel === 'webhook' ? Boolean(data.webhook && data.webhook.trim()) : true),
+  { message: "Webhook URL is required for webhook channel", path: ["webhook"] }
 ).refine((data) =>
-  (data.channel === 'webhook' ? Boolean(data.webhookUrl && data.webhookUrl.trim()) : true),
-  { message: "Webhook URL is required for webhook channel", path: ["webhookUrl"] }
+  (data.channel === 'discord' ? Boolean(data.discordBot && data.discordBot.trim()) : true),
+  { message: "Discord webhook URL is required for discord channel", path: ["discordBot"] }
 );
 
 export type MarketCapAlertFormValues = z.infer<typeof marketCapAlertSchema>;

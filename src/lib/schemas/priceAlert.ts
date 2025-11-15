@@ -13,6 +13,7 @@ export const priceAlertSchema = z.object({
   channel: z.enum(['discord', 'webhook'], { message: 'Channel is required.' }),
   discordWebhookUrl: z.string().url({ message: 'Invalid Discord webhook URL.' }).optional().or(z.literal('')),
   webhookUrl: z.string().url({ message: 'Invalid webhook URL.' }).optional().or(z.literal('')),
+  exchange: z.string().min(1, { message: 'Exchange is required.' }),
 }).refine((data) =>
   (data.channel === 'discord' ? Boolean(data.discordWebhookUrl && data.discordWebhookUrl.trim()) : true),
   { message: "Discord webhook URL is required for discord channel", path: ["discordWebhookUrl"] }

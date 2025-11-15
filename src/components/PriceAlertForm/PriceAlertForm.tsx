@@ -1,15 +1,13 @@
 "use client";
 import React, { useState } from "react";
-import { useDebouncedCallback } from 'use-debounce';
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { priceAlertSchema, PriceAlertFormValues } from "../../lib/schemas/priceAlert";
-import ChannelSelect from "./ChannelSelect";
-import WebhookField from "./WebhookField";
-import DiscordField from "./DiscordField";
 import CoinConditionRow from "./CoinConditionRow";
 import PriceCurrencyRow from "./PriceCurrencyRow";
-import ExchangeSelect from "./ExchangeSelect";
+import { SelectField } from "../ui/select-field";
+import { UrlField } from "../ui/url-field";
+import { Spinner } from "../ui/spinner";
 import { Spinner } from "../ui/spinner";
 // import { useToast } from "../ui/use-toast";
 
@@ -31,16 +29,15 @@ export default function PriceAlertForm() {
       channel: "webhook",
       discordWebhookUrl: "",
       webhookUrl: "",
+      exchange: "CoinGecko",
     },
   });
 
   // const { toast } = useToast();
   const channel = watch("channel");
   const coins: PriceAlertFormValues['coins'] = watch("coins");
-  const [exchange, setExchange] = useState("CoinGecko");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [thresholdInput, setThresholdInput] = useState('0');
 
   const onSubmit = async (data: PriceAlertFormValues) => {
     setIsLoading(true);
@@ -64,7 +61,6 @@ export default function PriceAlertForm() {
       //   description: "Price alert created successfully.",
       // });
       reset(); // Reset form fields
-      setThresholdInput('0'); // Reset threshold input
     } catch (err: any) {
       setError(err.message);
       // toast({
@@ -84,120 +80,77 @@ export default function PriceAlertForm() {
         Price Alert
       </h2>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        <Controller
+        <SelectField
           name="channel"
-          control={control}
-          render={({ field }) => {
-            const debouncedOnChange = useDebouncedCallback(
-              (value) => field.onChange(value),
-              300
-            );
-            return (
-              <ChannelSelect value={field.value || ""} onChange={debouncedOnChange} />
-            );
-          }}
+          label="Channel"
+          placeholder="Select where to receive alerts"
+          options={[
+            { label: "Webhook", value: "webhook" },
+            { label: "Discord Bot", value: "discord" },
+          ]}
         />
-        {errors.channel && (
-          <p className="text-red-500 text-sm">{errors.channel.message}</p>
-        )}
         {channel === "webhook" && (
           <>
-            <Controller
-              name="webhookUrl"
-              control={control}
-              render={({ field }) => {
-                const debouncedOnChange = useDebouncedCallback(
-                  (value) => field.onChange(value),
-                  300
-                );
-                return (
-                  <WebhookField value={field.value || ""} onChange={debouncedOnChange} />
-                );
-              }}
-            />
-            {errors.webhookUrl && (
-              <p className="text-red-500 text-sm">{errors.webhookUrl.message}</p>
-            )}
+          <UrlField
+            name="webhookUrl"
+            label="Webhook URL"
+            placeholder="Enter your webhook URL"
+          />
           </>
         )}
         {channel === "discord" && (
           <>
-            <Controller
-              name="discordWebhookUrl"
-              control={control}
-              render={({ field }) => {
-                const debouncedOnChange = useDebouncedCallback(
-                  (value) => field.onChange(value),
-                  300
-                );
-                return (
-                  <DiscordField value={field.value || ""} onChange={debouncedOnChange} />
-                );
-              }}
-            />
-            {errors.discordWebhookUrl && (
-              <p className="text-red-500 text-sm">{errors.discordWebhookUrl.message}</p>
-            )}
+          <UrlField
+            name="discordWebhookUrl"
+            label="Discord Webhook URL"
+            placeholder="Enter your Discord webhook URL"
+          />
           </>
         )}
-        <Controller
+        <SelectField
           name="coins.0.coinId"
-          control={control}
-          render={({ field: { onChange: setCoinId, value: coinId } }) => {
-            const debouncedSetCoin = useDebouncedCallback((newCoinId) => {
-              setCoinId(newCoinId);
-              setValue("coins.0.coinId", newCoinId, { shouldValidate: true, shouldDirty: true });
-            }, 300);
-            return (
-              <CoinConditionRow
-                coin={coinId}
-                setCoin={debouncedSetCoin}
-                condition={coins[0] && (coins[0].condition === "above" || coins[0].condition === "below") ? coins[0].condition : "above"}
-                setCondition={(newCondition) => {
-                  setValue("coins.0.condition", newCondition, { shouldValidate: true, shouldDirty: true });
-                }}
-              />
-            );
-          }}
+          label="Coin"
+          placeholder="Select a coin"
+          options={[
+            { label: "Bitcoin", value: "bitcoin" },
+            { label: "Ethereum", value: "ethereum" },
+            { label: "Ripple", value: "ripple" },
+          ]} // Placeholder options
         />
-        {errors.coins?.[0]?.coinId && (
-          <p className="text-red-500 text-sm">{errors.coins[0].coinId.message}</p>
-        )}
-        {errors.coins?.[0]?.condition && (
-          <p className="text-red-500 text-sm">{errors.coins[0].condition.message}</p>
-        )}
-        <Controller
+        <SelectField
+          name="coins.0.condition"
+          label="Condition"
+          placeholder="Select a condition"
+          options={[
+            { label: "Above", value: "above" },
+            { label: "Below", value: "below" },
+          ]}
+        />
+        <NumberField
           name="threshold"
-          control={control}
-          render={({ field }) => {
-            const debouncedSetPrice = useDebouncedCallback((value: string) => {
-              setThresholdInput(value);
-              if (value === '') {
-                field.onChange(0, { shouldValidate: true, shouldDirty: true });
-              } else {
-                const parsedNumber = Number(value);
-                if (Number.isFinite(parsedNumber)) {
-                  field.onChange(parsedNumber, { shouldValidate: true, shouldDirty: true });
-                }
-              }
-            }, 300);
-            return (
-              <PriceCurrencyRow
-                price={thresholdInput}
-                setPrice={debouncedSetPrice}
-                currency={watch("currency")}
-                setCurrency={useDebouncedCallback((newCurrency) => {
-                  setValue("currency", newCurrency, { shouldValidate: true, shouldDirty: true });
-                }, 300)}
-              />
-            );
-          }}
+          label="Threshold"
+          placeholder="Enter threshold price"
+          step={0.01}
         />
-        {errors.threshold && (
-          <p className="text-red-500 text-sm">{errors.threshold.message}</p>
-        )}
+        <SelectField
+          name="currency"
+          label="Currency"
+          placeholder="Select currency"
+          options={[
+            { label: "USD", value: "USD" },
+            { label: "EUR", value: "EUR" },
+            { label: "GBP", value: "GBP" },
+          ]} // Placeholder options
+        />
 
-        <ExchangeSelect value={exchange} onChange={useDebouncedCallback(setExchange, 300)} />
+        <SelectField
+          name="exchange"
+          label="Exchange"
+          options={[
+            { label: "CoinGecko", value: "CoinGecko" },
+            { label: "Uniswap", value: "Uniswap" },
+          ]}
+        />
         <button
           type="submit"
           className="w-full py-3 mt-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-600 hover:to-blue-600 text-white font-bold rounded-xl shadow-lg transition-all duration-200"

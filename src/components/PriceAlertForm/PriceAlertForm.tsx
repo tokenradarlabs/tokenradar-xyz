@@ -7,11 +7,12 @@ import CoinConditionRow from "./CoinConditionRow";
 import PriceCurrencyRow from "./PriceCurrencyRow";
 import { SelectField } from "../ui/select-field";
 import { UrlField } from "../ui/url-field";
+import { NumberField } from "../ui/number-field";
 import { Spinner } from "../ui/spinner";
-import { Spinner } from "../ui/spinner";
-// import { useToast } from "../ui/use-toast";
+import { useToast } from "@/lib/contexts/toast-context";
 
 export default function PriceAlertForm() {
+  const { showToast } = useToast();
   const {
     register,
     handleSubmit,
@@ -37,11 +38,10 @@ export default function PriceAlertForm() {
   const channel = watch("channel");
   const coins: PriceAlertFormValues['coins'] = watch("coins");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const onSubmit = async (data: PriceAlertFormValues) => {
     setIsLoading(true);
-    setError(null);
+    // setError(null);
     try {
       const response = await fetch("/api/price-alerts", {
         method: "POST",
@@ -56,18 +56,11 @@ export default function PriceAlertForm() {
         throw new Error(errorData.message || "Failed to create price alert.");
       }
 
-      // toast({
-      //   title: "Success!",
-      //   description: "Price alert created successfully.",
-      // });
+      showToast("Price alert created successfully.", "success");
       reset(); // Reset form fields
     } catch (err: any) {
-      setError(err.message);
-      // toast({
-      //   title: "Error",
-      //   description: err.message,
-      //   variant: "destructive",
-      // });
+      // setError(err.message);
+      showToast(err.message || "Failed to create price alert.", "error");
       console.error("Failed to create price alert:", err);
     } finally {
       setIsLoading(false);
@@ -158,6 +151,10 @@ export default function PriceAlertForm() {
         >
           {isLoading ? <Spinner /> : "Set Alert"}
         </button>
+      </form>
+    </div>
+  );
+}
       </form>
     </div>
   );

@@ -74,7 +74,7 @@ export default function CoinListingAlertForm() {
           <UrlField
             name="discordBot"
             label="Discord Bot Webhook URL"
-            placeholder="XXXXXX"
+            placeholder="https://discord.com/api/webhooks/..."
             disabled={isLoading}
           />
         )}

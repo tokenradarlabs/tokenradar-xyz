@@ -78,7 +78,6 @@ export default function PriceAlertForm() {
         <StepIndicator steps={steps} currentStep={currentStep} />
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {currentStep === 0 && (
           <>
             <SelectField

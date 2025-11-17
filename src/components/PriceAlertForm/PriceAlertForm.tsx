@@ -109,8 +109,6 @@ export default function PriceAlertForm() {
                 { label: "Ethereum", value: "ethereum" },
               ]} // Placeholder options
             />
-              ]}
-            />
             <NumberField
               name="threshold"
               label="Threshold"

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import StepIndicator from '../ui/step-indicator';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { priceAlertSchema, PriceAlertFormValues } from "../../lib/schemas/priceAlert";
@@ -14,16 +14,7 @@ export default function PriceAlertForm() {
   const { showToast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
   const steps = ['Channel', 'Details', 'Review'];
-  const {
-    register,
-    handleSubmit,
-    watch,
-    control,
-    setValue,
-    reset,
-    trigger,
-    formState: { errors },
-  } = useForm<PriceAlertFormValues>({
+  const methods = useForm<PriceAlertFormValues>({
     resolver: zodResolver(priceAlertSchema),
     defaultValues: {
       coins: [{ coinId: "", condition: "above" }],
@@ -37,8 +28,8 @@ export default function PriceAlertForm() {
   });
 
   // const { toast } = useToast();
-  const channel = watch("channel");
-  const coins: PriceAlertFormValues['coins'] = watch("coins");
+  const channel = methods.watch("channel");
+  const coins: PriceAlertFormValues['coins'] = methods.watch("coins");
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (data: PriceAlertFormValues) => {
@@ -77,7 +68,8 @@ export default function PriceAlertForm() {
       <div className="mb-8">
         <StepIndicator steps={steps} currentStep={currentStep} />
       </div>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-5">
+        <FormProvider {...methods}>
         {currentStep === 0 && (
           <>
             <SelectField
@@ -88,14 +80,12 @@ export default function PriceAlertForm() {
                 { label: "Webhook", value: "webhook" },
                 { label: "Discord Bot", value: "discord" },
               ]}
-              control={control}
             />
             {channel === "webhook" && (
               <UrlField
                 name="webhookUrl"
                 label="Webhook URL"
                 placeholder="Enter your webhook URL"
-                control={control}
               />
             )}
             {channel === "discord" && (
@@ -103,7 +93,6 @@ export default function PriceAlertForm() {
                 name="discordWebhookUrl"
                 label="Discord Webhook URL"
                 placeholder="Enter your Discord webhook URL"
-                control={control}
               />
             )}
           </>
@@ -118,26 +107,15 @@ export default function PriceAlertForm() {
               options={[
                 { label: "Bitcoin", value: "bitcoin" },
                 { label: "Ethereum", value: "ethereum" },
-                { label: "Ripple", value: "ripple" },
               ]} // Placeholder options
-              control={control}
             />
-            <SelectField
-              name="coins.0.condition"
-              label="Condition"
-              placeholder="Select a condition"
-              options={[
-                { label: "Above", value: "above" },
-                { label: "Below", value: "below" },
               ]}
-              control={control}
             />
             <NumberField
               name="threshold"
               label="Threshold"
               placeholder="Enter threshold price"
               step={0.01}
-              control={control}
             />
             <SelectField
               name="currency"
@@ -148,7 +126,6 @@ export default function PriceAlertForm() {
                 { label: "EUR", value: "EUR" },
                 { label: "GBP", value: "GBP" },
               ]} // Placeholder options
-              control={control}
             />
           </>
         )}
@@ -162,17 +139,16 @@ export default function PriceAlertForm() {
                 { label: "CoinGecko", value: "CoinGecko" },
                 { label: "Uniswap", value: "Uniswap" },
               ]}
-              control={control}
             />
             <div className="mt-5 p-4 border rounded-md bg-gray-50 dark:bg-gray-800">
               <h3 className="text-lg font-semibold mb-2">Review Your Alert</h3>
-              <p><strong>Channel:</strong> {watch("channel")}</p>
-              {watch("channel") === "webhook" && <p><strong>Webhook URL:</strong> {watch("webhookUrl")}</p>}
-              {watch("channel") === "discord" && <p><strong>Discord Webhook URL:</strong> {watch("discordWebhookUrl")}</p>}
-              <p><strong>Coin:</strong> {watch("coins.0.coinId")}</p>
-              <p><strong>Condition:</strong> {watch("coins.0.condition")}</p>
-              <p><strong>Threshold:</strong> {watch("threshold")} {watch("currency")}</p>
-              <p><strong>Exchange:</strong> {watch("exchange")}</p>
+              <p><strong>Channel:</strong> {methods.watch("channel")}</p>
+              {methods.watch("channel") === "webhook" && <p><strong>Webhook URL:</strong> {methods.watch("webhookUrl")}</p>}
+              {methods.watch("channel") === "discord" && <p><strong>Discord Webhook URL:</strong> {methods.watch("discordWebhookUrl")}</p>}
+              <p><strong>Coin:</strong> {methods.watch("coins.0.coinId")}</p>
+              <p><strong>Condition:</strong> {methods.watch("coins.0.condition")}</p>
+              <p><strong>Threshold:</strong> {methods.watch("threshold")} {methods.watch("currency")}</p>
+              <p><strong>Exchange:</strong> {methods.watch("exchange")}</p>
             </div>
           </>
         )}
@@ -194,9 +170,9 @@ export default function PriceAlertForm() {
               onClick={async () => {
                 let isValid = false;
                 if (currentStep === 0) {
-                  isValid = await trigger(["channel", channel === "webhook" ? "webhookUrl" : "discordWebhookUrl"]);
+                  isValid = await methods.trigger(["channel", channel === "webhook" ? "webhookUrl" : "discordWebhookUrl"]);
                 } else if (currentStep === 1) {
-                  isValid = await trigger(["coins.0.coinId", "coins.0.condition", "threshold", "currency"]);
+                  isValid = await methods.trigger(["coins.0.coinId", "coins.0.condition", "threshold", "currency"]);
                 }
 
                 if (isValid) {

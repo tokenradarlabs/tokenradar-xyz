@@ -42,10 +42,10 @@ export const NumberField: React.FC<NumberFieldProps> = ({
           <FormLabel>{label}</FormLabel>
           <FormControl>
             <Input
-              type="number"
+              type='number'
               placeholder={placeholder}
               {...field}
-              onChange={(e) => field.onChange(parseFloat(e.target.value))}
+              onChange={e => field.onChange(parseFloat(e.target.value))}
               disabled={disabled}
               min={min}
               max={max}

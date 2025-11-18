@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useToast } from "@/lib/contexts/toast-context";
+import { useState } from 'react';
+import { useToast } from '@/lib/contexts/toast-context';
 
 interface UseFormSubmissionOptions<T> {
   onSubmit: (values: T) => Promise<void>;
@@ -11,8 +11,8 @@ interface UseFormSubmissionOptions<T> {
 
 export function useFormSubmission<T extends object>({
   onSubmit: submitFunction,
-  successMessage = "Operation successful!",
-  errorMessage = "An unexpected error occurred. Please try again.",
+  successMessage = 'Operation successful!',
+  errorMessage = 'An unexpected error occurred. Please try again.',
   onSuccess,
   onError,
 }: UseFormSubmissionOptions<T>) {
@@ -23,17 +23,17 @@ export function useFormSubmission<T extends object>({
     setIsSubmitting(true);
     try {
       await submitFunction(values);
-      showToast(successMessage, "success");
+      showToast(successMessage, 'success');
       onSuccess?.();
     } catch (err: unknown) {
-      console.error("Form submission error", err);
+      console.error('Form submission error', err);
       let message = errorMessage;
       if (err instanceof Error) {
         message = err.message;
       } else if (typeof err === 'string') {
         message = err;
       }
-      showToast(message, "error");
+      showToast(message, 'error');
       onError?.(err instanceof Error ? err : new Error(message));
     } finally {
       setIsSubmitting(false);

@@ -37,7 +37,12 @@ export const TextField: React.FC<TextFieldProps> = ({
         <FormItem className={cn('w-full', className)}>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Input placeholder={placeholder} {...field} disabled={disabled} type={type} />
+            <Input
+              placeholder={placeholder}
+              {...field}
+              disabled={disabled}
+              type={type}
+            />
           </FormControl>
           <FormMessage />
         </FormItem>

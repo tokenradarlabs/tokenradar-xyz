@@ -1,4 +1,3 @@
-
 interface CacheEntry<T> {
   value: T;
   expiry: number;
@@ -13,7 +12,7 @@ export const setCache = <T>(key: string, value: T, ttl: number = 3600000) => {
   try {
     localStorage.setItem(key, JSON.stringify(item));
   } catch (error) {
-    console.error("Failed to set item in localStorage:", error);
+    console.error('Failed to set item in localStorage:', error);
   }
 };
 
@@ -31,7 +30,7 @@ export const getCache = <T>(key: string): T | null => {
     }
     return item.value;
   } catch (error) {
-    console.error("Failed to get item from localStorage:", error);
+    console.error('Failed to get item from localStorage:', error);
     return null;
   }
 };
@@ -40,6 +39,6 @@ export const removeCache = (key: string) => {
   try {
     localStorage.removeItem(key);
   } catch (error) {
-    console.error("Failed to remove item from localStorage:", error);
+    console.error('Failed to remove item from localStorage:', error);
   }
 };

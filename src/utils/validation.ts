@@ -23,6 +23,10 @@ export const isValidEmail = (email: string): boolean => {
   return emailRegex.test(email);
 };
 
-export const isWithinRange = (value: number, min: number, max: number): boolean => {
+export const isWithinRange = (
+  value: number,
+  min: number,
+  max: number
+): boolean => {
   return value >= min && value <= max;
 };

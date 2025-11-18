@@ -90,8 +90,7 @@ export default function NotificationPage() {
         {/* Slack Bot Card */}
         <div className='flex min-h-[150px] flex-col justify-center rounded-2xl border border-pink-500 bg-gray-950 p-12 shadow-xl'>
           <h3 className='mb-3 text-2xl font-bold text-pink-600 dark:text-pink-300'>
-            <span className='text-pink-500 dark:text-pink-300'>Slack</span>{' '}
-            Bot
+            <span className='text-pink-500 dark:text-pink-300'>Slack</span> Bot
           </h3>
           <p className='text-lg text-gray-200'>
             Integrate your account with any Slack channel in seconds. Once
@@ -128,7 +127,6 @@ export default function NotificationPage() {
             indicate errors.
           </p>
         </div>
-       
       </div>
     </div>
   );

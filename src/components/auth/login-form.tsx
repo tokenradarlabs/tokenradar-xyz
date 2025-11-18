@@ -30,18 +30,14 @@ export function LoginForm() {
       password: '',
     },
     onSubmit: async (values: LoginFormData) => {
-      // Sanitize inputs before processing
-      const sanitizedValues = {
-        email: sanitizeInput(values.email),
-        password: sanitizeInput(values.password),
-      };
+      const sanitizedValues = values;
 
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // TODO: replace authenticateUser with your real auth call (e.g. API client, next-auth, etc.)
       // For now, we'll simulate a successful authentication.
-      const result = await authenticateUser(sanitizedValues);
+      const result = await authenticateUser(values);
 
       if (!result || !result.ok) {
         throw new Error(

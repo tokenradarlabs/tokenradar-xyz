@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { PlugZap, Bot } from 'lucide-react';
 import { Spinner } from '@/components/ui/spinner';
@@ -160,7 +160,7 @@ const VolumeAlertForm: React.FC<Props> = ({
             <input
               type='url'
               value={webhook}
-              onChange={debouncedSetWebhook}
+              onChange={e => debouncedSetWebhook(e.target.value)}
               placeholder='https://webhook.site/...'
               required
               className='w-full bg-transparent text-gray-100 placeholder-gray-400 outline-none'
@@ -181,7 +181,7 @@ const VolumeAlertForm: React.FC<Props> = ({
             <input
               type='text'
               value={discordBot}
-              onChange={debouncedSetDiscordBot}
+              onChange={e => debouncedSetDiscordBot(e.target.value)}
               placeholder='Paste Discord Bot Token'
               className='w-full bg-transparent text-gray-100 placeholder-gray-400 outline-none'
             />
@@ -197,7 +197,7 @@ const VolumeAlertForm: React.FC<Props> = ({
           <label className={labelClass}>Coin</label>
           <select
             value={coin}
-            onChange={debouncedSetCoin}
+            onChange={e => debouncedSetCoin(e.target.value)}
             className={selectClass}
           >
             {coins.map(c => (
@@ -211,7 +211,7 @@ const VolumeAlertForm: React.FC<Props> = ({
           <label className={labelClass}>Exchange</label>
           <select
             value={exchange}
-            onChange={debouncedSetExchange}
+            onChange={e => debouncedSetExchange(e.target.value)}
             className={selectClass}
           >
             {exchanges.map(ex => (

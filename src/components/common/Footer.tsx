@@ -222,22 +222,21 @@ export default function Footer() {
         </div>
         <script
           type='application/ld+json'
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'http://schema.org',
-              '@type': 'Organization',
-              name: 'TokenRadar Labs',
-              url: 'https://tokenradar.xyz',
-              logo: 'https://tokenradar.xyz/logo.png',
-              sameAs: [
-                'https://twitter.com/tokenradarlabs',
-                'https://github.com/tokenradarlabs',
-                'https://discord.gg/tokenradar',
-                'https://t.me/tokenradar',
-              ],
-            }),
-          }}
-        />
+        >
+          {JSON.stringify({
+            '@context': 'http://schema.org',
+            '@type': 'Organization',
+            name: 'TokenRadar Labs',
+            url: 'https://tokenradar.xyz',
+            logo: 'https://tokenradar.xyz/logo.png',
+            sameAs: [
+              'https://twitter.com/tokenradarlabs',
+              'https://github.com/tokenradarlabs',
+              'https://discord.gg/tokenradar',
+              'https://t.me/tokenradar',
+            ],
+          })}
+        </script>
       </div>
     </footer>
   );

@@ -1,15 +1,15 @@
-import * as React from "react"
+import * as React from 'react';
 
-import { cn } from "@/lib/utils"
+import { cn } from '@/lib/utils';
 
-interface CardProps extends React.ComponentProps<"div"> {
+interface CardProps extends React.ComponentProps<'div'> {
   isLoading?: boolean;
 }
 
-function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
+function Skeleton({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
-      className={cn("animate-pulse rounded-md bg-muted", className)}
+      className={cn('bg-muted animate-pulse rounded-md', className)}
       {...props}
     />
   );
@@ -25,25 +25,25 @@ function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
 function Card({ className, isLoading = false, children, ...props }: CardProps) {
   return (
     <div
-      data-slot="card"
+      data-slot='card'
       className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border p-6 shadow-sm",
+        'bg-card text-card-foreground flex flex-col gap-6 rounded-xl border p-6 shadow-sm',
         className
       )}
       {...props}
     >
       {isLoading ? (
-        <div className="space-y-4">
-          <Skeleton className="h-6 w-3/4" />
-          <Skeleton className="h-4 w-1/2" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-5/6" />
+        <div className='space-y-4'>
+          <Skeleton className='h-6 w-3/4' />
+          <Skeleton className='h-4 w-1/2' />
+          <Skeleton className='h-4 w-full' />
+          <Skeleton className='h-4 w-5/6' />
         </div>
       ) : (
         children
       )}
     </div>
-  )
+  );
 }
 
 /**
@@ -53,17 +53,17 @@ function Card({ className, isLoading = false, children, ...props }: CardProps) {
  * @param {object} props - Additional props to pass to the div element.
  * @returns {JSX.Element} The rendered card header component.
  */
-function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
+function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
-      data-slot="card-header"
+      data-slot='card-header'
       className={cn(
-        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6",
+        '@container/card-header has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5',
         className
       )}
       {...props}
     />
-  )
+  );
 }
 
 /**
@@ -73,14 +73,14 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
  * @param {object} props - Additional props to pass to the div element.
  * @returns {JSX.Element} The rendered card title component.
  */
-function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
+function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
-      data-slot="card-title"
-      className={cn("leading-none font-semibold", className)}
+      data-slot='card-title'
+      className={cn('font-semibold leading-none', className)}
       {...props}
     />
-  )
+  );
 }
 
 /**
@@ -90,14 +90,14 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
  * @param {object} props - Additional props to pass to the div element.
  * @returns {JSX.Element} The rendered card description component.
  */
-function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
+function CardDescription({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
-      data-slot="card-description"
-      className={cn("text-muted-foreground text-sm", className)}
+      data-slot='card-description'
+      className={cn('text-muted-foreground text-sm', className)}
       {...props}
     />
-  )
+  );
 }
 
 /**
@@ -107,17 +107,17 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
  * @param {object} props - Additional props to pass to the div element.
  * @returns {JSX.Element} The rendered card action component.
  */
-function CardAction({ className, ...props }: React.ComponentProps<"div">) {
+function CardAction({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
-      data-slot="card-action"
+      data-slot='card-action'
       className={cn(
-        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
+        'col-start-2 row-span-2 row-start-1 self-start justify-self-end',
         className
       )}
       {...props}
     />
-  )
+  );
 }
 
 /**
@@ -127,14 +127,8 @@ function CardAction({ className, ...props }: React.ComponentProps<"div">) {
  * @param {object} props - Additional props to pass to the div element.
  * @returns {JSX.Element} The rendered card content component.
  */
-function CardContent({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-content"
-      className={cn(className)}
-      {...props}
-    />
-  )
+function CardContent({ className, ...props }: React.ComponentProps<'div'>) {
+  return <div data-slot='card-content' className={cn(className)} {...props} />;
 }
 
 /**
@@ -144,14 +138,14 @@ function CardContent({ className, ...props }: React.ComponentProps<"div">) {
  * @param {object} props - Additional props to pass to the div element.
  * @returns {JSX.Element} The rendered card footer component.
  */
-function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
+function CardFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
-      data-slot="card-footer"
-      className={cn("flex items-center [.border-t]:pt-6", className)}
+      data-slot='card-footer'
+      className={cn('[.border-t]:pt-6 flex items-center', className)}
       {...props}
     />
-  )
+  );
 }
 
 export {
@@ -162,4 +156,4 @@ export {
   CardAction,
   CardDescription,
   CardContent,
-}
+};

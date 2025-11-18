@@ -53,4 +53,4 @@ This document outlines the security considerations and best practices implemente
 
 - Implement wallet linking with secure authentication.
 - Add custom rate limiting and abuse detection.
-- Regularly audit dependencies for vulnerabilities. 
+- Regularly audit dependencies for vulnerabilities.

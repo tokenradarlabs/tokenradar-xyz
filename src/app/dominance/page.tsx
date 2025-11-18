@@ -45,8 +45,8 @@ export default function BTCDominanceAlertPage() {
   const btcDominance = '57.7903';
 
   return (
-    <div className='flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-100 via-purple-100 to-violet-50 dark:from-gray-900 dark:to-indigo-900 p-8'>
-      <div className='relative w-full max-w-lg rounded-3xl border border-pink-600 bg-white dark:bg-gray-950 p-10 shadow-xl'>
+    <div className='flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-100 via-purple-100 to-violet-50 p-8 dark:from-gray-900 dark:to-indigo-900'>
+      <div className='relative w-full max-w-lg rounded-3xl border border-pink-600 bg-white p-10 shadow-xl dark:bg-gray-950'>
         <div className='mb-4 flex flex-col items-center'>
           <span className='mb-2'>
             {/* Icon */}

@@ -36,7 +36,7 @@ export const UrlField: React.FC<UrlFieldProps> = ({
           <FormLabel>{label}</FormLabel>
           <FormControl>
             <Input
-              type="url"
+              type='url'
               placeholder={placeholder}
               {...field}
               disabled={disabled}

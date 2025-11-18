@@ -1,8 +1,8 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 /**
@@ -16,19 +16,36 @@ export function cn(...inputs: ClassValue[]) {
  * formatNumberCompact(1234); // "1.2K"
  * formatNumberCompact(1000000); // "1M"
  */
-export function formatNumberCompact(num: number, locale: string = 'en-US'): string {
+export function formatNumberCompact(
+  num: number,
+  locale: string = 'en-US'
+): string {
   try {
-    return new Intl.NumberFormat(locale, { notation: 'compact', compactDisplay: 'short' }).format(num);
+    return new Intl.NumberFormat(locale, {
+      notation: 'compact',
+      compactDisplay: 'short',
+    }).format(num);
   } catch (error) {
     // Only treat invalid-locale (RangeError) as recoverable; rethrow others
-    if (error instanceof RangeError || (error && typeof error === 'object' && 'name' in error && error.name === 'RangeError')) {
+    if (
+      error instanceof RangeError ||
+      (error &&
+        typeof error === 'object' &&
+        'name' in error &&
+        error.name === 'RangeError')
+    ) {
       // Optional: log a warning so the issue can be diagnosed
       try {
-        console.warn(`formatNumberCompact: invalid locale "${locale}"; falling back to 'en-US'.`);
+        console.warn(
+          `formatNumberCompact: invalid locale "${locale}"; falling back to 'en-US'.`
+        );
       } catch {
         // ignore logging errors
       }
-      return new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(num);
+      return new Intl.NumberFormat('en-US', {
+        notation: 'compact',
+        compactDisplay: 'short',
+      }).format(num);
     }
     throw error;
   }

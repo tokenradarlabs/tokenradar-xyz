@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useDebouncedCallback } from 'use-debounce';
 import { PlugZap, Bot, DollarSign } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";

@@ -18,8 +18,8 @@ const fetchExchanges = async (): Promise<string[]> => {
 };
 
 export const useCoinAndExchangeData = () => {
-  const { data: coins = [], isLoading: isLoadingCoins, error: coinsError } = useQuery<string[]>({ queryKey: ['coins'], queryFn: fetchCoins, staleTime: CACHE_TIME, cacheTime: CACHE_TIME });
-  const { data: exchanges = [], isLoading: isLoadingExchanges, error: exchangesError } = useQuery<string[]>({ queryKey: ['exchanges'], queryFn: fetchExchanges, staleTime: CACHE_TIME, cacheTime: CACHE_TIME });
+  const { data: coins = [], isLoading: isLoadingCoins, error: coinsError } = useQuery<string[]>({ queryKey: ['coins'], queryFn: fetchCoins, staleTime: CACHE_TIME, gcTime: CACHE_TIME });
+  const { data: exchanges = [], isLoading: isLoadingExchanges, error: exchangesError } = useQuery<string[]>({ queryKey: ['exchanges'], queryFn: fetchExchanges, staleTime: CACHE_TIME, gcTime: CACHE_TIME });
 
   return {
     coins,

@@ -16,16 +16,13 @@ const channels = [
 
 const directions = [
   { label: "rises", value: "rises" },
-  { label: "falls", value: "falls" },
+  { label: "drops", value: "drops" },
 ];
 
 const intervals = [
-  { label: "24 hours", value: "24h" },
   { label: "1 hour", value: "1h" },
-  { label: "30 minutes", value: "30m" },
-  { label: "15 minutes", value: "15m" },
-  { label: "5 minutes", value: "5m" },
-  { label: "1 minute", value: "1m" },
+  { label: "24 hours", value: "24h" },
+  { label: "7 days", value: "7d" },
 ];
 
 export default function PercentAlertForm() {
@@ -35,14 +32,6 @@ export default function PercentAlertForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
-
-  React.useEffect(() => {
-    if (coins.length > 0 && form.getValues("coin") === "") {
-      form.setValue("coin", coins[0]);
-    }
-  }, [coins, form]);
-
-
 
   const form = useForm<PercentageAlertFormValues>({
 
@@ -73,6 +62,12 @@ export default function PercentAlertForm() {
     criteriaMode: "all",
 
   });
+
+  React.useEffect(() => {
+    if (coins.length > 0 && form.getValues("coin") === "") {
+      form.setValue("coin", coins[0]);
+    }
+  }, [coins, form]);
 
 
 

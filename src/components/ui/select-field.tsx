@@ -44,7 +44,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({
           <FormLabel>{label}</FormLabel>
           <Select
             onValueChange={field.onChange}
-            defaultValue={field.value}
+            value={field.value}
             disabled={disabled}
           >
             <FormControl>

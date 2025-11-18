@@ -54,7 +54,7 @@ export default function PercentAlertForm() {
 
       interval: "24h",
 
-      exchange: "CoinGecko",
+      exchange: "",
 
     },
 
@@ -69,6 +69,12 @@ export default function PercentAlertForm() {
       form.setValue("coin", coins[0]);
     }
   }, [coins, form]);
+
+  React.useEffect(() => {
+    if (exchanges.length > 0 && form.getValues("exchange") === "") {
+      form.setValue("exchange", exchanges[0]);
+    }
+  }, [exchanges, form]);
 
 
 
@@ -114,7 +120,7 @@ export default function PercentAlertForm() {
 
 
 
-  const formDisabled = isSubmitting || isLoadingData;
+  const formDisabled = isSubmitting;
 
 
 
@@ -132,6 +138,8 @@ export default function PercentAlertForm() {
   }
 
 
+
+  const coinLabel = coin || "the selected coin";
 
   return (
 
@@ -261,7 +269,7 @@ export default function PercentAlertForm() {
 
         <div className="text-sm mt-3 text-gray-400">
 
-          ⚡ The price of {coin} is currently <span className="text-green-400 font-bold">--</span>.
+          ⚡ The price of {coinLabel} is currently <span className="text-green-400 font-bold">--</span>.
 
         </div>
 

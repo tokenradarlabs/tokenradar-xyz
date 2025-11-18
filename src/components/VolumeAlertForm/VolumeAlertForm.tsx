@@ -4,6 +4,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { PlugZap, Bot } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import { useToast } from "@/lib/contexts/toast-context";
+import { sanitizeInput, isValidUrl } from "../../utils/validation";
 
 type Props = {
   channel: string; setChannel: (v: string) => void;
@@ -32,9 +33,25 @@ const VolumeAlertForm: React.FC<Props> = ({
 }) => {
   const { showToast } = useToast();
 
+  const [webhookError, setWebhookError] = useState<string | null>(null);
+  const [discordBotError, setDiscordBotError] = useState<string | null>(null);
+
   const debouncedSetChannel = useDebouncedCallback((value: string) => setChannel(value), 300);
-  const debouncedSetWebhook = useDebouncedCallback((value: string) => setWebhook(value), 300);
-  const debouncedSetDiscordBot = useDebouncedCallback((value: string) => setDiscordBot(value), 300);
+  const debouncedSetWebhook = useDebouncedCallback((value: string) => {
+    const sanitized = sanitizeInput(value);
+    setWebhook(sanitized);
+    if (!isValidUrl(sanitized)) {
+      setWebhookError("Please enter a valid URL.");
+    } else {
+      setWebhookError(null);
+    }
+  }, 300);
+  const debouncedSetDiscordBot = useDebouncedCallback((value: string) => {
+    const sanitized = sanitizeInput(value);
+    setDiscordBot(sanitized);
+    // No specific validation for Discord Bot Token format yet, just sanitization
+    setDiscordBotError(null);
+  }, 300);
   const debouncedSetCoin = useDebouncedCallback((value: string) => setCoin(value), 300);
   const debouncedSetExchange = useDebouncedCallback((value: string) => setExchange(value), 300);
   const debouncedSetMultiplier = useDebouncedCallback((value: string) => setMultiplier(value), 300);
@@ -42,6 +59,18 @@ const VolumeAlertForm: React.FC<Props> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Trigger all validations manually before submission
+    const isWebhookValid = webhook ? isValidUrl(webhook) : true; // Optional field
+    const isDiscordBotValid = discordBot ? true : true; // No specific validation for token yet
+
+    if (!isWebhookValid) setWebhookError("Please enter a valid URL.");
+    if (!isDiscordBotValid) setDiscordBotError("Please enter a valid Discord Bot Token."); // Placeholder error
+
+    if (!isWebhookValid || !isDiscordBotValid) {
+      return; // Stop submission if any validation fails
+    }
+
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
     try {
@@ -74,19 +103,20 @@ const VolumeAlertForm: React.FC<Props> = ({
       {channel === "webhook" && (
         <div>
           <label className={labelClass}>Webhook URL</label>
-          <div className="flex items-center bg-gray-800 rounded-lg px-4 py-2 border border-gray-700">
+          <div className={`flex items-center bg-gray-800 rounded-lg px-4 py-2 border ${webhookError ? 'border-red-500' : 'border-gray-700'}`}>
             <PlugZap className="mr-2 text-blue-400" />
             <input
               type="url" value={webhook} onChange={debouncedSetWebhook}
               placeholder="https://webhook.site/..." required
               className="bg-transparent outline-none w-full text-gray-100 placeholder-gray-400" />
           </div>
+          {webhookError && <p className="text-red-500 text-xs mt-1">{webhookError}</p>}
         </div>
       )}
       {channel === "discord" && (
         <div>
           <label className={labelClass}>Discord Bot Token</label>
-          <div className="flex items-center bg-gray-800 rounded-lg px-4 py-2 border border-gray-700">
+          <div className={`flex items-center bg-gray-800 rounded-lg px-4 py-2 border ${discordBotError ? 'border-red-500' : 'border-gray-700'}`}>
             <Bot className="mr-2 text-purple-400" />
             <input
               type="text" value={discordBot} onChange={debouncedSetDiscordBot}
@@ -94,6 +124,7 @@ const VolumeAlertForm: React.FC<Props> = ({
               className="bg-transparent outline-none w-full text-gray-100 placeholder-gray-400"
             />
           </div>
+          {discordBotError && <p className="text-red-500 text-xs mt-1">{discordBotError}</p>}
         </div>
       )}
       {/* TWO ROWS: Coin/Exchange, Multiplier/Interval */}

@@ -1,8 +1,7 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { Button } from './button';
 import { ThemeToggle } from './theme-toggle';
 
@@ -25,7 +24,6 @@ const NAV_ITEMS: NavItem[] = [
 export function Navbar() {
   const [active, setActive] = useState<number>(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
-  const router = useRouter();
 
   const handleTabClick = (idx: number, path: string) => {
     setActive(idx);

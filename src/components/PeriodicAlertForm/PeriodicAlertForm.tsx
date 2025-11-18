@@ -3,6 +3,7 @@ import React from "react";
 import { useDebouncedCallback } from 'use-debounce';
 import { PlugZap, Bot, DollarSign } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
+import { sanitizeInput, isValidUrl, isWithinRange } from "../../utils/validation";
 
 type Option = { label: string; value: string };
 
@@ -49,7 +50,7 @@ function SelectField({ label, value, setValue, options }: {
 }
 
 // Typed, generic input
-function InputField({ label, type, value, onChange, icon, placeholder, min }: {
+function InputField({ label, type, value, onChange, icon, placeholder, min, error, errorMessage }: {
   label: string;
   type: string;
   value: string;
@@ -57,12 +58,14 @@ function InputField({ label, type, value, onChange, icon, placeholder, min }: {
   icon?: React.ReactNode;
   placeholder?: string;
   min?: string | number;
+  error?: boolean;
+  errorMessage?: string;
 }) {
   const debouncedOnChange = useDebouncedCallback(onChange, 300);
   return (
     <div className="w-full">
       <label className={labelClass}>{label}</label>
-      <div className="flex items-center rounded-lg bg-[#23263c] px-3">
+      <div className={`flex items-center rounded-lg bg-[#23263c] px-3 ${error ? 'border border-red-500' : ''}`}>
         {icon}
         <input
           type={type}
@@ -74,6 +77,7 @@ function InputField({ label, type, value, onChange, icon, placeholder, min }: {
           className="w-full py-2 bg-transparent text-gray-100 outline-none"
         />
       </div>
+      {error && errorMessage && <p className="text-red-500 text-xs mt-1">{errorMessage}</p>}
     </div>
   );
 }
@@ -83,17 +87,70 @@ const PeriodicAlertForm: React.FC<Props> = ({
   coin, setCoin, condition, setCondition, price, setPrice,
   currency, setCurrency, exchange, setExchange,
   channels, coins, conditions, currencies, exchanges, onSubmit, isLoading, error,
-}) => (
-  <form className="space-y-6" onSubmit={onSubmit}>
+}) => {
+  const [webhookError, setWebhookError] = useState<string | null>(null);
+  const [discordBotError, setDiscordBotError] = useState<string | null>(null);
+  const [priceError, setPriceError] = useState<string | null>(null);
+
+  const handleSetWebhook = (v: string) => {
+    const sanitized = sanitizeInput(v);
+    setWebhook(sanitized);
+    if (!isValidUrl(sanitized)) {
+      setWebhookError("Please enter a valid URL.");
+    } else {
+      setWebhookError(null);
+    }
+  };
+
+  const handleSetDiscordBot = (v: string) => {
+    const sanitized = sanitizeInput(v);
+    setDiscordBot(sanitized);
+    // No specific validation for Discord Bot Token format yet, just sanitization
+    setDiscordBotError(null);
+  };
+
+  const handleSetPrice = (v: string) => {
+    setPrice(v);
+    const numValue = parseFloat(v);
+    if (isNaN(numValue) || !isWithinRange(numValue, 0, 1_000_000_000)) {
+      setPriceError("Price must be a number between 0 and 1 billion.");
+    } else {
+      setPriceError(null);
+    }
+  };
+
+  const handleSubmitWithValidation = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Trigger all validations manually before submission
+    const isWebhookValid = webhook ? isValidUrl(webhook) : true; // Optional field
+    const isDiscordBotValid = discordBot ? true : true; // No specific validation for token yet
+    const isPriceValid = !isNaN(parseFloat(price)) && isWithinRange(parseFloat(price), 0, 1_000_000_000);
+
+    if (!isWebhookValid) setWebhookError("Please enter a valid URL.");
+    if (!isDiscordBotValid) setDiscordBotError("Please enter a valid Discord Bot Token."); // Placeholder error
+    if (!isPriceValid) setPriceError("Price must be a number between 0 and 1 billion.");
+
+    if (!isWebhookValid || !isDiscordBotValid || !isPriceValid) {
+      return; // Stop submission if any validation fails
+    }
+
+    onSubmit(e); // Call the original onSubmit if all validations pass
+  };
+
+  return (
+    <form className="space-y-6" onSubmit={handleSubmitWithValidation}>
     <SelectField label="Channel" value={channel} setValue={setChannel} options={channels} />
     {channel === "webhook" && (
       <InputField
         label="Webhook URL"
         type="url"
         value={webhook}
-        onChange={setWebhook}
+        onChange={handleSetWebhook}
         icon={<PlugZap className="mr-2 text-purple-400" size={18} />}
         placeholder="https://webhook.site/..."
+        error={!!webhookError}
+        errorMessage={webhookError || undefined}
       />
     )}
     {channel === "discord" && (
@@ -101,9 +158,11 @@ const PeriodicAlertForm: React.FC<Props> = ({
         label="Discord Bot Token"
         type="text"
         value={discordBot}
-        onChange={setDiscordBot}
+        onChange={handleSetDiscordBot}
         icon={<Bot className="mr-2 text-purple-400" size={18} />}
         placeholder="Paste Discord Bot Token"
+        error={!!discordBotError}
+        errorMessage={discordBotError || undefined}
       />
     )}
     <div className="flex gap-4">
@@ -115,10 +174,12 @@ const PeriodicAlertForm: React.FC<Props> = ({
         label="Price"
         type="number"
         value={price}
-        onChange={setPrice}
+        onChange={handleSetPrice}
         icon={<DollarSign className="mr-2 text-blue-300" size={16} />}
         placeholder="0.00"
         min="0"
+        error={!!priceError}
+        errorMessage={priceError || undefined}
       />
       <SelectField label="Currency" value={currency} setValue={setCurrency} options={currencies} />
     </div>

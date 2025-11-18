@@ -14,6 +14,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { loginFormSchema, type LoginFormData } from "@/lib/schemas/auth";
 import { useFormHandler } from "@/lib/hooks/useFormHandler";
 
+const authenticateUser = async (values: LoginFormData) => {
+  // Placeholder for actual authentication logic
+  console.log("Authenticating user with values:", values);
+  // Simulate a successful login for now
+  return { ok: true, message: "Login successful" };
+};
+
 export function LoginForm() {
   const { form, handleSubmit, isSubmitting } = useFormHandler<LoginFormData>({
     schema: loginFormSchema,
@@ -21,13 +28,13 @@ export function LoginForm() {
       email: "",
       password: "",
     },
-    onSubmit: async () => {
+    onSubmit: async (values: LoginFormData) => {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // TODO: replace authenticateUser with your real auth call (e.g. API client, next-auth, etc.)
       // For now, we'll simulate a successful authentication.
-      const result = { ok: true, message: "Login successful" }; // await authenticateUser(values);
+      const result = await authenticateUser(values);
 
       if (!result || !result.ok) {
         throw new Error(result?.message || 'Invalid credentials. Please try again.');

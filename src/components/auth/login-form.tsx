@@ -1,9 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -16,46 +12,38 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { loginFormSchema, type LoginFormData } from "@/lib/schemas/auth";
-import { useToast } from "@/lib/contexts/toast-context";
+import { useFormHandler } from "@/lib/hooks/useFormHandler";
+
+const authenticateUser = async (values: LoginFormData) => {
+  // Placeholder for actual authentication logic
+  console.log("Authenticating user with values:", values);
+  // Simulate a successful login for now
+  return { ok: true, message: "Login successful" };
+};
 
 export function LoginForm() {
-  const { showToast } = useToast();
-
-  const form = useForm<LoginFormData>({
-    resolver: zodResolver(loginFormSchema),
+  const { form, handleSubmit, isSubmitting } = useFormHandler<LoginFormData>({
+    schema: loginFormSchema,
     defaultValues: {
       email: "",
       password: "",
     },
-    mode: "onChange", // Validate on change
-    criteriaMode: "all", // Show all validation criteria
-  });
+    onSubmit: async (values: LoginFormData) => {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  async function onSubmit(values: LoginFormData) {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    try {
       // TODO: replace authenticateUser with your real auth call (e.g. API client, next-auth, etc.)
       // For now, we'll simulate a successful authentication.
-      const result = { ok: true, message: "Login successful" }; // await authenticateUser(values);
+      const result = await authenticateUser(values);
 
       if (!result || !result.ok) {
-        showToast(result?.message || 'Invalid credentials. Please try again.', 'error');
-        return;
+        throw new Error(result?.message || 'Invalid credentials. Please try again.');
       }
-
-      showToast('Login successful!', 'success');
       // Success path: continue with sign-in flow (redirect, set session, etc.)
-      // console.log("Login successful:", values); // Removed to prevent logging sensitive information
-    } catch (err) {
-      console.error('Login error', err);
-      showToast('An unexpected error occurred. Please try again.', 'error');
-    }
-
-    // console.log("Form submitted:", values); // Removed to prevent logging sensitive information
-    form.reset();
-  }
+    },
+    successMessage: 'Login successful!',
+    errorMessage: 'An unexpected error occurred during login. Please try again.',
+  });
 
   return (
     <Card className="w-full max-w-md mx-auto">
@@ -64,7 +52,7 @@ export function LoginForm() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <FormField
               control={form.control}
               name="email"
@@ -75,13 +63,9 @@ export function LoginForm() {
                     <Input 
                       placeholder="Enter your email" 
                       type="email"
-                      disabled={form.formState.isSubmitting}
+                      disabled={isSubmitting}
                       error={!!form.formState.errors.email}
                       {...field} 
-                      onChange={(e) => {
-                        field.onChange(e);
-                        form.trigger("email");
-                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -98,13 +82,9 @@ export function LoginForm() {
                     <Input 
                       placeholder="Enter your password" 
                       type="password"
-                      disabled={form.formState.isSubmitting}
+                      disabled={isSubmitting}
                       error={!!form.formState.errors.password}
                       {...field}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        form.trigger("password");
-                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -114,9 +94,9 @@ export function LoginForm() {
             <Button 
               type="submit" 
               className="w-full"
-              disabled={form.formState.isSubmitting}
+              disabled={isSubmitting}
             >
-              {form.formState.isSubmitting ? (
+              {isSubmitting ? (
                 "Logging in..."
               ) : (
                 "Login"

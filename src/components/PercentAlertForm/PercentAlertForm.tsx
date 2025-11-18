@@ -14,6 +14,20 @@ const channels = [
   { label: "Discord Bot", value: "discord" },
 ];
 
+const directions = [
+  { label: "rises", value: "rises" },
+  { label: "falls", value: "falls" },
+];
+
+const intervals = [
+  { label: "24 hours", value: "24h" },
+  { label: "1 hour", value: "1h" },
+  { label: "30 minutes", value: "30m" },
+  { label: "15 minutes", value: "15m" },
+  { label: "5 minutes", value: "5m" },
+  { label: "1 minute", value: "1m" },
+];
+
 export default function PercentAlertForm() {
 
   const { coins, exchanges, isLoading: isLoadingData, error: dataError } = useCoinAndExchangeData();
@@ -21,6 +35,12 @@ export default function PercentAlertForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (coins.length > 0 && form.getValues("coin") === "") {
+      form.setValue("coin", coins[0]);
+    }
+  }, [coins, form]);
 
 
 
@@ -36,7 +56,7 @@ export default function PercentAlertForm() {
 
       discordWebhookUrl: "",
 
-      coin: "bitcoin",
+      coin: "",
 
       direction: "rises",
 
@@ -111,9 +131,8 @@ export default function PercentAlertForm() {
 
 
   if (dataError) {
-
-    return <p className="text-red-500 text-center">Error loading data: {dataError.message}</p>;
-
+    const errorMessage = dataError?.message ?? (typeof dataError === 'string' ? dataError : JSON.stringify(dataError)) ?? 'Unknown error';
+    return <p className="text-red-500 text-center">Error loading data: {errorMessage}</p>;
   }
 
 

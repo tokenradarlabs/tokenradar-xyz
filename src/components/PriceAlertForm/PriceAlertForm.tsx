@@ -66,7 +66,8 @@ export default function PriceAlertForm() {
   }
 
   if (dataError) {
-    return <p className="text-red-500 text-center">Error loading data: {dataError.message}</p>;
+    const errorMessage = dataError?.message ?? (typeof dataError === 'string' ? dataError : JSON.stringify(dataError)) ?? 'Unknown error';
+    return <p className="text-red-500 text-center">Error loading data: {errorMessage}</p>;
   }
 
   return (

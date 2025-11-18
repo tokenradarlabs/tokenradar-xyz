@@ -6,10 +6,7 @@ import Footer from "@/components/common/Footer";
 import { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { ToastProvider } from "@/lib/contexts/toast-context";
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryStreamedHydration } from '@tanstack/react-query-next-experimental';
-
-const queryClient = new QueryClient();
+import ReactQueryProvider from "@/components/ReactQueryProvider";
 
 
 
@@ -38,8 +35,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}>
                   <ToastProvider>
-                    <QueryClientProvider client={queryClient}>
-                      <ReactQueryStreamedHydration>
+                    <ReactQueryProvider>
                         <ThemeProvider
                           attribute="class"
                           defaultTheme="system"
@@ -53,8 +49,7 @@ export default function RootLayout({
                           <main id="main-content">{children}</main>
                           <Footer/>
                         </ThemeProvider>
-                      </ReactQueryStreamedHydration>
-                    </QueryClientProvider>
+                    </ReactQueryProvider>
                   </ToastProvider>      </body>
     </html>
   );

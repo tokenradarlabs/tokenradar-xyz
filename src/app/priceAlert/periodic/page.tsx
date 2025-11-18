@@ -37,7 +37,7 @@ export default function PeriodicPage() {
     if (fetchedExchanges.length > 0 && !exchange) {
       setExchange(fetchedExchanges[0]);
     }
-  }, [fetchedCoins, fetchedExchanges, coin, exchange]);
+  }, [fetchedCoins, fetchedExchanges]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,7 +67,8 @@ export default function PeriodicPage() {
   }
 
   if (dataError) {
-    return <div className="min-h-screen flex items-center justify-center text-red-500">Error loading data: {dataError.message}</div>;
+    const errorMessage = dataError?.message ?? (typeof dataError === 'string' ? dataError : JSON.stringify(dataError)) ?? 'Unknown error';
+    return <div className="min-h-screen flex items-center justify-center text-red-500">Error loading data: {errorMessage}</div>;
   }
 
   return (

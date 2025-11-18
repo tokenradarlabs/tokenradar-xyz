@@ -14,6 +14,11 @@ const channels = [
   { label: "Discord Bot", value: "discord" },
 ];
 
+const directions = [
+  { label: "above", value: "above" },
+  { label: "below", value: "below" },
+];
+
 export default function MarketCapAlertForm() {
   const { coins, isLoading: isLoadingData, error: dataError } = useCoinAndExchangeData();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,7 +65,8 @@ export default function MarketCapAlertForm() {
   }
 
   if (dataError) {
-    return <p className="text-red-500 text-center">Error loading data: {dataError.message}</p>;
+    const errorMessage = dataError?.message ?? (typeof dataError === 'string' ? dataError : JSON.stringify(dataError)) ?? 'Unknown error';
+    return <p className="text-red-500 text-center">Error loading data: {errorMessage}</p>;
   }
 
   return (

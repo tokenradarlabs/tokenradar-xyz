@@ -5,7 +5,7 @@ import { useAutoSave, hasUnsavedData } from "@/lib/utils/auto-save";
 import StepIndicator from '../ui/step-indicator';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { priceAlertSchema, PriceAlertFormValues } from "../../lib/schemas/priceAlert";
-import { sanitizeInput } from "../../utils/validation";
+
 import { SelectField } from "../ui/select-field";
 import { UrlField } from "../ui/url-field";
 import { NumberField } from "../ui/number-field";
@@ -57,18 +57,12 @@ export default function PriceAlertForm() {
   const onSubmit = async (data: PriceAlertFormValues) => {
     setIsLoading(true);
     try {
-      const sanitizedData = {
-        ...data,
-        webhookUrl: data.webhookUrl ? sanitizeInput(data.webhookUrl) : data.webhookUrl,
-        discordWebhookUrl: data.discordWebhookUrl ? sanitizeInput(data.discordWebhookUrl) : data.discordWebhookUrl,
-      };
-
       const response = await fetch("/api/price-alerts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(sanitizedData),
+        body: JSON.stringify(data),
       });
 
       if (!response.ok) {

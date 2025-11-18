@@ -4,7 +4,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { PlugZap, Bot } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import { useToast } from "@/lib/contexts/toast-context";
-import { sanitizeInput, isValidUrl } from "../../utils/validation";
+import { isValidUrl } from "../../utils/validation";
 
 type Props = {
   channel: string; setChannel: (v: string) => void;
@@ -38,19 +38,20 @@ const VolumeAlertForm: React.FC<Props> = ({
 
   const debouncedSetChannel = useDebouncedCallback((value: string) => setChannel(value), 300);
   const debouncedSetWebhook = useDebouncedCallback((value: string) => {
-    const sanitized = sanitizeInput(value);
-    setWebhook(sanitized);
-    if (!isValidUrl(sanitized)) {
+    setWebhook(value);
+    if (!isValidUrl(value)) {
       setWebhookError("Please enter a valid URL.");
     } else {
       setWebhookError(null);
     }
   }, 300);
   const debouncedSetDiscordBot = useDebouncedCallback((value: string) => {
-    const sanitized = sanitizeInput(value);
-    setDiscordBot(sanitized);
-    // No specific validation for Discord Bot Token format yet, just sanitization
-    setDiscordBotError(null);
+    setDiscordBot(value);
+    if (!isValidUrl(value)) {
+      setDiscordBotError("Please enter a valid URL.");
+    } else {
+      setDiscordBotError(null);
+    }
   }, 300);
   const debouncedSetCoin = useDebouncedCallback((value: string) => setCoin(value), 300);
   const debouncedSetExchange = useDebouncedCallback((value: string) => setExchange(value), 300);
@@ -62,10 +63,10 @@ const VolumeAlertForm: React.FC<Props> = ({
 
     // Trigger all validations manually before submission
     const isWebhookValid = webhook ? isValidUrl(webhook) : true; // Optional field
-    const isDiscordBotValid = discordBot ? true : true; // No specific validation for token yet
+    const isDiscordBotValid = discordBot ? isValidUrl(discordBot) : true; // Optional field
 
     if (!isWebhookValid) setWebhookError("Please enter a valid URL.");
-    if (!isDiscordBotValid) setDiscordBotError("Please enter a valid Discord Bot Token."); // Placeholder error
+    if (!isDiscordBotValid) setDiscordBotError("Please enter a valid URL.");
 
     if (!isWebhookValid || !isDiscordBotValid) {
       return; // Stop submission if any validation fails

@@ -6,7 +6,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { SelectField } from "@/components/ui/select-field";
 import { UrlField } from "@/components/ui/url-field";
 import { coinListingAlertSchema, CoinListingAlertFormValues } from "@/lib/schemas/coinListingAlert";
-import { sanitizeInput } from "../../utils/validation";
+
 import { useCoinAndExchangeData } from "@/lib/hooks/useCoinAndExchangeData";
 
 const channels = [
@@ -39,15 +39,9 @@ export default function CoinListingAlertForm() {
     setIsSubmitting(true);
     setError(null);
     try {
-      const sanitizedData = {
-        ...data,
-        webhook: data.webhook ? sanitizeInput(data.webhook) : data.webhook,
-        discordBot: data.discordBot ? sanitizeInput(data.discordBot) : data.discordBot,
-      };
-
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("Form submitted:", sanitizedData);
+      console.log("Form submitted:", data);
       // TODO: Implement actual API call to set Coin Listing alert
       form.reset();
     } catch (err: any) {

@@ -38,7 +38,7 @@ const Toast: React.FC<ToastProps> = ({ id, message, type, onDismiss }) => {
       <span>{message}</span>
       <button
         onClick={() => onDismiss(id)}
-        className="ml-4 p-1 rounded-full hover:bg-opacity-80 transition-opacity"
+        className="ml-4 p-1 rounded-full hover:bg-white/80 transition-opacity"
         aria-label={`Dismiss notification: ${message}`}
       >
         <X className="h-4 w-4" />

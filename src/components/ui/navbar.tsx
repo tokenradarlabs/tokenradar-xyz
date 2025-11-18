@@ -33,7 +33,7 @@ export function Navbar() {
   return (
     <div className='sticky top-0 z-50'>
       <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-[999] focus:bg-white focus:text-black focus:p-3 focus:rounded-br-lg">Skip to main content</a>
-      <nav className='w-full border-b border-white/10 bg-gradient-to-r from-[#0f172a] via-[#1e293b] to-[#0f172a] backdrop-blur supports-[backdrop-filter]:bg-opacity-60' role="navigation" aria-label="Main navigation">
+      <nav className='w-full border-b border-white/10 bg-gradient-to-r from-[#0f172a] via-[#1e293b] to-[#0f172a] backdrop-blur supports-[backdrop-filter]:bg-black/60' role="navigation" aria-label="Main navigation">
         <div className='mx-auto flex max-w-7xl flex-wrap items-center justify-between px-3 sm:px-6 md:h-16 md:px-12 lg:px-20 py-2'>
           {/* Logo */}
           <div className='flex min-w-max items-center'>

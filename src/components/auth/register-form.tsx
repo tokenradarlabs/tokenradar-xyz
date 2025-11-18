@@ -1,8 +1,5 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,43 +12,30 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { registerFormSchema, type RegisterFormData } from "@/lib/schemas/auth";
-import { useToast } from "@/lib/contexts/toast-context";
+import { useFormHandler } from "@/lib/hooks/useFormHandler";
 
 export function RegisterForm() {
-  const { showToast } = useToast();
-
-  const form = useForm<RegisterFormData>({
-    resolver: zodResolver(registerFormSchema),
+  const { form, handleSubmit, isSubmitting } = useFormHandler<RegisterFormData>({
+    schema: registerFormSchema,
     defaultValues: {
       name: "",
       email: "",
       password: "",
       confirmPassword: "",
     },
-    mode: "onChange", // Validate on change
-    criteriaMode: "all", // Show all validation criteria
-  });
-
-  async function onSubmit(values: RegisterFormData) {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    try {
+    onSubmit: async (values) => {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       // Simulate successful registration
       const result = { ok: true, message: "Account created successfully!" };
 
       if (!result.ok) {
-        showToast(result.message || "Registration failed. Please try again.", "error");
-        return;
+        throw new Error(result.message || "Registration failed. Please try again.");
       }
-
-      showToast("Account created successfully!", "success");
-      // console.log("Form submitted:", values);
-    } catch (err) {
-      console.error("Registration error", err);
-      showToast("An unexpected error occurred during registration. Please try again.", "error");
-    }
-    form.reset();
-  }
+    },
+    successMessage: "Account created successfully!",
+    errorMessage: "An unexpected error occurred during registration. Please try again.",
+  });
 
   return (
     <Card className="w-full max-w-md mx-auto">
@@ -60,7 +44,7 @@ export function RegisterForm() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <FormField
               control={form.control}
               name="name"
@@ -70,12 +54,8 @@ export function RegisterForm() {
                   <FormControl>
                     <Input 
                       placeholder="Enter your full name" 
-                      disabled={form.formState.isSubmitting}
+                      disabled={isSubmitting}
                       {...field} 
-                      onChange={(e) => {
-                        field.onChange(e);
-                        form.trigger("name");
-                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -92,12 +72,8 @@ export function RegisterForm() {
                     <Input 
                       placeholder="Enter your email" 
                       type="email"
-                      disabled={form.formState.isSubmitting}
+                      disabled={isSubmitting}
                       {...field} 
-                      onChange={(e) => {
-                        field.onChange(e);
-                        form.trigger("email");
-                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -114,12 +90,8 @@ export function RegisterForm() {
                     <Input 
                       placeholder="Enter your password" 
                       type="password"
-                      disabled={form.formState.isSubmitting}
+                      disabled={isSubmitting}
                       {...field}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        form.trigger("password");
-                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -136,12 +108,8 @@ export function RegisterForm() {
                     <Input 
                       placeholder="Confirm your password" 
                       type="password"
-                      disabled={form.formState.isSubmitting}
+                      disabled={isSubmitting}
                       {...field}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        form.trigger("confirmPassword");
-                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -151,9 +119,9 @@ export function RegisterForm() {
             <Button 
               type="submit" 
               className="w-full"
-              disabled={form.formState.isSubmitting}
+              disabled={isSubmitting}
             >
-              {form.formState.isSubmitting ? (
+              {isSubmitting ? (
                 "Creating Account..."
               ) : (
                 "Create Account"

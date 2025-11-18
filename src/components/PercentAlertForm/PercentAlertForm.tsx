@@ -7,6 +7,7 @@ import { SelectField } from "@/components/ui/select-field";
 import { UrlField } from "@/components/ui/url-field";
 import { NumberField } from "@/components/ui/number-field";
 import { percentageAlertSchema, PercentageAlertFormValues } from "@/lib/schemas/percentageAlert";
+import { sanitizeInput } from "../../utils/validation";
 import { useCoinAndExchangeData } from "@/lib/hooks/useCoinAndExchangeData";
 
 const channels = [
@@ -93,12 +94,17 @@ export default function PercentAlertForm() {
     setError(null);
 
     try {
+      const sanitizedData = {
+        ...data,
+        webhookUrl: data.webhookUrl ? sanitizeInput(data.webhookUrl) : data.webhookUrl,
+        discordWebhookUrl: data.discordWebhookUrl ? sanitizeInput(data.discordWebhookUrl) : data.discordWebhookUrl,
+      };
 
       // Simulate API call
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      console.log("Form submitted:", data);
+      console.log("Form submitted:", sanitizedData);
 
       // TODO: Implement actual API call to set Percentage alert
 

@@ -9,6 +9,15 @@ const channels = [
   { label: "Webhook", value: "webhook" },
   { label: "Discord Bot", value: "discord" },
 ];
+
+const multipliers = [
+  "2x", "5x", "10x"
+];
+
+const intervals = [
+  "1h", "24h", "7d"
+];
+
 export default function VolumePage() {
   const { coins: fetchedCoins, exchanges: fetchedExchanges, isLoading: isLoadingData, error: dataError } = useCoinAndExchangeData();
 
@@ -51,8 +60,9 @@ export default function VolumePage() {
       // Reset form fields after successful submission
       setWebhook("");
       setDiscordBot("");
-    } catch (err: any) {
-      console.error("Failed to set volume alert:", err);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
+      console.error("Failed to set volume alert:", errorMessage);
     } finally {
       setIsLoading(false);
     }

@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { loginFormSchema, type LoginFormData } from "@/lib/schemas/auth";
+import { sanitizeInput } from "@/utils/validation";
 import { useFormHandler } from "@/lib/hooks/useFormHandler";
 
 const authenticateUser = async (values: LoginFormData) => {
@@ -29,12 +30,18 @@ export function LoginForm() {
       password: "",
     },
     onSubmit: async (values: LoginFormData) => {
+      // Sanitize inputs before processing
+      const sanitizedValues = {
+        email: sanitizeInput(values.email),
+        password: sanitizeInput(values.password),
+      };
+
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // TODO: replace authenticateUser with your real auth call (e.g. API client, next-auth, etc.)
       // For now, we'll simulate a successful authentication.
-      const result = await authenticateUser(values);
+      const result = await authenticateUser(sanitizedValues);
 
       if (!result || !result.ok) {
         throw new Error(result?.message || 'Invalid credentials. Please try again.');

@@ -7,6 +7,7 @@ import { SelectField } from "@/components/ui/select-field";
 import { UrlField } from "@/components/ui/url-field";
 import { NumberField } from "@/components/ui/number-field";
 import { btcDominanceAlertSchema, BTCDominanceAlertFormValues } from "@/lib/schemas/btcDominanceAlert";
+import { sanitizeInput } from "../../utils/validation";
 
 const channels = [
   { label: "Webhook", value: "webhook" },
@@ -42,13 +43,20 @@ export default function BTCDominanceAlertForm() {
     setIsLoading(true);
     setError(null);
     try {
+      const sanitizedData = {
+        ...data,
+        webhook: data.webhook ? sanitizeInput(data.webhook) : data.webhook,
+        discordWebhookUrl: data.discordWebhookUrl ? sanitizeInput(data.discordWebhookUrl) : data.discordWebhookUrl,
+      };
+
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("Form submitted:", data);
+      console.log("Form submitted:", sanitizedData);
       // TODO: Implement actual API call to set BTC dominance alert
       form.reset();
-    } catch (err: any) {
-      setError(err.message || "Failed to set BTC dominance alert.");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to set BTC dominance alert.";
+      setError(errorMessage);
       console.error("Failed to set BTC dominance alert:", err);
     } finally {
       setIsLoading(false);

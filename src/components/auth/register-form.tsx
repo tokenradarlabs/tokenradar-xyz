@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { registerFormSchema, type RegisterFormData } from "@/lib/schemas/auth";
+import { sanitizeInput } from "@/utils/validation";
 import { useFormHandler } from "@/lib/hooks/useFormHandler";
 
 export function RegisterForm() {
@@ -23,7 +24,15 @@ export function RegisterForm() {
       password: "",
       confirmPassword: "",
     },
-    onSubmit: async (values) => {
+    onSubmit: async (values: RegisterFormData) => {
+      // Sanitize inputs before processing
+      const sanitizedValues = {
+        name: sanitizeInput(values.name),
+        email: sanitizeInput(values.email),
+        password: sanitizeInput(values.password),
+        confirmPassword: sanitizeInput(values.confirmPassword),
+      };
+
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
       // Simulate successful registration

@@ -27,7 +27,8 @@ const intervals = [
 
 export default function PercentAlertForm() {
 
-  const { coins, exchanges, isLoading: isLoadingData, error: dataError } = useCoinAndExchangeData();
+  const { coins, exchanges, isLoading: isLoadingData, coinsError, exchangesError } = useCoinAndExchangeData();
+  const dataError = coinsError || exchangesError;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 

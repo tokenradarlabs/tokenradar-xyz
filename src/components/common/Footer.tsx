@@ -51,6 +51,11 @@ export default function Footer() {
             <h3 id="company-heading" className="font-medium text-lg text-slate-900 dark:text-white">Company</h3>
             <ul className="space-y-2">
               <li>
+                <Link href="/" className="text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 text-sm">
+                  Home
+                </Link>
+              </li>
+              <li>
                 <Link href="/about" className="text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 text-sm">
                   About Us
                 </Link>
@@ -83,22 +88,22 @@ export default function Footer() {
             <h3 id="connect-heading" className="font-medium text-lg text-slate-900 dark:text-white">Connect</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="https://discord.gg/tokenradar" className="text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 text-sm">
+                <Link href="https://discord.gg/tokenradar" className="text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 text-sm" target="_blank" rel="noopener noreferrer" title="Join our Discord community">
                   Discord
                 </Link>
               </li>
               <li>
-                <Link href="https://twitter.com/tokenradarlabs" className="text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 text-sm">
+                <Link href="https://twitter.com/tokenradarlabs" className="text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 text-sm" target="_blank" rel="noopener noreferrer" title="Follow us on Twitter">
                   Twitter
                 </Link>
               </li>
               <li>
-                <Link href="https://github.com/tokenradarlabs" className="text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 text-sm">
+                <Link href="https://github.com/tokenradarlabs" className="text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 text-sm" target="_blank" rel="noopener noreferrer" title="Check out our GitHub">
                   GitHub
                 </Link>
               </li>
               <li>
-                <Link href="https://t.me/tokenradar" className="text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 text-sm">
+                <Link href="https://t.me/tokenradar" className="text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 text-sm" target="_blank" rel="noopener noreferrer" title="Join us on Telegram">
                   Telegram
                 </Link>
               </li>
@@ -128,8 +133,43 @@ export default function Footer() {
         </div>
         
         <div className="mt-12 pt-6 border-t border-slate-200 dark:border-gray-800 text-center text-sm text-slate-500 dark:text-gray-400">
-          © 2025 TokenRadar Labs. All rights reserved. Forging next-generation open-source web3 tools.
+          <div className="flex flex-col items-center justify-center space-y-4">
+            <form className="flex gap-2" onSubmit={(e) => e.preventDefault()}>
+              <input
+                type="email"
+                placeholder="Your email"
+                className="px-4 py-2 rounded-md bg-slate-100 dark:bg-gray-700 border border-slate-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+              />
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >
+                Subscribe
+              </button>
+            </form>
+            <p>
+              © {new Date().getFullYear()} TokenRadar Labs. All rights reserved. Forging next-generation open-source web3 tools.
+            </p>
+          </div>
         </div>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "http://schema.org",
+              "@type": "Organization",
+              "name": "TokenRadar Labs",
+              "url": "https://tokenradar.xyz",
+              "logo": "https://tokenradar.xyz/logo.png",
+              "sameAs": [
+                "https://twitter.com/tokenradarlabs",
+                "https://github.com/tokenradarlabs",
+                "https://discord.gg/tokenradar",
+                "https://t.me/tokenradar"
+              ]
+            })
+          }}
+        />
       </div>
     </footer>
   );

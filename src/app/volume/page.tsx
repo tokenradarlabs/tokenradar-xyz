@@ -2,41 +2,69 @@
 import React, { useState } from "react";
 import VolumeAlertForm from "@/components/VolumeAlertForm/VolumeAlertForm";
 import { Card } from "@/components/ui/card";
-
+import { useCoinAndExchangeData } from "@/lib/hooks/useCoinAndExchangeData";
+import { Spinner } from "@/components/ui/spinner";
 
 const channels = [
   { label: "Webhook", value: "webhook" },
   { label: "Discord Bot", value: "discord" },
 ];
-const coins = ["BTC", "ETH", "USDT"];
-const exchanges = ["CoinGecko", "Uniswap"];
-const multipliers = ["1x", "2x", "3x", "4x", "5x", "6x"];
-const intervals = ["5 minutes", "15 minutes", "1 hour", "24 hours"];
-
 export default function VolumePage() {
+  const { coins: fetchedCoins, exchanges: fetchedExchanges, isLoading: isLoadingData, error: dataError } = useCoinAndExchangeData();
+
   const [channel, setChannel] = useState<string>(channels[0].value);
   const [webhook, setWebhook] = useState<string>("");
   const [discordBot, setDiscordBot] = useState<string>("");
-  const [coin, setCoin] = useState<string>(coins[0]);
-  const [exchange, setExchange] = useState<string>(exchanges[0]);
+  const [coin, setCoin] = useState<string>("");
+  const [exchange, setExchange] = useState<string>("");
   const [multiplier, setMultiplier] = useState<string>(multipliers[0]);
   const [interval, setInterval] = useState<string>(intervals[0]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  React.useEffect(() => {
+    if (fetchedCoins.length > 0 && !coin) {
+      setCoin(fetchedCoins[0]);
+    }
+    if (fetchedExchanges.length > 0 && !exchange) {
+      setExchange(fetchedExchanges[0]);
+    }
+  }, [fetchedCoins, fetchedExchanges, coin, exchange]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Form data
-    const formData = {
-      channel,
-      webhook,
-      discordBot,
-      coin,
-      exchange,
-      multiplier,
-      interval,
-    };
-    // Backend API call or next step here
-    console.log(formData);
+    setIsLoading(true);
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Form data
+      const formData = {
+        channel,
+        webhook,
+        discordBot,
+        coin,
+        exchange,
+        multiplier,
+        interval,
+      };
+      // Backend API call or next step here
+      console.log(formData);
+      // Reset form fields after successful submission
+      setWebhook("");
+      setDiscordBot("");
+    } catch (err: any) {
+      console.error("Failed to set volume alert:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  if (isLoadingData) {
+    return <div className="min-h-screen flex items-center justify-center"><Spinner /></div>;
+  }
+
+  if (dataError) {
+    return <div className="min-h-screen flex items-center justify-center text-red-500">Error loading data: {dataError.message}</div>;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-purple-100 to-violet-50 dark:from-gray-900 dark:to-indigo-900 p-8">
@@ -64,10 +92,11 @@ export default function VolumePage() {
             setInterval={setInterval}
             onSubmit={handleSubmit}
             channels={channels}
-            coins={coins}
-            exchanges={exchanges}
+            coins={fetchedCoins}
+            exchanges={fetchedExchanges}
             multipliers={multipliers}
             intervals={intervals}
+            isLoading={isLoading}
           />
       </Card>
     </div>

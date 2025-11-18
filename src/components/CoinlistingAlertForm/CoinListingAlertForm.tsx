@@ -6,17 +6,16 @@ import { Spinner } from "@/components/ui/spinner";
 import { SelectField } from "@/components/ui/select-field";
 import { UrlField } from "@/components/ui/url-field";
 import { coinListingAlertSchema, CoinListingAlertFormValues } from "@/lib/schemas/coinListingAlert";
+import { useCoinAndExchangeData } from "@/lib/hooks/useCoinAndExchangeData";
 
 const channels = [
   { label: "Webhook", value: "webhook" },
   { label: "Discord Bot", value: "discord" },
 ];
 
-const coins = ["BTC", "ETH", "USDT"]; // Placeholder, ideally fetched from an API
-const exchanges = ["CoinGecko", "Uniswap"]; // Placeholder, ideally fetched from an API
-
 export default function CoinListingAlertForm() {
-  const [isLoading, setIsLoading] = useState(false);
+  const { coins, exchanges, isLoading: isLoadingData, error: dataError } = useCoinAndExchangeData();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm<CoinListingAlertFormValues>({
@@ -36,7 +35,7 @@ export default function CoinListingAlertForm() {
   const channel = watch("channel");
 
   const onSubmit = async (data: CoinListingAlertFormValues) => {
-    setIsLoading(true);
+    setIsSubmitting(true);
     setError(null);
     try {
       // Simulate API call
@@ -48,9 +47,19 @@ export default function CoinListingAlertForm() {
       setError(err.message || "Failed to set Coin Listing alert.");
       console.error("Failed to set Coin Listing alert:", err);
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
+
+  const formDisabled = isSubmitting || isLoadingData;
+
+  if (isLoadingData) {
+    return <div className="flex justify-center items-center h-48"><Spinner /></div>;
+  }
+
+  if (dataError) {
+    return <p className="text-red-500 text-center">Error loading data: {dataError.message}</p>;
+  }
 
   return (
     <FormProvider {...form}>
@@ -59,7 +68,7 @@ export default function CoinListingAlertForm() {
           name="channel"
           label="Send me an"
           options={channels}
-          disabled={isLoading}
+          disabled={formDisabled}
         />
 
         {channel === 'webhook' && (
@@ -67,7 +76,7 @@ export default function CoinListingAlertForm() {
             name="webhook"
             label="Webhook URL"
             placeholder="https://webhook.site/..."
-            disabled={isLoading}
+            disabled={formDisabled}
           />
         )}
         {channel === 'discord' && (
@@ -75,7 +84,7 @@ export default function CoinListingAlertForm() {
             name="discordBot"
             label="Discord Bot Webhook URL"
             placeholder="https://discord.com/api/webhooks/..."
-            disabled={isLoading}
+            disabled={formDisabled}
           />
         )}
 
@@ -83,14 +92,14 @@ export default function CoinListingAlertForm() {
           name="coin"
           label="as soon as"
           options={coins.map(c => ({ label: c, value: c }))}
-          disabled={isLoading}
+          disabled={formDisabled}
         />
 
         <SelectField
           name="exchange"
           label="gets listed on"
           options={exchanges.map(ex => ({ label: ex, value: ex }))}
-          disabled={isLoading}
+          disabled={formDisabled}
         />
 
         <p className='mb-2 mt-6 text-center text-xs text-green-400'>
@@ -104,10 +113,10 @@ export default function CoinListingAlertForm() {
         <button
           type='submit'
           className='mt-6 w-full rounded-xl bg-gradient-to-r from-pink-600 to-purple-700 py-3 font-bold text-white shadow-lg transition hover:from-purple-700 hover:to-blue-600 flex items-center justify-center'
-          disabled={isLoading}
-          aria-busy={isLoading}
+          disabled={formDisabled}
+          aria-busy={isSubmitting}
         >
-          {isLoading ? <Spinner /> : "Set Alert"}
+          {isSubmitting ? <Spinner /> : "Set Alert"}
         </button>
       </form>
     </FormProvider>

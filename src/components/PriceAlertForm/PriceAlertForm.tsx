@@ -9,9 +9,11 @@ import { UrlField } from "../ui/url-field";
 import { NumberField } from "../ui/number-field";
 import { Spinner } from "../ui/spinner";
 import { useToast } from "@/lib/contexts/toast-context";
+import { useCoinAndExchangeData } from "@/lib/hooks/useCoinAndExchangeData";
 
 export default function PriceAlertForm() {
   const { showToast } = useToast();
+  const { coins, exchanges, isLoading: isLoadingData, error: dataError } = useCoinAndExchangeData();
   const [currentStep, setCurrentStep] = useState(0);
   const steps = ['Channel', 'Details', 'Review'];
   const methods = useForm<PriceAlertFormValues>({
@@ -27,14 +29,12 @@ export default function PriceAlertForm() {
     },
   });
 
-  // const { toast } = useToast();
   const channel = methods.watch("channel");
-  const coins: PriceAlertFormValues['coins'] = methods.watch("coins");
+  const formCoins: PriceAlertFormValues['coins'] = methods.watch("coins");
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (data: PriceAlertFormValues) => {
     setIsLoading(true);
-    // setError(null);
     try {
       const response = await fetch("/api/price-alerts", {
         method: "POST",
@@ -50,15 +50,24 @@ export default function PriceAlertForm() {
       }
 
       showToast("Price alert created successfully.", "success");
-      reset(); // Reset form fields
+      methods.reset(); // Reset form fields
     } catch (err: any) {
-      // setError(err.message);
       showToast(err.message || "Failed to create price alert.", "error");
       console.error("Failed to create price alert:", err);
     } finally {
       setIsLoading(false);
     }
   };
+
+  const formDisabled = isLoading || isLoadingData;
+
+  if (isLoadingData) {
+    return <div className="flex justify-center items-center h-48"><Spinner /></div>;
+  }
+
+  if (dataError) {
+    return <p className="text-red-500 text-center">Error loading data: {dataError.message}</p>;
+  }
 
   return (
     <div className="max-w-xl w-full bg-white dark:bg-gray-950 shadow-xl rounded-3xl p-10 relative border border-blue-100 dark:border-indigo-800">
@@ -80,12 +89,14 @@ export default function PriceAlertForm() {
                 { label: "Webhook", value: "webhook" },
                 { label: "Discord Bot", value: "discord" },
               ]}
+              disabled={formDisabled}
             />
             {channel === "webhook" && (
               <UrlField
                 name="webhookUrl"
                 label="Webhook URL"
                 placeholder="Enter your webhook URL"
+                disabled={formDisabled}
               />
             )}
             {channel === "discord" && (
@@ -93,6 +104,7 @@ export default function PriceAlertForm() {
                 name="discordWebhookUrl"
                 label="Discord Webhook URL"
                 placeholder="Enter your Discord webhook URL"
+                disabled={formDisabled}
               />
             )}
           </>
@@ -104,16 +116,15 @@ export default function PriceAlertForm() {
               name="coins.0.coinId"
               label="Coin"
               placeholder="Select a coin"
-              options={[
-                { label: "Bitcoin", value: "bitcoin" },
-                { label: "Ethereum", value: "ethereum" },
-              ]} // Placeholder options
+              options={coins.map(c => ({ label: c, value: c }))}
+              disabled={formDisabled}
             />
             <NumberField
               name="threshold"
               label="Threshold"
               placeholder="Enter threshold price"
               step={0.01}
+              disabled={formDisabled}
             />
             <SelectField
               name="currency"
@@ -124,6 +135,7 @@ export default function PriceAlertForm() {
                 { label: "EUR", value: "EUR" },
                 { label: "GBP", value: "GBP" },
               ]} // Placeholder options
+              disabled={formDisabled}
             />
           </>
         )}
@@ -133,10 +145,8 @@ export default function PriceAlertForm() {
             <SelectField
               name="exchange"
               label="Exchange"
-              options={[
-                { label: "CoinGecko", value: "CoinGecko" },
-                { label: "Uniswap", value: "Uniswap" },
-              ]}
+              options={exchanges.map(ex => ({ label: ex, value: ex }))}
+              disabled={formDisabled}
             />
             <div className="mt-5 p-4 border rounded-md bg-gray-50 dark:bg-gray-800">
               <h3 className="text-lg font-semibold mb-2">Review Your Alert</h3>
@@ -157,6 +167,7 @@ export default function PriceAlertForm() {
               type="button"
               onClick={() => setCurrentStep((prev) => prev - 1)}
               className="py-2 px-4 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-xl shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200"
+              disabled={formDisabled}
             >
               Previous
             </button>
@@ -178,6 +189,7 @@ export default function PriceAlertForm() {
                 }
               }}
               className="ml-auto py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-all duration-200"
+              disabled={formDisabled}
             >
               Next
             </button>
@@ -187,13 +199,13 @@ export default function PriceAlertForm() {
             <button
               type="submit"
               className="ml-auto w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-600 hover:to-blue-600 text-white font-bold rounded-xl shadow-lg transition-all duration-200"
-              disabled={isLoading}
+              disabled={formDisabled}
             >
               {isLoading ? <Spinner /> : "Set Alert"}
             </button>
           )}
         </div>
-      </form>
+        </FormProvider>
       </form>
     </div>
   );

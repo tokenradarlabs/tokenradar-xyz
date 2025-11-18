@@ -7,25 +7,16 @@ import { SelectField } from "@/components/ui/select-field";
 import { UrlField } from "@/components/ui/url-field";
 import { NumberField } from "@/components/ui/number-field";
 import { marketCapAlertSchema, MarketCapAlertFormValues } from "@/lib/schemas/marketCapAlert";
+import { useCoinAndExchangeData } from "@/lib/hooks/useCoinAndExchangeData";
 
 const channels = [
   { label: "Webhook", value: "webhook" },
   { label: "Discord Bot", value: "discord" },
 ];
 
-const coins = [
-  { label: "Bitcoin", value: "BTC" },
-  { label: "Ethereum", value: "ETH" },
-  { label: "Tether", value: "USDT" },
-]; // Placeholder, ideally fetched from an API
-
-const directions = [
-  { label: "rises above", value: "above" },
-  { label: "falls below", value: "below" },
-];
-
 export default function MarketCapAlertForm() {
-  const [isLoading, setIsLoading] = useState(false);
+  const { coins, isLoading: isLoadingData, error: dataError } = useCoinAndExchangeData();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm<MarketCapAlertFormValues>({
@@ -46,7 +37,7 @@ export default function MarketCapAlertForm() {
   const channel = watch("channel");
 
   const onSubmit = async (data: MarketCapAlertFormValues) => {
-    setIsLoading(true);
+    setIsSubmitting(true);
     setError(null);
     try {
       // Simulate API call
@@ -58,9 +49,19 @@ export default function MarketCapAlertForm() {
       setError(err.message || "Failed to set Market Cap alert.");
       console.error("Failed to set Market Cap alert:", err);
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
+
+  const formDisabled = isSubmitting || isLoadingData;
+
+  if (isLoadingData) {
+    return <div className="flex justify-center items-center h-48"><Spinner /></div>;
+  }
+
+  if (dataError) {
+    return <p className="text-red-500 text-center">Error loading data: {dataError.message}</p>;
+  }
 
   return (
     <FormProvider {...form}>
@@ -69,7 +70,7 @@ export default function MarketCapAlertForm() {
           name="channel"
           label="Send me an"
           options={channels}
-          disabled={isLoading}
+          disabled={formDisabled}
         />
 
         {channel === 'webhook' && (
@@ -77,7 +78,7 @@ export default function MarketCapAlertForm() {
             name="webhook"
             label="Webhook URL"
             placeholder="https://webhook.site/..."
-            disabled={isLoading}
+            disabled={formDisabled}
           />
         )}
         {channel === 'discord' && (
@@ -85,15 +86,15 @@ export default function MarketCapAlertForm() {
             name="discordBot"
             label="Discord Bot Webhook URL"
             placeholder="Bot Token"
-            disabled={isLoading}
+            disabled={formDisabled}
           />
         )}
 
         <SelectField
           name="coin"
           label="when the"
-          options={coins}
-          disabled={isLoading}
+          options={coins.map(c => ({ label: c, value: c }))}
+          disabled={formDisabled}
         />
 
         <div className="flex items-center gap-2">
@@ -101,13 +102,13 @@ export default function MarketCapAlertForm() {
           <SelectField
             name="direction"
             options={directions}
-            disabled={isLoading}
+            disabled={formDisabled}
           />
           <NumberField
             name="cap"
             placeholder="00"
             min={0}
-            disabled={isLoading}
+            disabled={formDisabled}
           />
           <span className='pl-2 text-gray-700 dark:text-gray-300'>
             billion USD.
@@ -127,9 +128,9 @@ export default function MarketCapAlertForm() {
         {error && <p role="alert" aria-live="polite" className="text-red-500 text-center">{error}</p>}
         <button type="submit"
         className="w-full py-3 mt-6 bg-gradient-to-r from-pink-600 to-purple-700 hover:from-purple-700 hover:to-blue-600 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center"
-        disabled={isLoading}
-        aria-busy={isLoading}>
-        {isLoading ? <Spinner /> : "Set Alert"}
+        disabled={formDisabled}
+        aria-busy={isSubmitting}>
+        {isSubmitting ? <Spinner /> : "Set Alert"}
       </button>
       </form>
     </FormProvider>

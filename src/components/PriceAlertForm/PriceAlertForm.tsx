@@ -1,6 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
+import { useAutoSave, hasUnsavedData } from "@/lib/utils/auto-save";
 import StepIndicator from '../ui/step-indicator';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { priceAlertSchema, PriceAlertFormValues } from "../../lib/schemas/priceAlert";
@@ -16,6 +17,8 @@ export default function PriceAlertForm() {
   const { coins, exchanges, isLoading: isLoadingData, error: dataError } = useCoinAndExchangeData();
   const [currentStep, setCurrentStep] = useState(0);
   const steps = ['Channel', 'Details', 'Review'];
+  const AUTO_SAVE_KEY = 'priceAlertForm';
+
   const methods = useForm<PriceAlertFormValues>({
     resolver: zodResolver(priceAlertSchema),
     defaultValues: {
@@ -29,8 +32,25 @@ export default function PriceAlertForm() {
     },
   });
 
+  const { isSaving, lastSaved, restore, clearSavedData } = useAutoSave<PriceAlertFormValues>({
+    key: AUTO_SAVE_KEY,
+    data: methods.watch(),
+    onRestore: (savedData) => {
+      methods.reset(savedData);
+      showToast("Unsaved data restored.", "info");
+    },
+    onSave: () => {
+      // Optional: show a subtle toast or log when data is saved
+    },
+  });
+
+  useEffect(() => {
+    if (hasUnsavedData(AUTO_SAVE_KEY)) {
+      showToast("Unsaved changes detected. Click restore to load them.", "info");
+    }
+  }, [restore, showToast]); // Run only once on mount
+
   const channel = methods.watch("channel");
-  const formCoins: PriceAlertFormValues['coins'] = methods.watch("coins");
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (data: PriceAlertFormValues) => {
@@ -51,8 +71,10 @@ export default function PriceAlertForm() {
 
       showToast("Price alert created successfully.", "success");
       methods.reset(); // Reset form fields
-    } catch (err: any) {
-      showToast(err.message || "Failed to create price alert.", "error");
+      clearSavedData(); // Clear auto-saved data
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to create price alert.";
+      showToast(errorMessage, "error");
       console.error("Failed to create price alert:", err);
     } finally {
       setIsLoading(false);
@@ -207,6 +229,12 @@ export default function PriceAlertForm() {
           )}
         </div>
         </FormProvider>
+        <div className="text-sm text-gray-500 dark:text-gray-400 mt-4 text-center">
+          {isSaving && <p>Saving...</p>}
+          {lastSaved && (
+            <p>Last saved: {lastSaved.toLocaleTimeString()}</p>
+          )}
+        </div>
       </form>
     </div>
   );

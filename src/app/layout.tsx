@@ -6,6 +6,7 @@ import Footer from "@/components/common/Footer";
 import { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { ToastProvider } from "@/lib/contexts/toast-context";
+import ReactQueryProvider from "@/components/ReactQueryProvider";
 
 
 
@@ -34,19 +35,21 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}>
                   <ToastProvider>
-                    <ThemeProvider
-                      attribute="class"
-                      defaultTheme="system"
-                      enableSystem
-                      disableTransitionOnChange
-                    >
-                      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:z-50 focus:top-0 focus:left-0 focus:bg-white focus:text-black focus:p-3 focus:underline">Skip to main content</a>
-                      <header>
-                        <Navbar />
-                      </header>
-                      <main id="main-content">{children}</main>
-                      <Footer/>
-                    </ThemeProvider>
+                    <ReactQueryProvider>
+                        <ThemeProvider
+                          attribute="class"
+                          defaultTheme="system"
+                          enableSystem
+                          disableTransitionOnChange
+                        >
+                          <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:z-50 focus:top-0 focus:left-0 focus:bg-white focus:text-black focus:p-3 focus:underline">Skip to main content</a>
+                          <header>
+                            <Navbar />
+                          </header>
+                          <main id="main-content">{children}</main>
+                          <Footer/>
+                        </ThemeProvider>
+                    </ReactQueryProvider>
                   </ToastProvider>      </body>
     </html>
   );

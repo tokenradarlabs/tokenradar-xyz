@@ -13,6 +13,7 @@ const Spinner = ({ className, ...props }: SpinnerProps) => (
     viewBox='0 0 24 24'
     stroke='currentColor'
     aria-label='Loading'
+    role='status'
     {...props}
   >
     <circle

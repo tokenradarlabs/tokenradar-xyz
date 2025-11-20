@@ -22,7 +22,8 @@ export default function CoinListingAlertForm() {
     coins,
     exchanges,
     isLoading: isLoadingData,
-    error: dataError,
+    coinsError,
+    exchangesError,
   } = useCoinAndExchangeData();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -70,10 +71,11 @@ export default function CoinListingAlertForm() {
     );
   }
 
-  if (dataError) {
+  if (coinsError || exchangesError) {
+    const errorMessage = coinsError?.message || exchangesError?.message || 'Unknown error';
     return (
       <p className='text-center text-red-500'>
-        Error loading data: {dataError.message}
+        Error loading data: {errorMessage}
       </p>
     );
   }

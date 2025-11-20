@@ -16,7 +16,8 @@ describe('CoinListingAlertForm', () => {
       coins: ['Bitcoin', 'Ethereum', 'A Very Long Coin Name That Should Wrap'],
       exchanges: ['Binance', 'Coinbase', 'Kraken'],
       isLoading: false,
-      error: null,
+      coinsError: null,
+      exchangesError: null,
     });
   });
 
@@ -62,7 +63,8 @@ describe('CoinListingAlertForm', () => {
       coins: [],
       exchanges: [],
       isLoading: false,
-      error: new Error(errorMessage),
+      coinsError: new Error(errorMessage),
+      exchangesError: null,
     });
 
     render(<CoinListingAlertForm />);

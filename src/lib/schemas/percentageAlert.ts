@@ -1,33 +1,30 @@
 import { z } from 'zod';
-import { sanitizeInput } from '../../utils/validation';
 
 export const percentageAlertSchema = z
   .object({
-    coin: z.string().min(1, { message: 'Coin is required.' }).transform(sanitizeInput),
+    coin: z.string().min(1, { message: 'Coin is required.' }),
     percentage: z.coerce
       .number()
       .min(0, { message: 'Percentage must be a non-negative number.' })
       .max(100, { message: 'Percentage cannot exceed 100.' }),
     direction: z.enum(['rises', 'drops'], {
       message: 'Direction is required.',
-    }).transform(val => sanitizeInput(val)),
-    interval: z.enum(['1h', '24h', '7d'], { message: 'Interval is required.' }).transform(val => sanitizeInput(val)),
+    }),
+    interval: z.enum(['1h', '24h', '7d'], { message: 'Interval is required.' }),
     channel: z.enum(['discord', 'webhook'], {
       message: 'Channel is required.',
-    }).transform(val => sanitizeInput(val)),
+    }),
     discordWebhookUrl: z
       .string()
       .url({ message: 'Invalid Discord webhook URL.' })
       .optional()
-      .or(z.literal(''))
-      .transform(val => (val ? sanitizeInput(val) : val)),
+      .or(z.literal('')),
     webhookUrl: z
       .string()
       .url({ message: 'Invalid webhook URL.' })
       .optional()
-      .or(z.literal(''))
-      .transform(val => (val ? sanitizeInput(val) : val)),
-    exchange: z.string().min(1, { message: 'Exchange is required.' }).transform(sanitizeInput),
+      .or(z.literal('')),
+    exchange: z.string().min(1, { message: 'Exchange is required.' }),
   })
   .refine(
     data =>

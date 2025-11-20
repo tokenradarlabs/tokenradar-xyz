@@ -21,10 +21,10 @@ export const btcDominanceAlertSchema = z
     level: z
       .string()
       .min(1, { message: 'Dominance level is required.' })
-      .refine(val => !isNaN(parseFloat(val)), {
+      .refine(val => /^-?\d+(\.\d+)?$/.test(val.trim()), {
         message: 'Dominance level must be a valid number.',
       })
-      .transform(val => parseFloat(val))
+      .transform(val => parseFloat(val.trim()))
       .refine(val => val >= 0, {
         message: 'Dominance level must be non-negative.',
       })

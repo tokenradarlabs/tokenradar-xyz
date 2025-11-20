@@ -18,10 +18,19 @@ export const btcDominanceAlertSchema = z
     direction: z.enum(['above', 'below'], {
       message: 'Direction is required.',
     }),
-    level: z.coerce
-      .number()
-      .min(0, { message: 'Level must be non-negative.' })
-      .max(100, { message: 'Level must be at most 100.' }),
+    level: z
+      .string()
+      .min(1, { message: 'Dominance level is required.' })
+      .refine(val => /^-?\d+(\.\d+)?$/.test(val.trim()), {
+        message: 'Dominance level must be a valid number.',
+      })
+      .transform(val => parseFloat(val.trim()))
+      .refine(val => val >= 0, {
+        message: 'Dominance level must be non-negative.',
+      })
+      .refine(val => val <= 100, {
+        message: 'Dominance level must be at most 100.',
+      }),
   })
   .refine(
     data =>

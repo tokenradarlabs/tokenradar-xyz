@@ -1,189 +1,203 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import MarketCapAlertForm from '../components/MarketCapAlertForm/MarketCapAlertForm';
 import '@testing-library/jest-dom';
 import React from 'react';
+import { useCoinAndExchangeData } from '@/lib/hooks/useCoinAndExchangeData';
 
-const mockChannels = [
-  { label: 'Webhook', value: 'webhook' },
-  { label: 'Discord', value: 'discord' },
-  { label: 'Email', value: 'email' },
-];
+// Mock the useCoinAndExchangeData hook
+jest.mock('@/lib/hooks/useCoinAndExchangeData', () => ({
+  useCoinAndExchangeData: jest.fn(),
+}));
 
-const mockCoins = [
-  { label: 'Bitcoin', value: 'BTC' },
-  { label: 'Ethereum', value: 'ETH' },
-];
-
-const mockDirections = [
-  { label: 'rises above', value: 'rises_above' },
-  { label: 'drops below', value: 'drops_below' },
-];
-
-const initialFormState = {
-  channel: 'webhook',
-  webhook: 'https://example.com/webhook',
-  discordBot: '',
-  coin: 'BTC',
-  direction: 'rises_above',
-  cap: '1000',
-};
-
-const setup = (
-  formState = initialFormState,
-  handleChange = jest.fn(),
-  handleSubmit = jest.fn(),
-  isLoading = false,
-  error = null,
-  currentMarketCap = '1,234.56'
-) => {
-  render(
-    <MarketCapAlertForm
-      form={formState}
-      handleChange={handleChange}
-      handleSubmit={handleSubmit}
-      channels={mockChannels}
-      coins={mockCoins}
-      directions={mockDirections}
-      currentMarketCap={currentMarketCap}
-      isLoading={isLoading}
-      error={error}
-    />
-  );
-};
+const mockUseCoinAndExchangeData = useCoinAndExchangeData as jest.Mock;
 
 describe('MarketCapAlertForm', () => {
-  it('renders correctly with initial form state', () => {
-    setup();
-    expect(screen.getByLabelText(/send me an/i)).toHaveValue('webhook');
+  beforeEach(() => {
+    mockUseCoinAndExchangeData.mockReturnValue({
+      coins: ['BTC', 'ETH', 'XRP'],
+      isLoading: false,
+      error: null,
+    });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('renders correctly with initial form state', async () => {
+    render(<MarketCapAlertForm />);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/send me an/i)).toHaveValue('webhook');
+    });
     expect(
       screen.getByPlaceholderText(/https:\/\/webhook.site\//i)
-    ).toHaveValue('https://example.com/webhook');
+    ).toBeInTheDocument();
     expect(screen.getByLabelText(/when the/i)).toHaveValue('BTC');
-    expect(screen.getByLabelText(/marketcap direction/i)).toHaveValue(
-      'rises_above'
-    );
-    expect(screen.getByDisplayValue('1000')).toBeInTheDocument();
+    expect(screen.getByLabelText(/marketcap/i)).toHaveValue('above');
+    expect(screen.getByPlaceholderText('00')).toBeInTheDocument();
     expect(
-      screen.getByText(/btc marketcap is currently \$1,234.56 billion/i)
+      screen.getByText(/btc marketcap is currently \$-- billion/i)
     ).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: /set alert/i })
     ).toBeInTheDocument();
   });
 
-  it('calls handleChange when channel is changed', () => {
-    const handleChange = jest.fn(() => () => {});
-    setup(initialFormState, handleChange);
+  it('conditionally renders Discord Bot Webhook URL field when channel is Discord', async () => {
+    render(<MarketCapAlertForm />);
 
-    fireEvent.change(screen.getByLabelText(/send me an/i), {
-      target: { value: 'discord' },
+    await waitFor(() => {
+      fireEvent.change(screen.getByLabelText(/send me an/i), {
+        target: { value: 'discord' },
+      });
     });
 
-    expect(handleChange).toHaveBeenCalledWith('channel');
-  });
-
-  it('calls handleChange when webhook URL is changed', () => {
-    const handleChange = jest.fn(() => () => {});
-    setup(initialFormState, handleChange);
-
-    const webhookInput = screen.getByPlaceholderText(
-      /https:\/\/webhook.site\//i
-    );
-    fireEvent.change(webhookInput, {
-      target: { value: 'https://new.webhook.com' },
-    });
-
-    expect(handleChange).toHaveBeenCalledWith('webhook');
-  });
-
-  it('calls handleChange when coin is changed', () => {
-    const handleChange = jest.fn(() => () => {});
-    setup(initialFormState, handleChange);
-
-    fireEvent.change(screen.getByLabelText(/cryptocurrency/i), {
-      target: { value: 'ETH' },
-    });
-
-    expect(handleChange).toHaveBeenCalledWith('coin');
-  });
-
-  it('calls handleChange when direction is changed', () => {
-    const handleChange = jest.fn(() => () => {});
-    setup(initialFormState, handleChange);
-
-    fireEvent.change(screen.getByLabelText(/market cap direction/i), {
-      target: { value: 'drops_below' },
-    });
-
-    expect(handleChange).toHaveBeenCalledWith('direction');
-  });
-
-  it('calls handleChange when market cap is changed', () => {
-    const handleChange = jest.fn(() => () => {});
-    setup(initialFormState, handleChange);
-
-    const capInput = screen.getByDisplayValue('1000');
-    fireEvent.change(capInput, { target: { value: '2000' } });
-
-    expect(handleChange).toHaveBeenCalledWith('cap');
-  });
-
-  it('conditionally renders Discord Bot Token field when channel is Discord', () => {
-    const discordFormState = { ...initialFormState, channel: 'discord' };
-    setup(discordFormState);
-
-    expect(screen.getByLabelText(/discord bot token/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/discord bot webhook url/i)).toBeInTheDocument();
     expect(screen.queryByLabelText(/webhook url/i)).not.toBeInTheDocument();
   });
 
-  it('conditionally renders Webhook URL field when channel is Webhook', () => {
-    const webhookFormState = { ...initialFormState, channel: 'webhook' };
-    setup(webhookFormState);
+  it('conditionally renders Webhook URL field when channel is Webhook', async () => {
+    render(<MarketCapAlertForm />);
+
+    await waitFor(() => {
+      fireEvent.change(screen.getByLabelText(/send me an/i), {
+        target: { value: 'webhook' },
+      });
+    });
 
     expect(screen.getByLabelText(/webhook url/i)).toBeInTheDocument();
     expect(
-      screen.queryByLabelText(/discord bot token/i)
+      screen.queryByLabelText(/discord bot webhook url/i)
     ).not.toBeInTheDocument();
   });
 
-  it('calls handleSubmit on form submission', () => {
-    const handleSubmit = jest.fn();
-    setup(
-      initialFormState,
-      jest.fn(() => () => {}),
-      handleSubmit
-    );
+  it('displays validation error for invalid webhook URL', async () => {
+    render(<MarketCapAlertForm />);
 
-    userEvent.click(screen.getByRole('button', { name: /set alert/i }));
-    expect(handleSubmit).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      fireEvent.change(screen.getByLabelText(/send me an/i), {
+        target: { value: 'webhook' },
+      });
+    });
+
+    const webhookInput = screen.getByLabelText(/webhook url/i);
+    fireEvent.change(webhookInput, { target: { value: 'invalid-url' } });
+
+    fireEvent.click(screen.getByRole('button', { name: /set alert/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/invalid webhook url./i)).toBeInTheDocument();
+    });
   });
 
-  it('disables the submit button and shows spinner when isLoading is true', () => {
-    setup(
-      initialFormState,
-      jest.fn(() => () => {}),
-      jest.fn(),
-      true
-    );
+  it('displays validation error for negative market cap', async () => {
+    render(<MarketCapAlertForm />);
 
-    const submitButton = screen.getByRole('button', { name: /set alert/i });
-    expect(submitButton).toBeDisabled();
-    expect(submitButton).toHaveAttribute('aria-busy', 'true');
-    expect(screen.getByRole('status')).toBeInTheDocument(); // Spinner has role="status"
+    const capInput = screen.getByPlaceholderText('00');
+    fireEvent.change(capInput, { target: { value: '-100' } });
+
+    fireEvent.click(screen.getByRole('button', { name: /set alert/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/market cap must be non-negative./i)
+      ).toBeInTheDocument();
+    });
   });
 
-  it('displays an error message when error prop is provided', () => {
-    const errorMessage = 'Market cap alert failed!';
-    setup(
-      initialFormState,
-      jest.fn(() => () => {}),
-      jest.fn(),
-      false,
-      errorMessage
-    );
+  it('submits the form with valid data', async () => {
+    const consoleSpy = jest.spyOn(console, 'log');
+    render(<MarketCapAlertForm />);
 
-    expect(screen.getByRole('alert')).toHaveTextContent(errorMessage);
-    expect(screen.getByText(errorMessage)).toHaveClass('text-red-500');
+    await waitFor(() => {
+      fireEvent.change(screen.getByLabelText(/send me an/i), {
+        target: { value: 'webhook' },
+      });
+    });
+
+    const webhookInput = screen.getByLabelText(/webhook url/i);
+    fireEvent.change(webhookInput, { target: { value: 'https://valid.webhook.com' } });
+
+    const coinSelect = screen.getByLabelText(/when the/i);
+    fireEvent.change(coinSelect, { target: { value: 'ETH' } });
+
+    const directionSelect = screen.getByLabelText(/marketcap/i);
+    fireEvent.change(directionSelect, { target: { value: 'below' } });
+
+    const capInput = screen.getByPlaceholderText('00');
+    fireEvent.change(capInput, { target: { value: '5000000000' } });
+
+    fireEvent.click(screen.getByRole('button', { name: /set alert/i }));
+
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Form submitted:',
+        expect.objectContaining({
+          channel: 'webhook',
+          webhook: 'https://valid.webhook.com',
+          coin: 'ETH',
+          direction: 'below',
+          cap: 5000000000,
+        })
+      );
+    });
+    consoleSpy.mockRestore();
+  });
+
+  it('handles large numbers with locale-specific formatting correctly', async () => {
+    const consoleSpy = jest.spyOn(console, 'log');
+    render(<MarketCapAlertForm />);
+
+    await waitFor(() => {
+      fireEvent.change(screen.getByLabelText(/send me an/i), {
+        target: { value: 'webhook' },
+      });
+    });
+
+    const webhookInput = screen.getByLabelText(/webhook url/i);
+    fireEvent.change(webhookInput, { target: { value: 'https://test.webhook.com' } });
+
+    const capInput = screen.getByPlaceholderText('00');
+
+    // Test with a large number using comma as thousands separator (e.g., en-US style)
+    fireEvent.change(capInput, { target: { value: '1,234,567,890.12' } });
+    fireEvent.click(screen.getByRole('button', { name: /set alert/i }));
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Form submitted:',
+        expect.objectContaining({
+          cap: 1234567890.12,
+        })
+      );
+    });
+    consoleSpy.mockClear();
+
+    // Test with a large number using dot as thousands separator (e.g., de-DE style)
+    fireEvent.change(capInput, { target: { value: '987.654.321,00' } });
+    fireEvent.click(screen.getByRole('button', { name: /set alert/i }));
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Form submitted:',
+        expect.objectContaining({
+          cap: 987654321,
+        })
+      );
+    });
+    consoleSpy.mockClear();
+
+    // Test with a very large number without separators
+    fireEvent.change(capInput, { target: { value: '1000000000000' } });
+    fireEvent.click(screen.getByRole('button', { name: /set alert/i }));
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Form submitted:',
+        expect.objectContaining({
+          cap: 1000000000000,
+        })
+      );
+    });
+    consoleSpy.mockRestore();
   });
 });

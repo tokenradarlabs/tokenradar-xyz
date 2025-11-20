@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { parseLocaleNumber } from '@/lib/utils';
 
 export const marketCapAlertSchema = z
   .object({
@@ -19,9 +20,10 @@ export const marketCapAlertSchema = z
     direction: z.enum(['above', 'below'], {
       message: 'Direction is required.',
     }),
-    cap: z.coerce
-      .number()
-      .min(0, { message: 'Market cap must be non-negative.' }),
+    cap: z.preprocess(
+      (val) => (typeof val === 'string' ? parseLocaleNumber(val) : val),
+      z.number().min(0, { message: 'Market cap must be non-negative.' })
+    ),
   })
   .refine(
     data =>

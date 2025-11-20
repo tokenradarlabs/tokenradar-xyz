@@ -50,3 +50,32 @@ export function formatNumberCompact(
     throw error;
   }
 }
+
+/**
+ * Parses a locale-formatted number string into a number.
+ * It attempts to determine the decimal separator based on the current locale
+ * and then normalizes the string before parsing to ensure correct conversion
+ * of large numbers with thousands separators.
+ *
+ * @param numStr The number string to parse.
+ * @param locale The locale to use for parsing (defaults to 'en-US').
+ * @returns The parsed number, or NaN if parsing fails.
+ */
+export function parseLocaleNumber(numStr: string, locale: string = 'en-US'): number {
+  if (!numStr) {
+    return NaN;
+  }
+
+  // Determine the actual decimal separator for the given locale
+  const numberWithDecimal = new Intl.NumberFormat(locale).format(1.1);
+  const decimalSeparator = numberWithDecimal.charAt(1);
+
+  // Remove all thousands separators and replace the locale-specific decimal separator with a dot
+  let cleanedNumStr = numStr.replace(new RegExp(`\\${decimalSeparator}`, 'g'), '.');
+  
+  // Remove any other non-digit characters that are not a dot (decimal separator)
+  cleanedNumStr = cleanedNumStr.replace(/[^\d.]/g, '');
+
+  return parseFloat(cleanedNumStr);
+}
+

@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Button } from '../components/ui/button';
 import '@testing-library/jest-dom';
 
@@ -71,5 +72,17 @@ describe('Button', () => {
     expect(link).toHaveAttribute('aria-disabled', 'true');
     expect(link).toHaveAttribute('tabIndex', '-1');
     expect(link).not.toHaveAttribute('href'); // href should be removed when disabled
+  });
+  it('triggers onClick on keyboard activation', async () => {
+    const handleClick = jest.fn();
+    render(<Button onClick={handleClick}>Clickable Button</Button>);
+    const button = screen.getByRole('button', { name: /clickable button/i });
+
+    button.focus();
+    await userEvent.keyboard('{Enter}');
+    expect(handleClick).toHaveBeenCalledTimes(1);
+
+    await userEvent.keyboard('{Space}');
+    expect(handleClick).toHaveBeenCalledTimes(2);
   });
 });

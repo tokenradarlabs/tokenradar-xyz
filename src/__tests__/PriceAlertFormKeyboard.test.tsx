@@ -85,7 +85,7 @@ describe('PriceAlertForm keyboard navigation', () => {
 
     // Dropdown should close and selected token should be ETH
     await waitFor(() => {
-      expect(screen.queryByText('ETH')).not.toBeInTheDocument(); // ETH item in dropdown
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument(); // Dropdown menu should be removed
       expect(screen.getByRole('button', { name: /ETH/i })).toBeInTheDocument(); // Selected ETH in trigger
     });
   });

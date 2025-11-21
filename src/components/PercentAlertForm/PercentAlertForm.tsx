@@ -10,7 +10,6 @@ import {
   percentageAlertSchema,
   PercentageAlertFormValues,
 } from '@/lib/schemas/percentageAlert';
-import { sanitizeInput } from '../../utils/validation';
 import { useCoinAndExchangeData } from '@/lib/hooks/useCoinAndExchangeData';
 
 const channels = [
@@ -93,16 +92,6 @@ export default function PercentAlertForm() {
     setError(null);
 
     try {
-      const sanitizedData = {
-        ...data,
-        webhookUrl: data.webhookUrl
-          ? sanitizeInput(data.webhookUrl)
-          : data.webhookUrl,
-        discordWebhookUrl: data.discordWebhookUrl
-          ? sanitizeInput(data.discordWebhookUrl)
-          : data.discordWebhookUrl,
-      };
-
       // Simulate API call
 
       await new Promise(resolve => setTimeout(resolve, 1000));

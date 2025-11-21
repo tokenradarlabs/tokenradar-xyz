@@ -15,6 +15,7 @@ import { NumberField } from '../ui/number-field';
 import { Spinner } from '../ui/spinner';
 import { useToast } from '@/lib/contexts/toast-context';
 import { useCoinAndExchangeData } from '@/lib/hooks/useCoinAndExchangeData';
+import { useFormSubmission } from '@/lib/hooks/useFormSubmission';
 
 export default function PriceAlertForm() {
   const { showToast } = useToast();

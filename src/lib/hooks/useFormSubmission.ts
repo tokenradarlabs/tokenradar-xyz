@@ -20,6 +20,7 @@ export function useFormSubmission<T extends object>({
   const { showToast } = useToast();
 
   const handleSubmit = async (values: T) => {
+    if (isSubmitting) return;
     setIsSubmitting(true);
     try {
       await submitFunction(values);

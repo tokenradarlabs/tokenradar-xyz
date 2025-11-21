@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useDebouncedCallback } from 'use-debounce';
 
 const labelClass = "block text-gray-300 mb-1 text-sm";
@@ -14,7 +14,20 @@ export function InputField({ label, type, value, onChange, icon, placeholder, mi
   error?: boolean;
   errorMessage?: string;
 }) {
+  const [internalValue, setInternalValue] = useState(value);
+
+  useEffect(() => {
+    setInternalValue(value);
+  }, [value]);
+
   const debouncedOnChange = useDebouncedCallback(onChange, 300);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setInternalValue(newValue);
+    debouncedOnChange(newValue);
+  };
+
   return (
     <div className="w-full">
       <label className={labelClass}>{label}</label>
@@ -22,8 +35,8 @@ export function InputField({ label, type, value, onChange, icon, placeholder, mi
         {icon}
         <input
           type={type}
-          value={value}
-          onChange={e => debouncedOnChange(e.target.value)}
+          value={internalValue}
+          onChange={handleChange}
           placeholder={placeholder}
           min={min}
           required

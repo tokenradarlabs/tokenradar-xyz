@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { PlugZap, Bot, DollarSign } from "lucide-react";
 import { SelectField } from "@/components/ui/select-field";
 import { InputField } from "@/components/ui/input-field";
-import { sanitizeInput, isValidUrl, isWithinRange } from "@/lib/utils/validation";
+import { isValidUrl, isWithinRange } from "@/lib/utils/validation";
 
 type Option = { label: string; value: string };
 
@@ -34,9 +34,8 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({
 }) => {
 
   const handleSetWebhook = (v: string) => {
-    const sanitized = sanitizeInput(v);
-    setWebhook(sanitized);
-    if (!isValidUrl(sanitized)) {
+    setWebhook(v);
+    if (!isValidUrl(v)) {
       setWebhookError("Please enter a valid URL.");
     } else {
       setWebhookError(null);
@@ -44,8 +43,7 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({
   };
 
   const handleSetDiscordBot = (v: string) => {
-    const sanitized = sanitizeInput(v);
-    setDiscordBot(sanitized);
+    setDiscordBot(v);
     // No specific validation for Discord Bot Token format yet, just sanitization
     setDiscordBotError(null);
   };

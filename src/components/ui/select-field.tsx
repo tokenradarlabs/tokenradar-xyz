@@ -1,5 +1,4 @@
 import React from "react";
-import { useDebouncedCallback } from 'use-debounce';
 
 type Option = { label: string; value: string };
 
@@ -12,11 +11,10 @@ export function SelectField({ label, value, setValue, options }: {
   setValue: (v: string) => void;
   options: Option[];
 }) {
-  const debouncedSetValue = useDebouncedCallback(setValue, 300);
   return (
     <div className="w-full">
       <label className={labelClass}>{label}</label>
-      <select value={value} onChange={e => debouncedSetValue(e.target.value)} className={selectClass}>
+      <select value={value} onChange={e => setValue(e.target.value)} className={selectClass}>
         {options.map(opt =>
           <option key={opt.value} value={opt.value}>{opt.label}</option>
         )}

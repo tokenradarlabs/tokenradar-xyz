@@ -275,7 +275,5 @@ async function handleSubscribe(e: React.FormEvent<HTMLFormElement>) {
   //   console.error('Subscription error:', error);
   //   alert('Subscription failed. Please try again later.');
   // }
-}
 
-  );
 }

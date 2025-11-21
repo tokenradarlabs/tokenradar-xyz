@@ -1,68 +1,24 @@
-import React from 'react';
-import { useFormContext } from 'react-hook-form';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from './form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './select';
-import { cn } from '@/lib/utils';
+import React from "react";
 
-interface SelectFieldProps {
-  name: string;
+type Option = { label: string; value: string };
+
+const selectClass = "w-full rounded-lg bg-[#23263c] py-2 px-3 text-gray-100 outline-none";
+const labelClass = "block text-gray-300 mb-1 text-sm";
+
+export function SelectField({ label, value, setValue, options }: {
   label: string;
-  placeholder?: string;
-  options: { value: string; label: string }[];
-  disabled?: boolean;
-  className?: string;
-}
-
-export const SelectField: React.FC<SelectFieldProps> = ({
-  name,
-  label,
-  placeholder,
-  options,
-  disabled,
-  className,
-}) => {
-  const { control } = useFormContext();
-
+  value: string;
+  setValue: (v: string) => void;
+  options: Option[];
+}) {
   return (
-    <FormField
-      control={control}
-      name={name}
-      render={({ field }) => (
-        <FormItem className={cn('w-full', className)}>
-          <FormLabel>{label}</FormLabel>
-          <Select
-            onValueChange={field.onChange}
-            value={field.value}
-            disabled={disabled}
-          >
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue placeholder={placeholder} />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              {options.map(option => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+    <div className="w-full">
+      <label className={labelClass}>{label}</label>
+      <select value={value} onChange={e => setValue(e.target.value)} className={selectClass}>
+        {options.map(opt =>
+          <option key={opt.value} value={opt.value}>{opt.label}</option>
+        )}
+      </select>
+    </div>
   );
-};
+}

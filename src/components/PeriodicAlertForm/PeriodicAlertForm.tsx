@@ -191,5 +191,6 @@ const PeriodicAlertForm: React.FC<Props> = ({
     </button>
   </form>
 );
+};
 
 export default PeriodicAlertForm;

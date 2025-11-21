@@ -2,15 +2,14 @@
 
 import { Button } from '@/components/ui/button';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
-import { useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 const CURRENT_PRICES = {
   btc: 116238.21,
@@ -18,11 +17,20 @@ const CURRENT_PRICES = {
   'scout-protocol-token': 0.328,
 };
 
+const COINS = [
+  { value: 'btc', label: 'BTC', icon: '/btc.svg' },
+  { value: 'eth', label: 'ETH', icon: null },
+  { value: 'scout-protocol-token', label: 'DEV', icon: null },
+];
+
 export function PriceAlertForm() {
   const [priceError, setPriceError] = useState<string>('');
   const [price, setPrice] = useState<string>('');
   const [selectedToken, setSelectedToken] = useState<string>('btc');
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -38,6 +46,7 @@ export function PriceAlertForm() {
   const handleTokenChange = (value: string) => {
     setSelectedToken(value);
     setPrice(CURRENT_PRICES[value as keyof typeof CURRENT_PRICES].toString());
+    setIsDropdownOpen(false);
   };
 
   const handleSetAlert = () => {
@@ -48,6 +57,30 @@ export function PriceAlertForm() {
       }, 3000);
     }
   };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      setHighlightedIndex((prevIndex) =>
+        Math.min(prevIndex + 1, COINS.length - 1)
+      );
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      setHighlightedIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+    } else if (event.key === 'Enter' && highlightedIndex !== -1) {
+      event.preventDefault();
+      handleTokenChange(COINS[highlightedIndex].value);
+    }
+  };
+
+  React.useEffect(() => {
+    if (highlightedIndex !== -1 && itemRefs.current[highlightedIndex]) {
+      itemRefs.current[highlightedIndex]?.focus();
+      itemRefs.current[highlightedIndex]?.scrollIntoView({
+        block: 'nearest',
+      });
+    }
+  }, [highlightedIndex]);
 
   return (
     <div className='relative mx-auto flex w-full max-w-2xl flex-col items-center'>
@@ -125,25 +158,58 @@ export function PriceAlertForm() {
           <span className='mb-2 min-w-[100px] text-gray-300 md:mb-0 md:min-w-[120px]'>
             as soon as
           </span>
-          <Select value={selectedToken} onValueChange={handleTokenChange}>
-            <SelectTrigger className='h-10 w-full border-[#2a3042] bg-[#1a1f2e] text-white [&>*]:text-white'>
-              <SelectValue placeholder='Select coin' />
-            </SelectTrigger>
-            <SelectContent className='border-[#2a3042] bg-[#1a1f2e]'>
-              <SelectItem value='btc' className='text-white'>
+          <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant='outline'
+                className='h-10 w-full justify-between border-[#2a3042] bg-[#1a1f2e] text-white [&>*]:text-white'
+              >
                 <div className='flex items-center gap-2'>
-                  <Image src='/btc.svg' alt='BTC' width={16} height={16} />
-                  BTC
+                  {selectedToken === 'btc' && (
+                    <Image src='/btc.svg' alt='BTC' width={16} height={16} />
+                  )}
+                  {selectedToken === 'eth' && 'ETH'}
+                  {selectedToken === 'scout-protocol-token' && 'DEV'}
                 </div>
-              </SelectItem>
-              <SelectItem value='eth' className='text-white'>
-                ETH
-              </SelectItem>
-              <SelectItem value='scout-protocol-token' className='text-white'>
-                DEV
-              </SelectItem>
-            </SelectContent>
-          </Select>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  viewBox='0 0 24 24'
+                  fill='none'
+                  stroke='currentColor'
+                  strokeWidth='2'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  className='h-4 w-4 opacity-50'
+                >
+                  <path d='M6 9l6 6 6-6' />
+                </svg>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className='w-[--radix-dropdown-menu-trigger-width]'
+              onKeyDown={handleKeyDown}
+            >
+              {COINS.map((coin, index) => (
+                <DropdownMenuItem
+                  key={coin.value}
+                  ref={(el) => (itemRefs.current[index] = el)}
+                  onClick={() => handleTokenChange(coin.value)}
+                  isHighlighted={highlightedIndex === index}
+                  className='text-white'
+                >
+                  {coin.icon && (
+                    <Image
+                      src={coin.icon}
+                      alt={coin.label}
+                      width={16}
+                      height={16}
+                    />
+                  )}
+                  {coin.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div className='flex flex-col gap-2 md:flex-row md:items-center md:gap-3'>

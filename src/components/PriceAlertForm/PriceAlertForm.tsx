@@ -15,6 +15,7 @@ import { NumberField } from '../ui/number-field';
 import { Spinner } from '../ui/spinner';
 import { useToast } from '@/lib/contexts/toast-context';
 import { useCoinAndExchangeData } from '@/lib/hooks/useCoinAndExchangeData';
+import { useFormSubmission } from '@/lib/hooks/useFormSubmission';
 
 export default function PriceAlertForm() {
   const { showToast } = useToast();
@@ -64,38 +65,37 @@ export default function PriceAlertForm() {
   }, [restore, showToast]); // Run only once on mount
 
   const channel = methods.watch('channel');
-  const [isLoading, setIsLoading] = useState(false);
 
-  const onSubmit = async (data: PriceAlertFormValues) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch('/api/price-alerts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+  const { handleSubmit: handleFormSubmission, isSubmitting } =
+    useFormSubmission<PriceAlertFormValues>({
+      onSubmit: async (data: PriceAlertFormValues) => {
+        const response = await fetch('/api/price-alerts', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create price alert.');
-      }
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to create price alert.');
+        }
 
-      showToast('Price alert created successfully.', 'success');
-      methods.reset(); // Reset form fields
-      clearSavedData(); // Clear auto-saved data
-    } catch (err: unknown) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Failed to create price alert.';
-      showToast(errorMessage, 'error');
-      console.error('Failed to create price alert:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        methods.reset(); // Reset form fields
+        clearSavedData(); // Clear auto-saved data
+      },
+      successMessage: 'Price alert created successfully.',
+      errorMessage: 'Failed to create price alert.',
+      onSuccess: () => {
+        // Any additional logic on success, if needed
+      },
+      onError: error => {
+        console.error('Failed to create price alert:', error);
+      },
+    });
 
-  const formDisabled = isLoading || isLoadingData;
+  const formDisabled = isSubmitting || isLoadingData;
 
   if (isLoadingData) {
     return (
@@ -125,7 +125,7 @@ export default function PriceAlertForm() {
       <div className='mb-8'>
         <StepIndicator steps={steps} currentStep={currentStep} />
       </div>
-      <form onSubmit={methods.handleSubmit(onSubmit)} className='space-y-5'>
+      <form onSubmit={methods.handleSubmit(handleFormSubmission)} className='space-y-5'>
         <FormProvider {...methods}>
           {currentStep === 0 && (
             <>
@@ -282,7 +282,7 @@ export default function PriceAlertForm() {
                 className='ml-auto w-full rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 py-3 font-bold text-white shadow-lg transition-all duration-200 hover:from-purple-600 hover:to-blue-600'
                 disabled={formDisabled}
               >
-                {isLoading ? <Spinner /> : 'Set Alert'}
+                {isSubmitting ? <Spinner /> : 'Set Alert'}
               </button>
             )}
           </div>

@@ -2,13 +2,8 @@ import { z } from 'zod';
 
 export const volumeAlertSchema = z
   .object({
-    coins: z
-      .array(
-        z.object({
-          coinId: z.string().trim().min(1, { message: 'Coin ID is required.' }),
-        })
-      )
-      .min(1, { message: 'At least one coin is required.' }),
+    coinId: z.string().trim().min(1, { message: 'Coin is required.' }),
+    exchange: z.string().trim().min(1, { message: 'Exchange is required.' }),
     threshold: z.coerce
       .number()
       .min(0, { message: 'Threshold must be a non-negative number.' }),
@@ -16,6 +11,7 @@ export const volumeAlertSchema = z
       message: 'Condition is required.',
     }),
     currency: z.string().trim().min(1, { message: 'Currency is required.' }),
+    interval: z.string().trim().min(1, { message: 'Interval is required.' }),
     channel: z.enum(['discord', 'webhook'], {
       message: 'Channel is required.',
     }),

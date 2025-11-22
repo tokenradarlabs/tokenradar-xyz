@@ -1,119 +1,39 @@
 'use client';
-import React, { useState } from 'react';
-import { useDebouncedCallback } from 'use-debounce';
+import React from 'react';
 import { PlugZap, Bot } from 'lucide-react';
 import { Spinner } from '@/components/ui/spinner';
 import { useToast } from '@/lib/contexts/toast-context';
-import { isValidUrl } from '../../utils/validation';
-
-type Props = {
-  channel: string;
-  setChannel: (v: string) => void;
-  webhook: string;
-  setWebhook: (v: string) => void;
-  discordBot: string;
-  setDiscordBot: (v: string) => void;
-  coin: string;
-  setCoin: (v: string) => void;
-  exchange: string;
-  setExchange: (v: string) => void;
-  multiplier: string;
-  setMultiplier: (v: string) => void;
-  interval: string;
-  setInterval: (v: string) => void;
-  onSubmit: (e: React.FormEvent) => void;
-  channels: { label: string; value: string }[];
-  coins: string[];
-  exchanges: string[];
-  multipliers: string[];
-  intervals: string[];
-  isLoading: boolean;
-};
+import { useFormHandler } from '@/lib/hooks/useFormHandler';
+import { useFormValidation } from '@/lib/hooks/useFormValidation';
+import { useFormSubmission } from '@/lib/hooks/useFormSubmission';
+import {
+  volumeAlertSchema,
+  VolumeAlertFormValues,
+} from '@/lib/schemas/volumeAlert';
 
 const selectClass =
   'w-full px-4 py-2 rounded-lg bg-gray-800 text-gray-100 focus:ring-2 focus:ring-blue-500 border border-gray-700 transition outline-none';
 
 const labelClass = 'block font-medium text-gray-300 mb-1 text-sm';
 
-const VolumeAlertForm: React.FC<Props> = ({
-  channel,
-  setChannel,
-  webhook,
-  setWebhook,
-  discordBot,
-  setDiscordBot,
-  coin,
-  setCoin,
-  exchange,
-  setExchange,
-  multiplier,
-  setMultiplier,
-  interval,
-  setInterval,
-  onSubmit,
-  channels,
-  coins,
-  exchanges,
-  multipliers,
-  intervals,
-  isLoading,
-}) => {
+const VolumeAlertForm: React.FC = () => {
   const { showToast } = useToast();
 
-  const [webhookError, setWebhookError] = useState<string | null>(null);
-  const [discordBotError, setDiscordBotError] = useState<string | null>(null);
+  const { formData, updateField, resetForm } = useFormHandler<VolumeAlertFormValues>({
+    channel: 'webhook',
+    webhookUrl: '',
+    discordWebhookUrl: '',
+    coinId: '',
+    exchange: '',
+    threshold: 0,
+    condition: 'above',
+    currency: 'USD',
+    interval: '',
+  });
 
-  const debouncedSetChannel = useDebouncedCallback(
-    (value: string) => setChannel(value),
-    300
-  );
-  const debouncedSetWebhook = useDebouncedCallback((value: string) => {
-    setWebhook(value);
-    if (!isValidUrl(value)) {
-      setWebhookError('Please enter a valid URL.');
-    } else {
-      setWebhookError(null);
-    }
-  }, 300);
-  const debouncedSetDiscordBot = useDebouncedCallback((value: string) => {
-    setDiscordBot(value);
-    if (!isValidUrl(value)) {
-      setDiscordBotError('Please enter a valid URL.');
-    } else {
-      setDiscordBotError(null);
-    }
-  }, 300);
-  const debouncedSetCoin = useDebouncedCallback(
-    (value: string) => setCoin(value),
-    300
-  );
-  const debouncedSetExchange = useDebouncedCallback(
-    (value: string) => setExchange(value),
-    300
-  );
-  const debouncedSetMultiplier = useDebouncedCallback(
-    (value: string) => setMultiplier(value),
-    300
-  );
-  const debouncedSetInterval = useDebouncedCallback(
-    (value: string) => setInterval(value),
-    300
-  );
+  const { errors, validateField, validateForm } = useFormValidation(volumeAlertSchema, formData);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Trigger all validations manually before submission
-    const isWebhookValid = webhook ? isValidUrl(webhook) : true; // Optional field
-    const isDiscordBotValid = discordBot ? isValidUrl(discordBot) : true; // Optional field
-
-    if (!isWebhookValid) setWebhookError('Please enter a valid URL.');
-    if (!isDiscordBotValid) setDiscordBotError('Please enter a valid URL.');
-
-    if (!isWebhookValid || !isDiscordBotValid) {
-      return; // Stop submission if any validation fails
-    }
-
+  const { isLoading, submitForm } = useFormSubmission(async () => {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     try {
@@ -125,12 +45,29 @@ const VolumeAlertForm: React.FC<Props> = ({
         return;
       }
       showToast('Volume alert set successfully!', 'success');
-      onSubmit(e);
+      resetForm();
     } catch (err: any) {
       showToast(err.message || 'Failed to set volume alert.', 'error');
       console.error('Failed to set volume alert:', err);
     }
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validateForm()) {
+      await submitForm();
+    }
   };
+
+  // Placeholder data for select options
+  const channels = [
+    { label: 'Webhook', value: 'webhook' },
+    { label: 'Discord', value: 'discord' },
+  ];
+  const coins = ['BTC', 'ETH', 'XRP'];
+  const exchanges = ['Binance', 'Coinbase', 'Kraken'];
+  const multipliers = ['0', '0.5', '1', '2', '5', '10']; // Multiplier values as strings
+  const intervals = ['1m', '5m', '15m', '30m', '1h', '4h', '1d'];
 
   return (
     <form className='space-y-7' onSubmit={handleSubmit}>
@@ -138,8 +75,9 @@ const VolumeAlertForm: React.FC<Props> = ({
       <div>
         <label className={labelClass}>Channel</label>
         <select
-          value={channel}
-          onChange={e => debouncedSetChannel(e.target.value)}
+          value={formData.channel}
+          onChange={e => updateField('channel', e.target.value)}
+          onBlur={() => validateField('channel')}
           className={selectClass}
         >
           {channels.map(ch => (
@@ -148,46 +86,50 @@ const VolumeAlertForm: React.FC<Props> = ({
             </option>
           ))}
         </select>
+        {errors.channel && (
+          <p className='mt-1 text-xs text-red-500'>{errors.channel}</p>
+        )}
       </div>
       {/* Conditional Inputs */}
-      {channel === 'webhook' && (
+      {formData.channel === 'webhook' && (
         <div>
           <label className={labelClass}>Webhook URL</label>
           <div
-            className={`flex items-center rounded-lg border bg-gray-800 px-4 py-2 ${webhookError ? 'border-red-500' : 'border-gray-700'}`}
+            className={`flex items-center rounded-lg border bg-gray-800 px-4 py-2 ${errors.webhookUrl ? 'border-red-500' : 'border-gray-700'}`}
           >
             <PlugZap className='mr-2 text-blue-400' />
             <input
               type='url'
-              value={webhook}
-              onChange={e => debouncedSetWebhook(e.target.value)}
+              value={formData.webhookUrl}
+              onChange={e => updateField('webhookUrl', e.target.value)}
+              onBlur={() => validateField('webhookUrl')}
               placeholder='https://webhook.site/...'
-              required
               className='w-full bg-transparent text-gray-100 placeholder-gray-400 outline-none'
             />
           </div>
-          {webhookError && (
-            <p className='mt-1 text-xs text-red-500'>{webhookError}</p>
+          {errors.webhookUrl && (
+            <p className='mt-1 text-xs text-red-500'>{errors.webhookUrl}</p>
           )}
         </div>
       )}
-      {channel === 'discord' && (
+      {formData.channel === 'discord' && (
         <div>
           <label className={labelClass}>Discord Bot Token</label>
           <div
-            className={`flex items-center rounded-lg border bg-gray-800 px-4 py-2 ${discordBotError ? 'border-red-500' : 'border-gray-700'}`}
+            className={`flex items-center rounded-lg border bg-gray-800 px-4 py-2 ${errors.discordWebhookUrl ? 'border-red-500' : 'border-gray-700'}`}
           >
             <Bot className='mr-2 text-purple-400' />
             <input
               type='text'
-              value={discordBot}
-              onChange={e => debouncedSetDiscordBot(e.target.value)}
+              value={formData.discordWebhookUrl}
+              onChange={e => updateField('discordWebhookUrl', e.target.value)}
+              onBlur={() => validateField('discordWebhookUrl')}
               placeholder='Paste Discord Bot Token'
               className='w-full bg-transparent text-gray-100 placeholder-gray-400 outline-none'
             />
           </div>
-          {discordBotError && (
-            <p className='mt-1 text-xs text-red-500'>{discordBotError}</p>
+          {errors.discordWebhookUrl && (
+            <p className='mt-1 text-xs text-red-500'>{errors.discordWebhookUrl}</p>
           )}
         </div>
       )}
@@ -196,60 +138,80 @@ const VolumeAlertForm: React.FC<Props> = ({
         <div>
           <label className={labelClass}>Coin</label>
           <select
-            value={coin}
-            onChange={e => debouncedSetCoin(e.target.value)}
+            value={formData.coinId}
+            onChange={e => updateField('coinId', e.target.value)}
+            onBlur={() => validateField('coinId')}
             className={selectClass}
           >
+            <option value=''>Select Coin</option>
             {coins.map(c => (
               <option key={c} value={c}>
                 {c}
               </option>
             ))}
           </select>
+          {errors.coinId && (
+            <p className='mt-1 text-xs text-red-500'>{errors.coinId}</p>
+          )}
         </div>
         <div>
           <label className={labelClass}>Exchange</label>
           <select
-            value={exchange}
-            onChange={e => debouncedSetExchange(e.target.value)}
+            value={formData.exchange}
+            onChange={e => updateField('exchange', e.target.value)}
+            onBlur={() => validateField('exchange')}
             className={selectClass}
           >
+            <option value=''>Select Exchange</option>
             {exchanges.map(ex => (
               <option key={ex} value={ex}>
                 {ex}
               </option>
             ))}
           </select>
+          {errors.exchange && (
+            <p className='mt-1 text-xs text-red-500'>{errors.exchange}</p>
+          )}
         </div>
       </div>
       <div className='grid grid-cols-2 gap-5'>
         <div>
           <label className={labelClass}>Multiplier</label>
           <select
-            value={multiplier}
-            onChange={debouncedSetMultiplier}
+            value={formData.threshold}
+            onChange={e => updateField('threshold', parseFloat(e.target.value))}
+            onBlur={() => validateField('threshold')}
             className={selectClass}
           >
+            <option value=''>Select Multiplier</option>
             {multipliers.map(m => (
               <option key={m} value={m}>
                 {m}
               </option>
             ))}
           </select>
+          {errors.threshold && (
+            <p className='mt-1 text-xs text-red-500'>{errors.threshold}</p>
+          )}
         </div>
         <div>
           <label className={labelClass}>Interval</label>
           <select
-            value={interval}
-            onChange={debouncedSetInterval}
+            value={formData.interval}
+            onChange={e => updateField('interval', e.target.value)}
+            onBlur={() => validateField('interval')}
             className={selectClass}
           >
+            <option value=''>Select Interval</option>
             {intervals.map(i => (
               <option key={i} value={i}>
                 {i}
               </option>
             ))}
           </select>
+          {errors.interval && (
+            <p className='mt-1 text-xs text-red-500'>{errors.interval}</p>
+          )}
         </div>
       </div>
       <button

@@ -16,24 +16,40 @@ const selectClass =
 
 const labelClass = 'block font-medium text-gray-300 mb-1 text-sm';
 
-const VolumeAlertForm: React.FC = () => {
+interface VolumeAlertFormProps {
+  channels?: { label: string; value: string }[];
+  coins?: string[];
+  exchanges?: string[];
+  multipliers?: string[];
+  intervals?: string[];
+}
+
+const VolumeAlertForm: React.FC<VolumeAlertFormProps> = ({
+  channels: propChannels,
+  coins: propCoins,
+  exchanges: propExchanges,
+  multipliers: propMultipliers,
+  intervals: propIntervals,
+}) => {
   const { showToast } = useToast();
 
-  const { formData, updateField, resetForm } = useFormHandler<VolumeAlertFormValues>({
-    channel: 'webhook',
-    webhookUrl: '',
-    discordWebhookUrl: '',
-    coinId: '',
-    exchange: '',
-    threshold: 0,
-    condition: 'above',
-    currency: 'USD',
-    interval: '',
-  });
+  // Default values for props
+  const defaultChannels = [
+    { label: 'Webhook', value: 'webhook' },
+    { label: 'Discord', value: 'discord' },
+  ];
+  const defaultCoins = ['BTC', 'ETH', 'XRP'];
+  const defaultExchanges = ['Binance', 'Coinbase', 'Kraken'];
+  const defaultMultipliers = ['0', '0.5', '1', '2', '5', '10'];
+  const defaultIntervals = ['1m', '5m', '15m', '30m', '1h', '4h', '1d'];
 
-  const { errors, validateField, validateForm } = useFormValidation(volumeAlertSchema, formData);
+  const channels = propChannels || defaultChannels;
+  const coins = propCoins || defaultCoins;
+  const exchanges = propExchanges || defaultExchanges;
+  const multipliers = propMultipliers || defaultMultipliers;
+  const intervals = propIntervals || defaultIntervals;
 
-  const { isLoading, submitForm } = useFormSubmission(async () => {
+  const onSubmit = async (values: VolumeAlertFormValues) => {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     try {
@@ -45,29 +61,36 @@ const VolumeAlertForm: React.FC = () => {
         return;
       }
       showToast('Volume alert set successfully!', 'success');
-      resetForm();
+      form.reset();
     } catch (err: any) {
       showToast(err.message || 'Failed to set volume alert.', 'error');
       console.error('Failed to set volume alert:', err);
     }
-  });
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validateForm()) {
-      await submitForm();
-    }
   };
 
-  // Placeholder data for select options
-  const channels = [
-    { label: 'Webhook', value: 'webhook' },
-    { label: 'Discord', value: 'discord' },
-  ];
-  const coins = ['BTC', 'ETH', 'XRP'];
-  const exchanges = ['Binance', 'Coinbase', 'Kraken'];
-  const multipliers = ['0', '0.5', '1', '2', '5', '10']; // Multiplier values as strings
-  const intervals = ['1m', '5m', '15m', '30m', '1h', '4h', '1d'];
+  const {
+    form,
+    handleSubmit,
+    isSubmitting,
+  } = useFormHandler<VolumeAlertFormValues>({
+    schema: volumeAlertSchema,
+    defaultValues: {
+      channel: 'webhook',
+      webhookUrl: '',
+      discordWebhookUrl: '',
+      coinId: '',
+      exchange: '',
+      threshold: 0,
+      condition: 'above',
+      currency: 'USD',
+      interval: '',
+    },
+    onSubmit: onSubmit,
+  });
+
+  // Access form state and methods directly from the 'form' object
+  const { errors } = form.formState;
+  const { trigger, watch, setValue } = form;
 
   return (
     <form className='space-y-7' onSubmit={handleSubmit}>
@@ -75,9 +98,9 @@ const VolumeAlertForm: React.FC = () => {
       <div>
         <label className={labelClass}>Channel</label>
         <select
-          value={formData.channel}
-          onChange={e => updateField('channel', e.target.value)}
-          onBlur={() => validateField('channel')}
+          value={watch('channel')}
+          onChange={e => setValue('channel', e.target.value)}
+          onBlur={() => trigger('channel')}
           className={selectClass}
         >
           {channels.map(ch => (
@@ -86,12 +109,12 @@ const VolumeAlertForm: React.FC = () => {
             </option>
           ))}
         </select>
-        {errors.channel && (
-          <p className='mt-1 text-xs text-red-500'>{errors.channel}</p>
+        {errors.channel?.message && (
+          <p className='mt-1 text-xs text-red-500'>{errors.channel.message}</p>
         )}
       </div>
       {/* Conditional Inputs */}
-      {formData.channel === 'webhook' && (
+      {watch('channel') === 'webhook' && (
         <div>
           <label className={labelClass}>Webhook URL</label>
           <div
@@ -100,36 +123,36 @@ const VolumeAlertForm: React.FC = () => {
             <PlugZap className='mr-2 text-blue-400' />
             <input
               type='url'
-              value={formData.webhookUrl}
-              onChange={e => updateField('webhookUrl', e.target.value)}
-              onBlur={() => validateField('webhookUrl')}
+              value={watch('webhookUrl')}
+              onChange={e => setValue('webhookUrl', e.target.value)}
+              onBlur={() => trigger('webhookUrl')}
               placeholder='https://webhook.site/...'
               className='w-full bg-transparent text-gray-100 placeholder-gray-400 outline-none'
             />
           </div>
-          {errors.webhookUrl && (
-            <p className='mt-1 text-xs text-red-500'>{errors.webhookUrl}</p>
+          {errors.webhookUrl?.message && (
+            <p className='mt-1 text-xs text-red-500'>{errors.webhookUrl.message}</p>
           )}
         </div>
       )}
-      {formData.channel === 'discord' && (
+      {watch('channel') === 'discord' && (
         <div>
-          <label className={labelClass}>Discord Bot Token</label>
+          <label className={labelClass}>Discord Webhook URL</label>
           <div
             className={`flex items-center rounded-lg border bg-gray-800 px-4 py-2 ${errors.discordWebhookUrl ? 'border-red-500' : 'border-gray-700'}`}
           >
             <Bot className='mr-2 text-purple-400' />
             <input
               type='text'
-              value={formData.discordWebhookUrl}
-              onChange={e => updateField('discordWebhookUrl', e.target.value)}
-              onBlur={() => validateField('discordWebhookUrl')}
-              placeholder='Paste Discord Bot Token'
+              value={watch('discordWebhookUrl')}
+              onChange={e => setValue('discordWebhookUrl', e.target.value)}
+              onBlur={() => trigger('discordWebhookUrl')}
+              placeholder='https://discord.com/api/webhooks/...'
               className='w-full bg-transparent text-gray-100 placeholder-gray-400 outline-none'
             />
           </div>
-          {errors.discordWebhookUrl && (
-            <p className='mt-1 text-xs text-red-500'>{errors.discordWebhookUrl}</p>
+          {errors.discordWebhookUrl?.message && (
+            <p className='mt-1 text-xs text-red-500'>{errors.discordWebhookUrl.message}</p>
           )}
         </div>
       )}
@@ -138,9 +161,9 @@ const VolumeAlertForm: React.FC = () => {
         <div>
           <label className={labelClass}>Coin</label>
           <select
-            value={formData.coinId}
-            onChange={e => updateField('coinId', e.target.value)}
-            onBlur={() => validateField('coinId')}
+            value={watch('coinId')}
+            onChange={e => setValue('coinId', e.target.value)}
+            onBlur={() => trigger('coinId')}
             className={selectClass}
           >
             <option value=''>Select Coin</option>
@@ -150,16 +173,16 @@ const VolumeAlertForm: React.FC = () => {
               </option>
             ))}
           </select>
-          {errors.coinId && (
-            <p className='mt-1 text-xs text-red-500'>{errors.coinId}</p>
+          {errors.coinId?.message && (
+            <p className='mt-1 text-xs text-red-500'>{errors.coinId.message}</p>
           )}
         </div>
         <div>
           <label className={labelClass}>Exchange</label>
           <select
-            value={formData.exchange}
-            onChange={e => updateField('exchange', e.target.value)}
-            onBlur={() => validateField('exchange')}
+            value={watch('exchange')}
+            onChange={e => setValue('exchange', e.target.value)}
+            onBlur={() => trigger('exchange')}
             className={selectClass}
           >
             <option value=''>Select Exchange</option>
@@ -169,8 +192,8 @@ const VolumeAlertForm: React.FC = () => {
               </option>
             ))}
           </select>
-          {errors.exchange && (
-            <p className='mt-1 text-xs text-red-500'>{errors.exchange}</p>
+          {errors.exchange?.message && (
+            <p className='mt-1 text-xs text-red-500'>{errors.exchange.message}</p>
           )}
         </div>
       </div>
@@ -178,9 +201,9 @@ const VolumeAlertForm: React.FC = () => {
         <div>
           <label className={labelClass}>Multiplier</label>
           <select
-            value={formData.threshold}
-            onChange={e => updateField('threshold', parseFloat(e.target.value))}
-            onBlur={() => validateField('threshold')}
+            value={watch('threshold')}
+            onChange={e => setValue('threshold', parseFloat(e.target.value))}
+            onBlur={() => trigger('threshold')}
             className={selectClass}
           >
             <option value=''>Select Multiplier</option>
@@ -190,16 +213,16 @@ const VolumeAlertForm: React.FC = () => {
               </option>
             ))}
           </select>
-          {errors.threshold && (
-            <p className='mt-1 text-xs text-red-500'>{errors.threshold}</p>
+          {errors.threshold?.message && (
+            <p className='mt-1 text-xs text-red-500'>{errors.threshold.message}</p>
           )}
         </div>
         <div>
           <label className={labelClass}>Interval</label>
           <select
-            value={formData.interval}
-            onChange={e => updateField('interval', e.target.value)}
-            onBlur={() => validateField('interval')}
+            value={watch('interval')}
+            onChange={e => setValue('interval', e.target.value)}
+            onBlur={() => trigger('interval')}
             className={selectClass}
           >
             <option value=''>Select Interval</option>
@@ -209,17 +232,17 @@ const VolumeAlertForm: React.FC = () => {
               </option>
             ))}
           </select>
-          {errors.interval && (
-            <p className='mt-1 text-xs text-red-500'>{errors.interval}</p>
+          {errors.interval?.message && (
+            <p className='mt-1 text-xs text-red-500'>{errors.interval.message}</p>
           )}
         </div>
       </div>
       <button
         type='submit'
         className='mt-6 flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-pink-600 to-purple-700 py-3 font-bold text-white shadow-lg transition hover:from-purple-700 hover:to-blue-600'
-        disabled={isLoading}
+        disabled={isSubmitting}
       >
-        {isLoading ? <Spinner /> : 'Set Alert'}
+        {isSubmitting ? <Spinner /> : 'Set Alert'}
       </button>
     </form>
   );

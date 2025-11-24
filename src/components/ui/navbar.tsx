@@ -156,7 +156,7 @@ export function Navbar() {
           <div
             id='mobile-menu'
             ref={mobileMenuRef}
-            className={`w-full md:flex md:w-auto md:items-center overflow-hidden transition-all duration-300 ease-in-out ${isMobileMenuOpen ? 'max-h-screen' : 'max-h-0'}`}
+            className={`w-full md:flex md:w-auto md:items-center overflow-hidden md:overflow-visible transition-[max-height] duration-300 ease-in-out ${isMobileMenuOpen ? 'max-h-screen' : 'max-h-0'} md:max-h-none`}
           >
             <ul
               className='mt-4 flex flex-1 flex-col items-center justify-center md:mt-0 md:flex-row md:space-x-4'

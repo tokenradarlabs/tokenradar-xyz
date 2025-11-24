@@ -14,15 +14,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { loginFormSchema, type LoginFormData } from '@/lib/schemas/auth';
 import { useFormHandler } from '@/lib/hooks/useFormHandler';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const authenticateUser = async (values: LoginFormData) => {
   // Placeholder for actual authentication logic
   console.log('Authenticating user with values:', values);
-  // Simulate a 429 error for demonstration purposes
-  if (values.email === 'rate@limit.com') {
-    return { ok: false, message: 'Too Many Requests', status: 429 };
-  }
+
   // Simulate a successful login for now
   return { ok: true, message: 'Login successful' };
 };
@@ -62,6 +59,22 @@ export function LoginForm() {
     errorMessage:
       'An unexpected error occurred during login. Please try again.',
   });
+
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (rateLimitError) {
+      timerRef.current = setTimeout(() => {
+        setRateLimitError(null);
+      }, 5000); // Clear after 5 seconds
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [rateLimitError]);
 
   return (
     <Card className='mx-auto w-full max-w-md'>
@@ -110,9 +123,9 @@ export function LoginForm() {
               )}
             />
             {rateLimitError && (
-              <Label className='text-destructive text-center'>
+              <div role="alert" aria-live="assertive" className='text-destructive text-center'>
                 {rateLimitError}
-              </Label>
+              </div>
             )}
             <Button type='submit' className='w-full' disabled={isSubmitting || !!rateLimitError}>
               {isSubmitting ? 'Logging in...' : 'Login'}

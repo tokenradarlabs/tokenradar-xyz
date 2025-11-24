@@ -11,18 +11,24 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 import { loginFormSchema, type LoginFormData } from '@/lib/schemas/auth';
-import { sanitizeInput } from '@/utils/validation';
 import { useFormHandler } from '@/lib/hooks/useFormHandler';
+import { useState } from 'react';
 
 const authenticateUser = async (values: LoginFormData) => {
   // Placeholder for actual authentication logic
   console.log('Authenticating user with values:', values);
+  // Simulate a 429 error for demonstration purposes
+  if (values.email === 'rate@limit.com') {
+    return { ok: false, message: 'Too Many Requests', status: 429 };
+  }
   // Simulate a successful login for now
   return { ok: true, message: 'Login successful' };
 };
 
 export function LoginForm() {
+  const [rateLimitError, setRateLimitError] = useState<string | null>(null);
   const { form, handleSubmit, isSubmitting } = useFormHandler<LoginFormData>({
     schema: loginFormSchema,
     defaultValues: {
@@ -30,7 +36,7 @@ export function LoginForm() {
       password: '',
     },
     onSubmit: async (values: LoginFormData) => {
-      const sanitizedValues = values;
+      setRateLimitError(null); // Clear any previous rate limit errors
 
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -40,6 +46,12 @@ export function LoginForm() {
       const result = await authenticateUser(values);
 
       if (!result || !result.ok) {
+        if (result?.status === 429) {
+          setRateLimitError(
+            'Too many login attempts. Please try again after some time.'
+          );
+          return; // Prevent further processing for rate limit error
+        }
         throw new Error(
           result?.message || 'Invalid credentials. Please try again.'
         );
@@ -97,7 +109,12 @@ export function LoginForm() {
                 </FormItem>
               )}
             />
-            <Button type='submit' className='w-full' disabled={isSubmitting}>
+            {rateLimitError && (
+              <Label className='text-destructive text-center'>
+                {rateLimitError}
+              </Label>
+            )}
+            <Button type='submit' className='w-full' disabled={isSubmitting || !!rateLimitError}>
               {isSubmitting ? 'Logging in...' : 'Login'}
             </Button>
           </form>

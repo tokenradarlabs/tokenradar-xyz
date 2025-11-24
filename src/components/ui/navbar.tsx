@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from './button';
 import { ThemeToggle } from './theme-toggle';
 
@@ -44,11 +44,44 @@ const NAV_ITEMS: NavItem[] = [
 export function Navbar() {
   const [active, setActive] = useState<number>(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const mobileMenuToggleRef = useRef<HTMLButtonElement>(null);
 
-  const handleTabClick = (idx: number, path: string) => {
+  const handleTabClick = (idx: number) => {
     setActive(idx);
     setIsMobileMenuOpen(false);
   };
+
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+        mobileMenuToggleRef.current?.focus();
+      }
+    };
+
+    const focusFirstElement = () => {
+      if (mobileMenuRef.current) {
+        const focusableElements = mobileMenuRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusableElements.length > 0) {
+          (focusableElements[0] as HTMLElement).focus();
+        }
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener('keydown', handleEscape);
+      focusFirstElement();
+    } else {
+      document.removeEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isMobileMenuOpen]);
 
   return (
     <div className='sticky top-0 z-50'>
@@ -86,10 +119,11 @@ export function Navbar() {
           {/* Mobile Menu Toggle */}
           <div className='flex items-center md:hidden'>
             <button
+              ref={mobileMenuToggleRef}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className='rounded-md p-2 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
               aria-controls='mobile-menu'
-              aria-expanded={isMobileMenuOpen}
+              aria-expanded={isMobileMenuOpen ? 'true' : 'false'}
               aria-label='Toggle navigation menu'
             >
               <svg
@@ -121,7 +155,8 @@ export function Navbar() {
           {/* Navigation Links (Desktop & Mobile) */}
           <div
             id='mobile-menu'
-            className={`w-full md:flex md:w-auto md:items-center ${isMobileMenuOpen ? 'block' : 'hidden'}`}
+            ref={mobileMenuRef}
+            className={`w-full md:flex md:w-auto md:items-center overflow-hidden md:overflow-visible transition-[max-height] duration-300 ease-in-out ${isMobileMenuOpen ? 'max-h-screen' : 'max-h-0'} md:max-h-none`}
           >
             <ul
               className='mt-4 flex flex-1 flex-col items-center justify-center md:mt-0 md:flex-row md:space-x-4'
@@ -131,7 +166,7 @@ export function Navbar() {
                 <li key={item.label}>
                   <Link
                     href={item.path}
-                    onClick={() => handleTabClick(idx, item.path)}
+                    onClick={() => handleTabClick(idx)}
                     className={`flex items-center rounded-md px-3 py-2 text-left text-[0.95rem] font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${active === idx ? 'bg-[#313440] font-semibold text-white shadow' : 'font-normal text-[#b2b7be] hover:bg-[#282b38] hover:text-white'}`}
                     aria-current={active === idx ? 'page' : undefined}
                   >

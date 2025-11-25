@@ -9,7 +9,9 @@ interface SpinnerProps extends React.SVGProps<SVGSVGElement> {
 
 const Spinner = ({ className, value, max = 100, ...props }: SpinnerProps) => {
   const isDeterminate = value != null;
-  const ariaValueText = isDeterminate ? `${Math.round((value / max) * 100)}%` : undefined;
+  const safeMax = max > 0 ? max : 1;
+  const safeValue = Math.min(Math.max(Number(value ?? 0), 0), safeMax);
+  const ariaValueText = isDeterminate ? `${Math.round((safeValue / safeMax) * 100)}%` : undefined;
 
   return (
     <svg

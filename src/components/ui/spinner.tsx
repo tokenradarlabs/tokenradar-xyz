@@ -3,19 +3,28 @@ import { cn } from '@/lib/utils';
 
 interface SpinnerProps extends React.SVGProps<SVGSVGElement> {
   className?: string;
+  value?: number;
+  max?: number;
 }
 
-const Spinner = ({ className, ...props }: SpinnerProps) => (
-  <svg
-    className={cn('h-4 w-4 animate-spin', className)}
-    xmlns='http://www.w3.org/2000/svg'
-    fill='none'
-    viewBox='0 0 24 24'
-    stroke='currentColor'
-    aria-label='Loading'
-    role='status'
-    {...props}
-  >
+const Spinner = ({ className, value, max = 100, ...props }: SpinnerProps) => {
+  const isDeterminate = value != null;
+  const ariaValueText = isDeterminate ? `${Math.round((value / max) * 100)}%` : undefined;
+
+  return (
+    <svg
+      className={cn('h-4 w-4 animate-spin', className)}
+      xmlns='http://www.w3.org/2000/svg'
+      fill='none'
+      viewBox='0 0 24 24'
+      stroke='currentColor'
+      aria-label={isDeterminate ? 'Loading progress' : 'Loading'}
+      role='progressbar'
+      aria-valuenow={isDeterminate ? value : undefined}
+      aria-valuemax={isDeterminate ? max : undefined}
+      aria-valuetext={ariaValueText}
+      {...props}
+    >
     <circle
       className='opacity-25'
       cx='12'
@@ -30,6 +39,30 @@ const Spinner = ({ className, ...props }: SpinnerProps) => (
       d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
     ></path>
   </svg>
+  );
+};
+
+interface VisuallyHiddenProps extends React.HTMLAttributes<HTMLSpanElement> {
+  children?: React.ReactNode;
+}
+
+const VisuallyHidden = ({ children, ...props }: VisuallyHiddenProps) => (
+  <span
+    style={{
+      position: 'absolute',
+      width: '1px',
+      height: '1px',
+      margin: '-1px',
+      padding: '0',
+      overflow: 'hidden',
+      clip: 'rect(0, 0, 0, 0)',
+      whiteSpace: 'nowrap',
+      border: '0',
+    }}
+    {...props}
+  >
+    {children}
+  </span>
 );
 
-export { Spinner };
+export { Spinner, VisuallyHidden };

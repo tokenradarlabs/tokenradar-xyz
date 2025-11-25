@@ -22,8 +22,9 @@ const Spinner = ({ className, value, max = 100, ...props }: SpinnerProps) => {
       stroke='currentColor'
       aria-label={isDeterminate ? 'Loading progress' : 'Loading'}
       role='progressbar'
-      aria-valuenow={isDeterminate ? value : undefined}
-      aria-valuemax={isDeterminate ? max : undefined}
+      aria-valuemin={isDeterminate ? 0 : undefined}
+      aria-valuenow={isDeterminate ? safeValue : undefined}
+      aria-valuemax={isDeterminate ? safeMax : undefined}
       aria-valuetext={ariaValueText}
       {...props}
     >

@@ -8,6 +8,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormFieldLayout,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -89,17 +90,19 @@ export function LoginForm() {
               name='email'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder='Enter your email'
-                      type='email'
-                      disabled={isSubmitting}
-                      error={!!form.formState.errors.email}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
+                  <FormFieldLayout>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='Enter your email'
+                        type='email'
+                        disabled={isSubmitting}
+                        error={!!form.formState.errors.email}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormFieldLayout>
                 </FormItem>
               )}
             />
@@ -108,17 +111,19 @@ export function LoginForm() {
               name='password'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder='Enter your password'
-                      type='password'
-                      disabled={isSubmitting}
-                      error={!!form.formState.errors.password}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
+                  <FormFieldLayout>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='Enter your password'
+                        type='password'
+                        disabled={isSubmitting}
+                        error={!!form.formState.errors.password}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormFieldLayout>
                 </FormItem>
               )}
             />

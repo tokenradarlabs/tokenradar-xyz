@@ -80,10 +80,20 @@ function FormItem({ className, ...props }: React.ComponentProps<'div'>) {
     <FormItemContext.Provider value={{ id }}>
       <div
         data-slot='form-item'
-        className={cn('grid gap-2', className)}
+        className={cn('space-y-2', className)}
         {...props}
       />
     </FormItemContext.Provider>
+  );
+}
+
+function FormFieldLayout({ className, ...props }: React.ComponentProps<'div'>) {
+  return (
+    <div
+      data-slot='form-field-layout'
+      className={cn('grid gap-2', className)}
+      {...props}
+    />
   );
 }
 
@@ -165,4 +175,5 @@ export {
   FormDescription,
   FormMessage,
   FormField,
+  FormFieldLayout,
 };

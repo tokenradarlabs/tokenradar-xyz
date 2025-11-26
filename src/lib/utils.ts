@@ -90,7 +90,7 @@ export const isValidUrl = (url: string) => {
 
 export const isValidEmail = (email: string): boolean => {
   // Basic email regex for demonstration. A more comprehensive regex might be needed for production.
-  const emailRegex = /^[^\s@]+@[^\s@]+\\.[^\s@]+$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 };
 

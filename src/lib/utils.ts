@@ -79,3 +79,18 @@ export function parseLocaleNumber(numStr: string, locale: string = 'en-US'): num
   return parseFloat(cleanedNumStr);
 }
 
+export const isValidUrl = (url: string) => {
+  try {
+    new URL(url);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const isValidEmail = (email: string): boolean => {
+  // Basic email regex for demonstration. A more comprehensive regex might be needed for production.
+  const emailRegex = /^[^\s@]+@[^\s@]+\\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+

@@ -23,7 +23,7 @@ describe('useFormValidation', () => {
     });
     const defaultValues = { name: 'John Doe', age: 30 };
 
-    const { result } = renderHook(() => useFormValidation({ schema, defaultValues }));
+    const { result } = renderHook(() => useFormValidation(schema, defaultValues));
 
     expect(result.current.formState.defaultValues).toEqual(defaultValues);
     expect(consoleErrorSpy).not.toHaveBeenCalled();
@@ -34,7 +34,7 @@ describe('useFormValidation', () => {
     const invalidSchema = { not: 'a zod schema' };
     const defaultValues = { name: 'John Doe', age: 30 };
 
-    const { result } = renderHook(() => useFormValidation({ schema: invalidSchema as any, defaultValues }));
+    const { result } = renderHook(() => useFormValidation(invalidSchema as any, defaultValues));
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       'useFormValidation: Invalid schema provided:',
@@ -50,7 +50,7 @@ describe('useFormValidation', () => {
     const defaultValues = { name: 'John Doe' };
 
     const { rerender } = renderHook(
-      ({ schema }) => useFormValidation({ schema, defaultValues }),
+      ({ schema }) => useFormValidation(schema, defaultValues),
       { initialProps: { schema: schema1 } }
     );
 

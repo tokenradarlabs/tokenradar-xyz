@@ -64,16 +64,10 @@ describe('useFormValidation', () => {
     });
     const defaultValues = { field1: '', field2: '', field3: '' };
 
-    let renderCount = 0;
-    const TestWrapper = () => {
-      renderCount++;
-      return useFormValidation(schema, defaultValues);
-    };
-
-    const { result } = renderHook(() => TestWrapper());
+    const { result, rerender } = renderHook(() => useFormValidation(schema, defaultValues));
 
     // Initial render
-    expect(renderCount).toBe(1);
+    expect(result.all.length).toBe(1);
 
     // Call batchedSetValue multiple times
     result.current.setValue('field1', 'value1');
@@ -81,13 +75,13 @@ describe('useFormValidation', () => {
     result.current.setValue('field3', 'value3');
 
     // Expect renderCount not to have increased yet, as updates are batched
-    expect(renderCount).toBe(1);
+    expect(result.all.length).toBe(1);
 
     // Advance timers to trigger requestAnimationFrame callback
     await new Promise(resolve => requestAnimationFrame(resolve));
 
     // Expect renderCount to have increased by 1 after the batched update is flushed
-    expect(renderCount).toBe(2);
+    expect(result.all.length).toBe(2);
 
     expect(result.current.getValues()).toEqual({
       field1: 'value1',

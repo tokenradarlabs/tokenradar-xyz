@@ -38,18 +38,30 @@ export function useFormValidation<T extends object>(
     criteriaMode: 'all',
   });
 
-  const pendingUpdates = useRef<Partial<T>>({});
+  const pendingUpdates = useRef<Partial<Record<keyof T, { value: T[keyof T], options?: { shouldValidate?: boolean; shouldDirty?: boolean; shouldTouch?: boolean } }>>>({});
   const animationFrameId = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (animationFrameId.current !== null) {
+        cancelAnimationFrame(animationFrameId.current);
+      }
+      animationFrameId.current = null;
+      pendingUpdates.current = {};
+    };
+  }, []);
 
   const batchedSetValue = useCallback(
     <K extends keyof T>(name: K, value: T[K], options?: { shouldValidate?: boolean; shouldDirty?: boolean; shouldTouch?: boolean }) => {
-      pendingUpdates.current = { ...pendingUpdates.current, [name]: value };
+      pendingUpdates.current = { ...pendingUpdates.current, [name]: { value, options } };
 
       if (animationFrameId.current === null) {
         animationFrameId.current = requestAnimationFrame(() => {
           for (const key in pendingUpdates.current) {
             if (Object.prototype.hasOwnProperty.call(pendingUpdates.current, key)) {
-              form.setValue(key as any, pendingUpdates.current[key], options);
+              const fieldKey = key as keyof T;
+              const { value: fieldValue, options: fieldOptions } = pendingUpdates.current[fieldKey]!;
+              form.setValue(fieldKey, fieldValue, fieldOptions);
             }
           }
           pendingUpdates.current = {};

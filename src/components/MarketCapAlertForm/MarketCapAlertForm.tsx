@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Spinner } from '@/components/ui/spinner';
@@ -37,18 +37,10 @@ export default function MarketCapAlertForm() {
 
   useEffect(() => {
     if (coinsError) {
-      showToast({
-        title: 'Error',
-        message: 'Failed to load coin data. Please try again later.',
-        type: 'error',
-      });
+      showToast('Failed to load coin data. Please try again later.', 'error');
     }
     if (exchangesError) {
-      showToast({
-        title: 'Error',
-        message: 'Failed to load exchange data. Please try again later.',
-        type: 'error',
-      });
+      showToast('Failed to load exchange data. Please try again later.', 'error');
     }
   }, [coinsError, exchangesError, showToast]);
 

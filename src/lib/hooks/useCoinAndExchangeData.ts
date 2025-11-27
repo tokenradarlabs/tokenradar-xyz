@@ -46,6 +46,8 @@ export const useCoinAndExchangeData = () => {
     queryFn: fetchCoins,
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
+    retry: 3,
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
   const {
     data: exchanges = [],
@@ -56,6 +58,8 @@ export const useCoinAndExchangeData = () => {
     queryFn: fetchExchanges,
     staleTime: CACHE_TIME,
     gcTime: CACHE_TIME,
+    retry: 3,
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
   return {

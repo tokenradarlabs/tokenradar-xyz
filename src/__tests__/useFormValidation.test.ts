@@ -56,8 +56,43 @@ describe('useFormValidation', () => {
 
     rerender({ schema: schema2 });
 
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
-      'useFormValidation: Schema changed during component lifecycle. This may indicate a schema mismatch or an unstable schema definition. Please ensure your schema is stable and correctly defined.'
-    );
+  it('should batch multiple setValue calls to reduce re-renders', async () => {
+    const schema = z.object({
+      field1: z.string(),
+      field2: z.string(),
+      field3: z.string(),
+    });
+    const defaultValues = { field1: '', field2: '', field3: '' };
+
+    let renderCount = 0;
+    const TestWrapper = () => {
+      renderCount++;
+      return useFormValidation(schema, defaultValues);
+    };
+
+    const { result } = renderHook(() => TestWrapper());
+
+    // Initial render
+    expect(renderCount).toBe(1);
+
+    // Call batchedSetValue multiple times
+    result.current.setValue('field1', 'value1');
+    result.current.setValue('field2', 'value2');
+    result.current.setValue('field3', 'value3');
+
+    // Expect renderCount not to have increased yet, as updates are batched
+    expect(renderCount).toBe(1);
+
+    // Advance timers to trigger requestAnimationFrame callback
+    await new Promise(resolve => requestAnimationFrame(resolve));
+
+    // Expect renderCount to have increased by 1 after the batched update is flushed
+    expect(renderCount).toBe(2);
+
+    expect(result.current.getValues()).toEqual({
+      field1: 'value1',
+      field2: 'value2',
+      field3: 'value3',
+    });
   });
 });

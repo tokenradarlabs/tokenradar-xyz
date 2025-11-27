@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ZodSchema, ZodError } from 'zod';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 
 export function useFormValidation<T extends object>(
   schema: ZodSchema<T>,
@@ -38,5 +38,27 @@ export function useFormValidation<T extends object>(
     criteriaMode: 'all',
   });
 
-  return form;
+  const pendingUpdates = useRef<Partial<T>>({});
+  const animationFrameId = useRef<number | null>(null);
+
+  const batchedSetValue = useCallback(
+    <K extends keyof T>(name: K, value: T[K], options?: { shouldValidate?: boolean; shouldDirty?: boolean; shouldTouch?: boolean }) => {
+      pendingUpdates.current = { ...pendingUpdates.current, [name]: value };
+
+      if (animationFrameId.current === null) {
+        animationFrameId.current = requestAnimationFrame(() => {
+          for (const key in pendingUpdates.current) {
+            if (Object.prototype.hasOwnProperty.call(pendingUpdates.current, key)) {
+              form.setValue(key as any, pendingUpdates.current[key], options);
+            }
+          }
+          pendingUpdates.current = {};
+          animationFrameId.current = null;
+        });
+      }
+    },
+    [form.setValue]
+  );
+
+  return { ...form, setValue: batchedSetValue };
 }

@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Spinner } from '@/components/ui/spinner';
@@ -10,6 +10,7 @@ import {
   marketCapAlertSchema,
   MarketCapAlertFormValues,
 } from '@/lib/schemas/marketCapAlert';
+import { useToast } from '@/lib/contexts/toast-context';
 import { sanitizeInput } from '../../utils/validation';
 import { useCoinAndExchangeData } from '@/lib/hooks/useCoinAndExchangeData';
 
@@ -24,13 +25,24 @@ const directions = [
 ];
 
 export default function MarketCapAlertForm() {
+  const { showToast } = useToast();
   const {
     coins,
     isLoading: isLoadingData,
-    error: dataError,
+    coinsError,
+    exchangesError,
   } = useCoinAndExchangeData();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (coinsError) {
+      showToast('Failed to load coin data. Please try again later.', 'error');
+    }
+    if (exchangesError) {
+      showToast('Failed to load exchange data. Please try again later.', 'error');
+    }
+  }, [coinsError, exchangesError, showToast]);
 
   const form = useForm<MarketCapAlertFormValues>({
     resolver: zodResolver(marketCapAlertSchema),
@@ -84,17 +96,6 @@ export default function MarketCapAlertForm() {
     );
   }
 
-  if (dataError) {
-    const errorMessage =
-      dataError?.message ??
-      (typeof dataError === 'string' ? dataError : JSON.stringify(dataError)) ??
-      'Unknown error';
-    return (
-      <p className='text-center text-red-500'>
-        Error loading data: {errorMessage}
-      </p>
-    );
-  }
 
   return (
     <FormProvider {...form}>

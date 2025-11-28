@@ -51,7 +51,7 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({
   const handleSetPrice = (v: string) => {
     setPrice(v);
     const numValue = parseFloat(v);
-    if (isNaN(numValue) || !isWithinRange(numValue, 0, 1_000_000_000)) {
+    if (isNaN(numValue) || !isWithinRange(isNaN(numValue) ? undefined : numValue, 0, 1_000_000_000)) {
       setPriceError("Price must be a number between 0 and 1 billion.");
     } else {
       setPriceError(null);

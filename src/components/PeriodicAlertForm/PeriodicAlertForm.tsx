@@ -112,7 +112,7 @@ const PeriodicAlertForm: React.FC<Props> = ({
   const handleSetPrice = (v: string) => {
     setPrice(v);
     const numValue = parseFloat(v);
-    if (isNaN(numValue) || !isWithinRange(numValue, 0, 1_000_000_000)) {
+    if (isNaN(numValue) || !isWithinRange(isNaN(numValue) ? undefined : numValue, 0, 1_000_000_000)) {
       setPriceError("Price must be a number between 0 and 1 billion.");
     } else {
       setPriceError(null);
@@ -125,7 +125,8 @@ const PeriodicAlertForm: React.FC<Props> = ({
     // Trigger all validations manually before submission
     const isWebhookValid = webhook ? isValidUrl(webhook) : true; // Optional field
     const isDiscordBotValid = discordBot ? true : true; // No specific validation for token yet
-    const isPriceValid = !isNaN(parseFloat(price)) && isWithinRange(parseFloat(price), 0, 1_000_000_000);
+    const parsedPrice = parseFloat(price);
+    const isPriceValid = !isNaN(parsedPrice) && isWithinRange(isNaN(parsedPrice) ? undefined : parsedPrice, 0, 1_000_000_000);
 
     if (!isWebhookValid) setWebhookError("Please enter a valid URL.");
     if (!isDiscordBotValid) setDiscordBotError("Please enter a valid Discord Bot Token."); // Placeholder error

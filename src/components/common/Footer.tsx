@@ -40,6 +40,7 @@ export default function Footer() {
                 <Link
                   href='/features/discord-bot'
                   className='text-sm text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400'
+                  title='Learn more about Discord Bot feature'
                 >
                   Discord Bot
                 </Link>
@@ -48,6 +49,7 @@ export default function Footer() {
                 <Link
                   href='/features/price-tracking'
                   className='text-sm text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400'
+                  title='Learn more about Price Tracking feature'
                 >
                   Price Tracking
                 </Link>
@@ -56,6 +58,7 @@ export default function Footer() {
                 <Link
                   href='/features/smart-alerts'
                   className='text-sm text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400'
+                  title='Learn more about Smart Alerts feature'
                 >
                   Smart Alerts
                 </Link>
@@ -76,6 +79,7 @@ export default function Footer() {
                 <Link
                   href='/'
                   className='text-sm text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400'
+                  title='Go to Home page'
                 >
                   Home
                 </Link>
@@ -84,6 +88,7 @@ export default function Footer() {
                 <Link
                   href='/about'
                   className='text-sm text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400'
+                  title='Learn more About Us'
                 >
                   About Us
                 </Link>
@@ -92,6 +97,7 @@ export default function Footer() {
                 <Link
                   href='/contact'
                   className='text-sm text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400'
+                  title='Contact us'
                 >
                   Contact
                 </Link>
@@ -100,6 +106,7 @@ export default function Footer() {
                 <Link
                   href='/docs'
                   className='text-sm text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400'
+                  title='Read our Documentation'
                 >
                   Documentation
                 </Link>
@@ -108,6 +115,7 @@ export default function Footer() {
                 <Link
                   href='/api'
                   className='text-sm text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400'
+                  title='Explore our API'
                 >
                   API
                 </Link>
@@ -116,6 +124,7 @@ export default function Footer() {
                 <Link
                   href='/privacy'
                   className='text-sm text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400'
+                  title='View our Privacy Policy'
                 >
                   Privacy Policy
                 </Link>

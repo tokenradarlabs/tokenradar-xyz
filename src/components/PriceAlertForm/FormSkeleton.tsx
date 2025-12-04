@@ -4,9 +4,33 @@ interface FormSkeletonProps {
   currentStep: number;
 }
 
-const SkeletonPlaceholder = ({ width = 'full', height = '10', className = '' }) => (
-  <div className={`animate-pulse bg-gray-200 dark:bg-gray-700 rounded-md w-${width} h-${height} ${className}`}></div>
-);
+interface SkeletonPlaceholderProps {
+  width?: 'full' | '3/4' | '1/2' | '1/3';
+  height?: '10' | '8' | '6' | '4';
+  className?: string;
+}
+
+const widthMap = {
+  'full': 'w-full',
+  '3/4': 'w-3/4',
+  '1/2': 'w-1/2',
+  '1/3': 'w-1/3',
+};
+
+const heightMap = {
+  '10': 'h-10',
+  '8': 'h-8',
+  '6': 'h-6',
+  '4': 'h-4',
+};
+
+const SkeletonPlaceholder: React.FC<SkeletonPlaceholderProps> = ({ width = 'full', height = '10', className = '' }) => {
+  const widthClass = widthMap[width];
+  const heightClass = heightMap[height];
+  return (
+    <div className={`animate-pulse bg-gray-200 dark:bg-gray-700 rounded-md ${widthClass} ${heightClass} ${className}`}></div>
+  );
+};
 
 export const FormSkeleton: React.FC<FormSkeletonProps> = ({ currentStep }) => {
   return (

@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { registerFormSchema, type RegisterFormData } from '@/lib/schemas/auth';
 import { sanitizeInput } from '@/utils/validation';
 import { useFormHandler } from '@/lib/hooks/useFormHandler';
+import PasswordStrength from '@/components/ui/password-strength';
 
 export function RegisterForm() {
   const { form, handleSubmit, isSubmitting } = useFormHandler<RegisterFormData>(
@@ -117,6 +118,7 @@ export function RegisterForm() {
                       />
                     </FormControl>
                     <FormMessage />
+                    <PasswordStrength password={form.watch('password')} />
                   </FormFieldLayout>
                 </FormItem>
               )}

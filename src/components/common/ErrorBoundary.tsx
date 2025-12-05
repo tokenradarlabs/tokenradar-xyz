@@ -17,19 +17,26 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     resetKey: 0,
   };
 
-  public static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> | null {
+  public static getDerivedStateFromError(error: unknown): Partial<ErrorBoundaryState> | null {
     // Update state so the next render will show the fallback UI.
-    return { hasError: true, error };
+    return { 
+      hasError: true, 
+      error: error instanceof Error ? error : new Error(String(error)) 
+    };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  public componentDidCatch(error: unknown, errorInfo: ErrorInfo) {
     console.error('Uncaught error:', error, errorInfo);
     // You could also log the error to an error reporting service
     // logErrorToMyService(error, errorInfo);
   }
 
   private handleRetry = () => {
-    this.setState({ hasError: false, error: null, resetKey: this.state.resetKey + 1 });
+    this.setState((prevState) => ({
+      hasError: false,
+      error: null,
+      resetKey: prevState.resetKey + 1 
+    }));
   };
 
   public render() {

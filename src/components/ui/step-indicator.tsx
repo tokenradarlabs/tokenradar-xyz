@@ -43,8 +43,7 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({
           <div
             ref={el => (stepRefs.current[index] = el)}
             className={cn(
-              'flex cursor-pointer flex-col items-center outline-none',
-              index === currentStep && 'rounded-md ring-2 ring-blue-500 ring-offset-2' // Visual focus indicator
+              'flex cursor-pointer flex-col items-center outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus:outline-none',
             )}
             onClick={() => onStepClick(index)}
             onKeyDown={e => handleKeyDown(e, index)}

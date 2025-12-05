@@ -7,12 +7,14 @@ interface ErrorBoundaryProps {
 interface ErrorBoundaryState {
   hasError: boolean;
   error: Error | null;
+  resetKey: number;
 }
 
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   public state: ErrorBoundaryState = {
     hasError: false,
     error: null,
+    resetKey: 0,
   };
 
   public static getDerivedStateFromError(error: Error): ErrorBoundaryState {
@@ -27,7 +29,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 
   private handleRetry = () => {
-    this.setState({ hasError: false, error: null });
+    this.setState({ hasError: false, error: null, resetKey: this.state.resetKey + 1 });
   };
 
   public render() {
@@ -37,8 +39,8 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
           <h1 className="text-2xl font-bold mb-4">Oops! Something went wrong.</h1>
           {this.state.error && (
-            <p className="text-red-500 mb-4 px-4 py-2 bg-red-100 dark:bg-red-900 rounded-md">
-              {this.state.error.toString()}
+            <p role="alert" className="text-red-500 mb-4 px-4 py-2 bg-red-100 dark:bg-red-900 rounded-md">
+              {process.env.NODE_ENV === 'development' ? this.state.error.message : 'An unexpected error occurred'}
             </p>
           )}
           <button
@@ -54,7 +56,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       );
     }
 
-    return this.props.children;
+    return <div key={this.state.resetKey}>{this.props.children}</div>;
   }
 }
 

@@ -32,6 +32,7 @@ export function PriceAlertForm() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [currency, setCurrency] = useState<string>('USD');
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -250,7 +251,8 @@ export function PriceAlertForm() {
               )}
             </div>
             <CurrencySelector
-              value="USD" // Set default value to USD
+              value={currency}
+              onValueChange={setCurrency}
               label="" // No label needed here as it's part of a larger input group
               className='h-10 w-[120px] border-[#2a3042] bg-[#1a1f2e] text-white [&>*]:text-white'
             />
@@ -268,7 +270,7 @@ export function PriceAlertForm() {
             {CURRENT_PRICES[
               selectedToken as keyof typeof CURRENT_PRICES
             ].toLocaleString()}{' '}
-            USD
+            {currency}
           </span>
           .
         </span>

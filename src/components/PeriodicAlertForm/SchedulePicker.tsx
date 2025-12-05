@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { PlugZap, Bot, DollarSign } from "lucide-react";
-import { SelectField } from "@/components/ui/select-field";
+
 import { InputField } from "@/components/ui/input-field";
 import { CurrencySelector } from "@/components/ui/currency-selector";
 import { isValidUrl, isWithinRange } from "@/lib/utils/validation";
@@ -101,7 +101,7 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({
           error={!!priceError}
           errorMessage={priceError || undefined}
         />
-        <SelectField label="Currency" value={currency} setValue={setCurrency} options={currencies} />
+        <CurrencySelector value={currency} onValueChange={setCurrency} />
       </div>
       <SelectField label="Exchange" value={exchange} setValue={setExchange} options={exchanges} />
     </div>

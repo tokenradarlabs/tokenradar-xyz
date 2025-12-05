@@ -18,13 +18,11 @@ interface UrlFieldProps {
   className?: string;
 }
 
-export const UrlField: React.FC<UrlFieldProps> = ({
-  name,
-  label,
-  placeholder,
-  disabled,
-  className,
-}) => {
+export const UrlField = React.forwardRef<HTMLInputElement, UrlFieldProps>(
+  (
+    { name, label, placeholder, disabled, className },
+    ref
+  ) => {
   const { control } = useFormContext();
 
   return (
@@ -36,6 +34,7 @@ export const UrlField: React.FC<UrlFieldProps> = ({
           <FormLabel>{label}</FormLabel>
           <FormControl>
             <Input
+              ref={ref}
               type='url'
               placeholder={placeholder}
               {...field}

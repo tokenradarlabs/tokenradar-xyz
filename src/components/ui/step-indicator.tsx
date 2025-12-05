@@ -1,20 +1,58 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
 interface StepIndicatorProps {
   steps: string[];
   currentStep: number;
+  onStepClick: (stepIndex: number) => void;
 }
 
 const StepIndicator: React.FC<StepIndicatorProps> = ({
   steps,
   currentStep,
+  onStepClick,
 }) => {
+  const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+
+  const handleKeyDown = (event: React.KeyboardEvent, index: number) => {
+    if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      if (index < steps.length - 1) {
+        stepRefs.current[index + 1]?.focus();
+      }
+    } else if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      if (index > 0) {
+        stepRefs.current[index - 1]?.focus();
+      }
+    } else if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onStepClick(index);
+    }
+  };
+
   return (
-    <div className='flex w-full items-center justify-between'>
+    <div
+      className='flex w-full items-center justify-between'
+      role='tablist'
+      aria-label='Form Steps'
+    >
       {steps.map((step, index) => (
         <React.Fragment key={step}>
-          <div className='flex flex-col items-center'>
+          <div
+            ref={el => (stepRefs.current[index] = el)}
+            className={cn(
+              'flex cursor-pointer flex-col items-center outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus:outline-none',
+            )}
+            onClick={() => onStepClick(index)}
+            onKeyDown={e => handleKeyDown(e, index)}
+            tabIndex={index === currentStep ? 0 : -1}
+            role='tab'
+            aria-selected={index === currentStep}
+            aria-controls={`panel-step-${index}`}
+            id={`tab-step-${index}`}
+          >
             <div
               className={cn(
                 'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold',

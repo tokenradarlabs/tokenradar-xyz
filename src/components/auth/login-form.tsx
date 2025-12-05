@@ -15,7 +15,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { loginFormSchema, type LoginFormData } from '@/lib/schemas/auth';
 import { useFormHandler } from '@/lib/hooks/useFormHandler';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useDebounce } from '@/lib/hooks/useDebounce';
 
 const authenticateUser = async (values: LoginFormData) => {
   // Placeholder for actual authentication logic
@@ -61,6 +62,31 @@ export function LoginForm() {
       'An unexpected error occurred during login. Please try again.',
   });
 
+  const [emailValidationStatus, setEmailValidationStatus] = useState<
+    'idle' | 'validating' | 'valid' | 'invalid'
+  >('idle');
+
+  const emailValue = form.watch('email');
+  const debouncedEmail = useDebounce(emailValue, 500);
+
+  useEffect(() => {
+    if (emailValue.length === 0) {
+      setEmailValidationStatus('idle');
+      return;
+    }
+
+    setEmailValidationStatus('validating');
+    const validateEmail = async () => {
+      try {
+        await loginFormSchema.pick({ email: true }).parseAsync({ email: debouncedEmail });
+        setEmailValidationStatus('valid');
+      } catch (error) {
+        setEmailValidationStatus('invalid');
+      }
+    };
+    validateEmail();
+  }, [debouncedEmail, emailValue]);
+
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -92,15 +118,31 @@ export function LoginForm() {
                 <FormItem>
                   <FormFieldLayout>
                     <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder='Enter your email'
-                        type='email'
-                        disabled={isSubmitting}
-                        error={!!form.formState.errors.email}
-                        {...field}
-                      />
-                    </FormControl>
+                    <div className='relative'>
+                      <FormControl>
+                        <Input
+                          placeholder='Enter your email'
+                          type='email'
+                          disabled={isSubmitting}
+                          {...field}
+                        />
+                      </FormControl>
+                      {emailValidationStatus === 'validating' && (
+                        <span className='absolute inset-y-0 right-0 pr-3 flex items-center'>
+                          <span className='h-5 w-5 text-gray-400 animate-spin'>●</span>
+                        </span>
+                      )}
+                      {emailValidationStatus === 'valid' && (
+                        <span className='absolute inset-y-0 right-0 pr-3 flex items-center'>
+                          <span className='h-5 w-5 text-green-500'>✓</span>
+                        </span>
+                      )}
+                      {emailValidationStatus === 'invalid' && (
+                        <span className='absolute inset-y-0 right-0 pr-3 flex items-center'>
+                          <span className='h-5 w-5 text-red-500'>✗</span>
+                        </span>
+                      )}
+                    </div>
                     <FormMessage />
                   </FormFieldLayout>
                 </FormItem>

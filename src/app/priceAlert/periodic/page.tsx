@@ -12,10 +12,7 @@ const conditions = [
   { label: 'above', value: 'above' },
   { label: 'below', value: 'below' },
 ];
-const currencies = [
-  { label: 'USD', value: 'USD' },
-  { label: 'EUR', value: 'EUR' },
-];
+
 export default function PeriodicPage() {
   const {
     coins: fetchedCoins,
@@ -122,7 +119,6 @@ export default function PeriodicPage() {
           channels={channels}
           coins={fetchedCoins.map(c => ({ label: c, value: c }))}
           conditions={conditions}
-          currencies={currencies}
           exchanges={fetchedExchanges.map(ex => ({ label: ex, value: ex }))}
           onSubmit={handleSubmit}
           isLoading={isLoading}

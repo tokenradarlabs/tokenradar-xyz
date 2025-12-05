@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useDebouncedCallback } from 'use-debounce';
 import { PlugZap, Bot, DollarSign } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
+import { CurrencySelector } from "@/components/ui/currency-selector";
 import { sanitizeInput, isValidUrl, isWithinRange } from "../../utils/validation";
 
 type Option = { label: string; value: string };
@@ -14,16 +15,16 @@ type Props = {
   coin: string; setCoin: (v: string) => void;
   condition: string; setCondition: (v: string) => void;
   price: string; setPrice: (v: string) => void;
-  currency: string; setCurrency: (v: string) => void;
   exchange: string; setExchange: (v: string) => void;
   channels: Option[];
   coins: Option[];
   conditions: Option[];
-  currencies: Option[];
   exchanges: Option[];
   onSubmit: (e: React.FormEvent) => void;
   isLoading: boolean;
   error: string | null;
+  currency: string;
+  setCurrency: (v: string) => void;
 };
 
 const selectClass = "w-full rounded-lg bg-[#23263c] py-2 px-3 text-gray-100 outline-none";
@@ -86,7 +87,7 @@ const PeriodicAlertForm: React.FC<Props> = ({
   channel, setChannel, webhook, setWebhook, discordBot, setDiscordBot,
   coin, setCoin, condition, setCondition, price, setPrice,
   currency, setCurrency, exchange, setExchange,
-  channels, coins, conditions, currencies, exchanges, onSubmit, isLoading, error,
+  channels, coins, conditions, exchanges, onSubmit, isLoading, error,
 }) => {
   const [webhookError, setWebhookError] = useState<string | null>(null);
   const [discordBotError, setDiscordBotError] = useState<string | null>(null);
@@ -182,7 +183,7 @@ const PeriodicAlertForm: React.FC<Props> = ({
         error={!!priceError}
         errorMessage={priceError || undefined}
       />
-      <SelectField label="Currency" value={currency} setValue={setCurrency} options={currencies} />
+      <CurrencySelector label="Currency" value={currency} onValueChange={setCurrency} />
     </div>
     <SelectField label="Exchange" value={exchange} setValue={setExchange} options={exchanges} />
     {error && <p className="text-red-500 text-center">{error}</p>}
@@ -191,7 +192,6 @@ const PeriodicAlertForm: React.FC<Props> = ({
       {isLoading ? <Spinner /> : "Set Alert"}
     </button>
   </form>
-);
 };
 
 export default PeriodicAlertForm;

@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { CurrencySelector } from '@/components/ui/currency-selector';
 import Image from 'next/image';
 import React, { useRef, useState } from 'react';
 
@@ -248,16 +249,11 @@ export function PriceAlertForm() {
                 <p className='mt-1 text-sm text-red-500'>{priceError}</p>
               )}
             </div>
-            <Select defaultValue='usd'>
-              <SelectTrigger className='h-10 w-[120px] border-[#2a3042] bg-[#1a1f2e] text-white [&>*]:text-white'>
-                <SelectValue placeholder='Currency' />
-              </SelectTrigger>
-              <SelectContent className='border-[#2a3042] bg-[#1a1f2e]'>
-                <SelectItem value='usd' className='text-white'>
-                  $ (USD)
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <CurrencySelector
+              value="USD" // Set default value to USD
+              label="" // No label needed here as it's part of a larger input group
+              className='h-10 w-[120px] border-[#2a3042] bg-[#1a1f2e] text-white [&>*]:text-white'
+            />
           </div>
         </div>
       </div>

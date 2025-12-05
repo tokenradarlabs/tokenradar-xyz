@@ -20,27 +20,46 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const MAX_VISIBLE_TOASTS = 3;
+  const TOAST_TIMEOUT = 5000; // 5 seconds
+
+  const [visibleToasts, setVisibleToasts] = useState<ToastMessage[]>([]);
+  const [toastQueue, setToastQueue] = useState<ToastMessage[]>([]);
+
+  const dismissToast = useCallback((id: string) => {
+    setVisibleToasts(prevVisibleToasts => {
+      const updatedVisibleToasts = prevVisibleToasts.filter(toast => toast.id !== id);
+      if (toastQueue.length > 0) {
+        const nextToast = toastQueue[0];
+        setToastQueue(prevQueue => prevQueue.slice(1));
+        setTimeout(() => dismissToast(nextToast.id), TOAST_TIMEOUT);
+        return [...updatedVisibleToasts, nextToast];
+      }
+      return updatedVisibleToasts;
+    });
+  }, [toastQueue]);
 
   const showToast = useCallback((message: string, type: ToastType = 'info') => {
     const id = uuidv4();
-    setToasts(prevToasts => [...prevToasts, { id, message, type }]);
+    const newToast = { id, message, type };
 
-    setTimeout(() => {
-      setToasts(prevToasts => prevToasts.filter(toast => toast.id !== id));
-    }, 5000);
-  }, []);
-
-  const dismissToast = useCallback((id: string) => {
-    setToasts(prevToasts => prevToasts.filter(toast => toast.id !== id));
-  }, []);
+    setVisibleToasts(prevVisibleToasts => {
+      if (prevVisibleToasts.length < MAX_VISIBLE_TOASTS) {
+        setTimeout(() => dismissToast(id), TOAST_TIMEOUT);
+        return [...prevVisibleToasts, newToast];
+      } else {
+        setToastQueue(prevQueue => [...prevQueue, newToast]);
+        return prevVisibleToasts;
+      }
+    });
+  }, [dismissToast]);
 
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
       <div className='fixed bottom-4 right-4 z-[9999]'>
         <AnimatePresence>
-          {toasts.map(toast => (
+          {visibleToasts.map(toast => (
             <Toast key={toast.id} {...toast} onDismiss={dismissToast} />
           ))}
         </AnimatePresence>

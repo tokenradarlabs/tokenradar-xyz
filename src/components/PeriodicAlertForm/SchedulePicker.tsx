@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { PlugZap, Bot, DollarSign } from "lucide-react";
 
 import { InputField } from "@/components/ui/input-field";
+
+import { SelectField } from "@/components/ui/select-field";
 import { CurrencySelector } from "@/components/ui/currency-selector";
 import { isValidUrl, isWithinRange } from "@/lib/utils/validation";
 

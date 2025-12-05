@@ -70,7 +70,7 @@ export function LoginForm() {
   const debouncedEmail = useDebounce(emailValue, 500);
 
   useEffect(() => {
-    if (emailValue.length === 0) {
+    if (debouncedEmail.length === 0) {
       setEmailValidationStatus('idle');
       return;
     }
@@ -85,7 +85,7 @@ export function LoginForm() {
       }
     };
     validateEmail();
-  }, [debouncedEmail, emailValue]);
+  }, [debouncedEmail]);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 

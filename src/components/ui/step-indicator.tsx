@@ -14,11 +14,6 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({
 }) => {
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  useEffect(() => {
-    if (stepRefs.current[currentStep]) {
-      stepRefs.current[currentStep]?.focus();
-    }
-  }, [currentStep]);
 
   const handleKeyDown = (event: React.KeyboardEvent, index: number) => {
     if (event.key === 'ArrowRight') {
@@ -53,7 +48,7 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({
             )}
             onClick={() => onStepClick(index)}
             onKeyDown={e => handleKeyDown(e, index)}
-            tabIndex={0} // Make it focusable
+            tabIndex={index === currentStep ? 0 : -1}
             role='tab'
             aria-selected={index === currentStep}
             aria-controls={`panel-step-${index}`}

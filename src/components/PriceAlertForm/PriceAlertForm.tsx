@@ -70,6 +70,8 @@ export default function PriceAlertForm() {
   const discordWebhookUrlRef = useRef<HTMLInputElement>(null);
   const coinIdRef = useRef<HTMLSelectElement>(null);
 
+  const channel = methods.watch('channel');
+
   useLayoutEffect(() => {
     if (currentStep === 0) {
       if (channel === 'webhook') {
@@ -83,8 +85,6 @@ export default function PriceAlertForm() {
       coinIdRef.current?.focus();
     }
   }, [currentStep, channel]);
-
-  const channel = methods.watch('channel');
 
   const { handleSubmit: handleFormSubmission, isSubmitting } =
     useFormSubmission<PriceAlertFormValues>({

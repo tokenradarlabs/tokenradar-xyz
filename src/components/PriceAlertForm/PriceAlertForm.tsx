@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useAutoSave, hasUnsavedData } from '@/lib/utils/auto-save';
 import StepIndicator from '../ui/step-indicator';
@@ -65,6 +65,25 @@ export default function PriceAlertForm() {
     }
   }, [restore, showToast]); // Run only once on mount
 
+  const channelRef = useRef<HTMLSelectElement>(null);
+  const webhookUrlRef = useRef<HTMLInputElement>(null);
+  const discordWebhookUrlRef = useRef<HTMLInputElement>(null);
+  const coinIdRef = useRef<HTMLSelectElement>(null);
+
+  useLayoutEffect(() => {
+    if (currentStep === 0) {
+      if (channel === 'webhook') {
+        webhookUrlRef.current?.focus();
+      } else if (channel === 'discord') {
+        discordWebhookUrlRef.current?.focus();
+      } else {
+        channelRef.current?.focus();
+      }
+    } else if (currentStep === 1) {
+      coinIdRef.current?.focus();
+    }
+  }, [currentStep, channel]);
+
   const channel = methods.watch('channel');
 
   const { handleSubmit: handleFormSubmission, isSubmitting } =
@@ -124,13 +143,18 @@ export default function PriceAlertForm() {
         Price Alert
       </h2>
       <div className='mb-8'>
-        <StepIndicator steps={steps} currentStep={currentStep} />
+        <StepIndicator
+          steps={steps}
+          currentStep={currentStep}
+          onStepClick={setCurrentStep}
+        />
       </div>
       <form onSubmit={methods.handleSubmit(handleFormSubmission)} className='space-y-5'>
         <FormProvider {...methods}>
           {currentStep === 0 && (
             <>
               <SelectField
+                ref={channelRef}
                 name='channel'
                 label='Channel'
                 placeholder='Select where to receive alerts'
@@ -142,6 +166,7 @@ export default function PriceAlertForm() {
               />
               {channel === 'webhook' && (
                 <UrlField
+                  ref={webhookUrlRef}
                   name='webhookUrl'
                   label='Webhook URL'
                   placeholder='Enter your webhook URL'
@@ -150,6 +175,7 @@ export default function PriceAlertForm() {
               )}
               {channel === 'discord' && (
                 <UrlField
+                  ref={discordWebhookUrlRef}
                   name='discordWebhookUrl'
                   label='Discord Webhook URL'
                   placeholder='Enter your Discord webhook URL'
@@ -162,6 +188,7 @@ export default function PriceAlertForm() {
           {currentStep === 1 && (
             <>
               <SelectField
+                ref={coinIdRef}
                 name='coins.0.coinId'
                 label='Coin'
                 placeholder='Select a coin'

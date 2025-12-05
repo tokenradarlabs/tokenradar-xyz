@@ -21,16 +21,11 @@ interface NumberFieldProps {
   step?: number;
 }
 
-export const NumberField: React.FC<NumberFieldProps> = ({
-  name,
-  label,
-  placeholder,
-  disabled,
-  className,
-  min,
-  max,
-  step,
-}) => {
+export const NumberField = React.forwardRef<HTMLInputElement, NumberFieldProps>(
+  (
+    { name, label, placeholder, disabled, className, min, max, step },
+    ref
+  ) => {
   const { control } = useFormContext();
 
   return (
@@ -42,6 +37,7 @@ export const NumberField: React.FC<NumberFieldProps> = ({
           <FormLabel>{label}</FormLabel>
           <FormControl>
             <Input
+              ref={ref}
               type='number'
               placeholder={placeholder}
               {...field}

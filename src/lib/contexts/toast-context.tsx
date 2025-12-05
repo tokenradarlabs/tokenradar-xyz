@@ -32,6 +32,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
       if (toastQueue.length > 0) {
         const nextToast = toastQueue[0];
         setToastQueue(prevQueue => prevQueue.slice(1));
+        setTimeout(() => dismissToast(nextToast.id), TOAST_TIMEOUT);
         return [...updatedVisibleToasts, nextToast];
       }
       return updatedVisibleToasts;

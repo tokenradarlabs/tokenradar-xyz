@@ -24,7 +24,15 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
-    const currentLength = props.value?.toString().length || 0;
+    const [currentLength, setCurrentLength] = React.useState(
+      props.value?.toString().length || props.defaultValue?.toString().length || 0
+    );
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setCurrentLength(event.currentTarget.value.length);
+      props.onChange?.(event);
+    };
+
     return (
       <div className="relative">
         <input
@@ -36,12 +44,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
             error &&
               'border-destructive aria-[invalid=true]:ring-destructive/20 dark:aria-[invalid=true]:ring-destructive/40',
+            showCharCount && 'pr-8',
             className
           )}
           ref={ref}
           aria-invalid={error}
           aria-describedby={ariaDescribedBy}
           maxLength={maxLength}
+          onChange={handleChange}
           {...props}
         />
         {showCharCount && maxLength && (

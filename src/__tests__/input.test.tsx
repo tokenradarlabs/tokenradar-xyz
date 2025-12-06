@@ -11,7 +11,11 @@ describe('Input', () => {
 
   it('displays character count when showCharCount and maxLength are provided', async () => {
     const user = userEvent.setup();
-    render(<Input showCharCount maxLength={10} defaultValue="hello" />);
+    const TestComponent = () => {
+      const [value, setValue] = React.useState('hello');
+      return <Input showCharCount maxLength={10} value={value} onChange={(e) => setValue(e.target.value)} />;
+    };
+    render(<TestComponent />);
     const inputElement = screen.getByRole('textbox');
     expect(inputElement).toBeInTheDocument();
     expect(screen.getByText('5/10')).toBeInTheDocument();

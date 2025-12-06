@@ -1,9 +1,16 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from './button';
 import { ThemeToggle } from './theme-toggle';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from './drawer';
+import { MenuIcon, XIcon } from 'lucide-react';
 
 type NavItem = {
   label: string;
@@ -43,45 +50,13 @@ const NAV_ITEMS: NavItem[] = [
 
 export function Navbar() {
   const [active, setActive] = useState<number>(0);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
-  const mobileMenuRef = useRef<HTMLDivElement>(null);
-  const mobileMenuToggleRef = useRef<HTMLButtonElement>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
 
   const handleTabClick = (idx: number) => {
     setActive(idx);
-    setIsMobileMenuOpen(false);
+    setIsDrawerOpen(false);
   };
 
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isMobileMenuOpen) {
-        setIsMobileMenuOpen(false);
-        mobileMenuToggleRef.current?.focus();
-      }
-    };
-
-    const focusFirstElement = () => {
-      if (mobileMenuRef.current) {
-        const focusableElements = mobileMenuRef.current.querySelectorAll(
-          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-        );
-        if (focusableElements.length > 0) {
-          (focusableElements[0] as HTMLElement).focus();
-        }
-      }
-    };
-
-    if (isMobileMenuOpen) {
-      document.addEventListener('keydown', handleEscape);
-      focusFirstElement();
-    } else {
-      document.removeEventListener('keydown', handleEscape);
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, [isMobileMenuOpen]);
 
   return (
     <div className='sticky top-0 z-50'>
@@ -118,46 +93,19 @@ export function Navbar() {
 
           {/* Mobile Menu Toggle */}
           <div className='flex items-center md:hidden'>
-            <button
-              ref={mobileMenuToggleRef}
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className='rounded-md p-2 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
-              aria-controls='mobile-menu'
-              aria-expanded={isMobileMenuOpen ? 'true' : 'false'}
-              aria-label='Toggle navigation menu'
+            <Button
+              variant='ghost'
+              size='icon'
+              className='h-8 w-8 text-white'
+              onClick={() => setIsDrawerOpen(true)}
+              aria-label='Open navigation menu'
             >
-              <svg
-                className='h-6 w-6'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
-                xmlns='http://www.w3.org/2000/svg'
-              >
-                {isMobileMenuOpen ? (
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth='2'
-                    d='M6 18L18 6M6 6l12 12'
-                  ></path>
-                ) : (
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth='2'
-                    d='M4 6h16M4 12h16m-7 6h7'
-                  ></path>
-                )}
-              </svg>
-            </button>
+              <MenuIcon className='h-5 w-5' />
+            </Button>
           </div>
 
-          {/* Navigation Links (Desktop & Mobile) */}
-          <div
-            id='mobile-menu'
-            ref={mobileMenuRef}
-            className={`w-full md:flex md:w-auto md:items-center overflow-hidden md:overflow-visible transition-[max-height] duration-300 ease-in-out ${isMobileMenuOpen ? 'max-h-screen' : 'max-h-0'} md:max-h-none`}
-          >
+          {/* Desktop Navigation Links */}
+          <div className='hidden w-full md:flex md:w-auto md:items-center'>
             <ul
               className='mt-4 flex flex-1 flex-col items-center justify-center md:mt-0 md:flex-row md:space-x-4'
               role='list'
@@ -167,7 +115,11 @@ export function Navbar() {
                   <Link
                     href={item.path}
                     onClick={() => handleTabClick(idx)}
-                    className={`flex items-center rounded-md px-3 py-2 text-left text-[0.95rem] font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${active === idx ? 'bg-[#313440] font-semibold text-white shadow' : 'font-normal text-[#b2b7be] hover:bg-[#282b38] hover:text-white'}`}
+                    className={`flex items-center rounded-md px-3 py-2 text-left text-[0.95rem] font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
+                      active === idx
+                        ? 'bg-[#313440] font-semibold text-white shadow'
+                        : 'font-normal text-[#b2b7be] hover:bg-[#282b38] hover:text-white'
+                    }`}
                     aria-current={active === idx ? 'page' : undefined}
                   >
                     {item.icon}
@@ -197,6 +149,57 @@ export function Navbar() {
           </div>
         </div>
       </nav>
+
+      <Drawer open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
+        <DrawerContent className='w-64'>
+          <DrawerHeader>
+            <DrawerTitle>Navigation</DrawerTitle>
+            <Button
+              variant='ghost'
+              size='icon'
+              className='absolute right-4 top-4 h-8 w-8'
+              onClick={() => setIsDrawerOpen(false)}
+            >
+              <XIcon className='h-5 w-5' />
+            </Button>
+          </DrawerHeader>
+          <ul className='flex flex-col gap-1 p-4' role='list'>
+            {NAV_ITEMS.map((item, idx) => (
+              <li key={item.label}>
+                <Link
+                  href={item.path}
+                  onClick={() => handleTabClick(idx)}
+                  className={`flex items-center rounded-md px-3 py-2 text-left text-[0.95rem] font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
+                    active === idx
+                      ? 'bg-[#313440] font-semibold text-white shadow'
+                      : 'font-normal text-[#b2b7be] hover:bg-[#282b38] hover:text-white'
+                  }`}
+                  aria-current={active === idx ? 'page' : undefined}
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className='mt-auto flex flex-col items-center gap-2 p-4'>
+            <ThemeToggle />
+            <Button
+              asChild
+              variant='ghost'
+              className='w-full text-sm font-medium text-[#b3b8c5] hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
+            >
+              <Link href='/login'>Login</Link>
+            </Button>
+            <Button
+              asChild
+              className='w-full bg-[#22d3ee] text-sm font-medium text-white hover:bg-[#0ea5e9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
+            >
+              <Link href='/register'>Sign up</Link>
+            </Button>
+          </div>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }

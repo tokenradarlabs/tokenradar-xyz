@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { CurrencySelector } from '@/components/ui/currency-selector';
 import Image from 'next/image';
 import React, { useRef, useState } from 'react';
 
@@ -31,6 +32,7 @@ export function PriceAlertForm() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [currency, setCurrency] = useState<string>('USD');
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -248,16 +250,12 @@ export function PriceAlertForm() {
                 <p className='mt-1 text-sm text-red-500'>{priceError}</p>
               )}
             </div>
-            <Select defaultValue='usd'>
-              <SelectTrigger className='h-10 w-[120px] border-[#2a3042] bg-[#1a1f2e] text-white [&>*]:text-white'>
-                <SelectValue placeholder='Currency' />
-              </SelectTrigger>
-              <SelectContent className='border-[#2a3042] bg-[#1a1f2e]'>
-                <SelectItem value='usd' className='text-white'>
-                  $ (USD)
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <CurrencySelector
+              value={currency}
+              onValueChange={setCurrency}
+              label="" // No label needed here as it's part of a larger input group
+              className='h-10 w-[120px] border-[#2a3042] bg-[#1a1f2e] text-white [&>*]:text-white'
+            />
           </div>
         </div>
       </div>
@@ -272,7 +270,7 @@ export function PriceAlertForm() {
             {CURRENT_PRICES[
               selectedToken as keyof typeof CURRENT_PRICES
             ].toLocaleString()}{' '}
-            USD
+            {currency}
           </span>
           .
         </span>

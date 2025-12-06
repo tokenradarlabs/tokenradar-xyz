@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { PlugZap, Bot, DollarSign } from "lucide-react";
-import { SelectField } from "@/components/ui/select-field";
+
 import { InputField } from "@/components/ui/input-field";
+
+import { SelectField } from "@/components/ui/select-field";
+import { CurrencySelector } from "@/components/ui/currency-selector";
 import { isValidUrl, isWithinRange } from "@/lib/utils/validation";
 
 type Option = { label: string; value: string };
@@ -18,7 +21,6 @@ type SchedulePickerProps = {
   channels: Option[];
   coins: Option[];
   conditions: Option[];
-  currencies: Option[];
   exchanges: Option[];
   webhookError: string | null; setWebhookError: (v: string | null) => void;
   discordBotError: string | null; setDiscordBotError: (v: string | null) => void;
@@ -29,7 +31,7 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({
   channel, setChannel, webhook, setWebhook, discordBot, setDiscordBot,
   coin, setCoin, condition, setCondition, price, setPrice,
   currency, setCurrency, exchange, setExchange,
-  channels, coins, conditions, currencies, exchanges,
+  channels, coins, conditions, exchanges,
   webhookError, setWebhookError, discordBotError, setDiscordBotError, priceError, setPriceError,
 }) => {
 
@@ -101,7 +103,7 @@ export const SchedulePicker: React.FC<SchedulePickerProps> = ({
           error={!!priceError}
           errorMessage={priceError || undefined}
         />
-        <SelectField label="Currency" value={currency} setValue={setCurrency} options={currencies} />
+        <CurrencySelector value={currency} onValueChange={setCurrency} />
       </div>
       <SelectField label="Exchange" value={exchange} setValue={setExchange} options={exchanges} />
     </div>

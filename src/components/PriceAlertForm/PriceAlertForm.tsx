@@ -12,6 +12,7 @@ import {
 import { SelectField } from '../ui/select-field';
 import { UrlField } from '../ui/url-field';
 import { NumberField } from '../ui/number-field';
+import { CurrencySelector } from '../ui/currency-selector';
 import { FormSkeleton } from './FormSkeleton';
 import { Spinner } from '../ui/spinner';
 import { useToast } from '@/lib/contexts/toast-context';
@@ -201,15 +202,12 @@ export default function PriceAlertForm() {
                 step={0.01}
                 disabled={formDisabled}
               />
-              <SelectField
+              <CurrencySelector
                 name='currency'
                 label='Currency'
                 placeholder='Select currency'
-                options={[
-                  { label: 'USD', value: 'USD' },
-                  { label: 'EUR', value: 'EUR' },
-                  { label: 'GBP', value: 'GBP' },
-                ]} // Placeholder options
+                value={methods.watch('currency')}
+                onValueChange={(value) => methods.setValue('currency', value)}
                 disabled={formDisabled}
               />
             </>

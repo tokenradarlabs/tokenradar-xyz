@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,8 +11,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function Home() {
+  const shouldReduceMotion = useReducedMotion();
+
   const cardVariants = {
-    hidden: { opacity: 0, y: 50 },
+    hidden: { opacity: shouldReduceMotion ? 1 : 0, y: shouldReduceMotion ? 0 : 50 },
     visible: { opacity: 1, y: 0 },
   };
 
@@ -71,7 +73,7 @@ export default function Home() {
           viewport={{ once: true, amount: 0.8 }}
           transition={{ duration: 0.5 }}
         >
-          <svg width="36" height="36" fill="none" viewBox="0 0 24 24" className="mb-3 animate-bounce"><path d="M12 22a10 10 0 100-20 10 10 0 000 20z" stroke="#3b82f6" strokeWidth="2"/><path d="M12 8v4l3 3" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round"/></svg>
+          <svg width="36" height="36" fill="none" viewBox="0 0 24 24" className="mb-3 motion-safe:animate-bounce"><path d="M12 22a10 10 0 100-20 10 10 0 000 20z" stroke="#3b82f6" strokeWidth="2"/><path d="M12 8v4l3 3" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round"/></svg>
           <h3 className="text-lg font-semibold text-white mb-1">Live Alerts</h3>
           <p className="text-[#b3b8c5] text-sm">Real-time price alerts and market notifications</p>
         </motion.div>
@@ -83,7 +85,7 @@ export default function Home() {
           viewport={{ once: true, amount: 0.8 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <svg width="36" height="36" fill="none" viewBox="0 0 24 24" className="mb-3 animate-bounce"><path d="M3 17l6-6 4 4 8-8" stroke="#06b6d4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          <svg width="36" height="36" fill="none" viewBox="0 0 24 24" className="mb-3 motion-safe:animate-bounce"><path d="M3 17l6-6 4 4 8-8" stroke="#06b6d4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
           <h3 className="text-lg font-semibold text-white mb-1">Market Insights</h3>
           <p className="text-[#b3b8c5] text-sm">Comprehensive market analysis and trends</p>
         </motion.div>
@@ -95,7 +97,7 @@ export default function Home() {
           viewport={{ once: true, amount: 0.8 }}
           transition={{ duration: 0.5, delay: 0.4 }}
         >
-          <svg width="36" height="36" fill="none" viewBox="0 0 24 24" className="mb-3 animate-bounce"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" stroke="#a78bfa" strokeWidth="2"/></svg>
+          <svg width="36" height="36" fill="none" viewBox="0 0 24 24" className="mb-3 motion-safe:animate-bounce"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" stroke="#a78bfa" strokeWidth="2"/></svg>
           <h3 className="text-lg font-semibold text-white mb-1">Community Tools</h3>
           <p className="text-[#b3b8c5] text-sm">Discord bots and community integrations</p>
         </motion.div>

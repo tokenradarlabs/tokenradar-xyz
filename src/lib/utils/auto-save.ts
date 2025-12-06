@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useLayoutEffect } from 'react';
 
 interface AutoSaveOptions<T> {
   key: string;
@@ -20,12 +20,13 @@ export const useAutoSave = <T>(options: AutoSaveOptions<T>) => {
   useEffect(() => {
     dataRef.current = data;
     // Check if data has changed from initialData or last saved data to set dirty state
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     if (JSON.stringify(data) !== JSON.stringify(initialDataRef.current)) {
       setIsDirty(true);
     } else {
       setIsDirty(false);
     }
-  }, [data, initialDataRef]);
+  }, [data]);
 
   const save = useCallback(() => {
     setIsSaving(true);
@@ -47,6 +48,7 @@ export const useAutoSave = <T>(options: AutoSaveOptions<T>) => {
       if (savedData) {
         const parsedData: T = JSON.parse(savedData);
         onRestore?.(parsedData);
+        initialDataRef.current = parsedData; // Set initialDataRef here
         return parsedData;
       }
     } catch (error) {
@@ -64,12 +66,9 @@ export const useAutoSave = <T>(options: AutoSaveOptions<T>) => {
     }
   }, [key]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Attempt to restore on mount
-    const restored = restore();
-    if (restored) {
-        initialDataRef.current = restored; // If restored, this becomes the new initial state
-    }
+    restore(); // initialDataRef is set inside restore
     const intervalId = setInterval(save, interval);
     return () => clearInterval(intervalId);
   }, [save, interval, restore]);

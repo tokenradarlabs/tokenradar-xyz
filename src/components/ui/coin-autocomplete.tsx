@@ -1,4 +1,4 @@
-import React, { useState, useMemo, ChangeEvent } from 'react';
+import React, { useState, useMemo, ChangeEvent, KeyboardEvent, useRef } from 'react';
 
 interface Coin {
   id: string;
@@ -10,10 +10,10 @@ interface Coin {
 // Mock data for demonstration purposes
 const mockCoins: Coin[] = [
   { id: 'bitcoin', name: 'Bitcoin', symbol: 'BTC', icon: '/btc.svg' },
-  { id: 'ethereum', name: 'Ethereum', symbol: 'ETH', icon: 'https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=025' },
-  { id: 'ripple', name: 'Ripple', symbol: 'XRP', icon: 'https://cryptologos.cc/logos/xrp-xrp-logo.svg?v=025' },
-  { id: 'litecoin', name: 'Litecoin', symbol: 'LTC', icon: 'https://cryptologos.cc/logos/litecoin-ltc-logo.svg?v=025' },
-  { id: 'cardano', name: 'Cardano', symbol: 'ADA', icon: 'https://cryptologos.cc/logos/cardano-ada-logo.svg?v=025' },
+  { id: 'ethereum', name: 'Ethereum', symbol: 'ETH', icon: '/eth.svg' }, // Placeholder, ideally a local asset
+  { id: 'ripple', name: 'Ripple', symbol: 'XRP', icon: '/xrp.svg' }, // Placeholder, ideally a local asset
+  { id: 'litecoin', name: 'Litecoin', symbol: 'LTC', icon: '/ltc.svg' }, // Placeholder, ideally a local asset
+  { id: 'cardano', name: 'Cardano', symbol: 'ADA', icon: '/ada.svg' }, // Placeholder, ideally a local asset
 ];
 
 interface CoinAutocompleteProps {
@@ -24,10 +24,15 @@ interface CoinAutocompleteProps {
 const CoinAutocomplete: React.FC<CoinAutocompleteProps> = ({ onSelectCoin, coins = mockCoins }) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [activeIndex, setActiveIndex] = useState<number>(-1); // For keyboard navigation
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const minSearchLength = 1; // Minimum length for search term to display results
 
   const filteredCoins = useMemo(() => {
-    if (!searchTerm) {
-      return [];
+    if (!searchTerm || searchTerm.length < minSearchLength) {
+      // When search term is empty or too short, show a default list (e.g., top N coins)
+      return coins.slice(0, 5); 
     }
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
     return coins.filter(
@@ -40,41 +45,97 @@ const CoinAutocomplete: React.FC<CoinAutocompleteProps> = ({ onSelectCoin, coins
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
     setIsOpen(true);
+    setActiveIndex(-1); // Reset active index on new search
   };
 
   const handleCoinClick = (coin: Coin) => {
     onSelectCoin(coin);
     setSearchTerm(coin.name); // Display selected coin name in input
     setIsOpen(false);
+    inputRef.current?.focus(); // Return focus to input after selection
   };
 
   const handleBlur = () => {
-    // Delay hiding to allow click event on coin item to register
-    setTimeout(() => setIsOpen(false), 100);
+    // Only close if a related target (like a clicked list item) isn't part of the autocomplete
+    setTimeout(() => {
+      if (!document.activeElement?.closest('.coin-autocomplete-list')) {
+        setIsOpen(false);
+      }
+    }, 100); // Small delay to allow click events on list items
   };
 
   const handleFocus = () => {
     setIsOpen(true);
   };
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (!isOpen || filteredCoins.length === 0) return;
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        setActiveIndex((prevIndex) => (prevIndex + 1) % filteredCoins.length);
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        setActiveIndex((prevIndex) =>
+          prevIndex === -1 ? filteredCoins.length - 1 : (prevIndex - 1 + filteredCoins.length) % filteredCoins.length
+        );
+        break;
+      case 'Enter':
+        event.preventDefault();
+        if (activeIndex !== -1) {
+          handleCoinClick(filteredCoins[activeIndex]);
+        } else if (filteredCoins.length > 0 && searchTerm) {
+          // If enter is pressed and no item is highlighted, but there are results,
+          // optionally select the first one or do nothing.
+          // For now, let's do nothing if no explicit highlight.
+        }
+        break;
+      case 'Escape':
+        event.preventDefault();
+        setIsOpen(false);
+        inputRef.current?.blur(); // Remove focus from input
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
-    <div className="relative w-full">
+    <div className="relative w-full" role="combobox" aria-expanded={isOpen} aria-haspopup="listbox" aria-controls="coin-list">
       <input
+        ref={inputRef}
+        id="coin-input"
         type="text"
         placeholder="Search for a coin..."
         value={searchTerm}
         onChange={handleInputChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
+        aria-autocomplete="list"
+        aria-label="Search for a coin"
+        aria-activedescendant={activeIndex !== -1 ? `coin-option-${filteredCoins[activeIndex]?.id}` : undefined}
         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
       />
       {isOpen && filteredCoins.length > 0 && (
-        <ul className="absolute z-10 w-full mt-1 border border-input rounded-md bg-popover shadow-lg max-h-60 overflow-auto">
-          {filteredCoins.map((coin) => (
+        <ul
+          id="coin-list"
+          role="listbox"
+          className="coin-autocomplete-list absolute z-10 w-full mt-1 border border-input rounded-md bg-popover shadow-lg max-h-60 overflow-auto"
+        >
+          {filteredCoins.map((coin, index) => (
             <li
               key={coin.id}
-              className="px-3 py-2 cursor-pointer hover:bg-accent hover:text-accent-foreground flex items-center"
+              id={`coin-option-${coin.id}`}
+              role="option"
+              aria-selected={activeIndex === index}
+              className={`px-3 py-2 cursor-pointer flex items-center ${
+                activeIndex === index ? 'bg-accent text-accent-foreground' : 'hover:bg-accent hover:text-accent-foreground'
+              }`}
               onClick={() => handleCoinClick(coin)}
+              onMouseDown={(e) => e.preventDefault()} // Prevent blur from closing before click registers
             >
               {coin.icon && (
                 <img src={coin.icon} alt={coin.name} className="w-5 h-5 mr-2 rounded-full" />

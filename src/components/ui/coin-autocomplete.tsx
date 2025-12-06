@@ -1,4 +1,4 @@
-import React, { useState, useMemo, ChangeEvent, KeyboardEvent, useRef } from 'react';
+import React, { useState, useMemo, ChangeEvent, KeyboardEvent, useRef, useId } from 'react';
 
 interface Coin {
   id: string;
@@ -19,15 +19,18 @@ const mockCoins: Coin[] = [
 interface CoinAutocompleteProps {
   onSelectCoin: (coin: Coin) => void;
   coins?: Coin[]; // Optional prop to provide external coin data
+  minSearchLength?: number; // Optional prop to set minimum search length
 }
 
-const CoinAutocomplete: React.FC<CoinAutocompleteProps> = ({ onSelectCoin, coins = mockCoins }) => {
+const CoinAutocomplete: React.FC<CoinAutocompleteProps> = ({ onSelectCoin, coins = mockCoins, minSearchLength = 1 }) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<number>(-1); // For keyboard navigation
   const inputRef = useRef<HTMLInputElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null); // Ref for the component's root element
 
-  const minSearchLength = 1; // Minimum length for search term to display results
+  const inputId = useId();
+  const listboxId = useId();
 
   const filteredCoins = useMemo(() => {
     if (!searchTerm || searchTerm.length < minSearchLength) {
@@ -40,7 +43,7 @@ const CoinAutocomplete: React.FC<CoinAutocompleteProps> = ({ onSelectCoin, coins
         coin.name.toLowerCase().includes(lowerCaseSearchTerm) ||
         coin.symbol.toLowerCase().includes(lowerCaseSearchTerm)
     );
-  }, [searchTerm, coins]);
+  }, [searchTerm, coins, minSearchLength]);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -56,9 +59,9 @@ const CoinAutocomplete: React.FC<CoinAutocompleteProps> = ({ onSelectCoin, coins
   };
 
   const handleBlur = () => {
-    // Only close if a related target (like a clicked list item) isn't part of the autocomplete
+    // Only close if focus has completely left the component
     setTimeout(() => {
-      if (!document.activeElement?.closest('.coin-autocomplete-list')) {
+      if (rootRef.current && !rootRef.current.contains(document.activeElement)) {
         setIsOpen(false);
       }
     }, 100); // Small delay to allow click events on list items
@@ -84,12 +87,12 @@ const CoinAutocomplete: React.FC<CoinAutocompleteProps> = ({ onSelectCoin, coins
         break;
       case 'Enter':
         event.preventDefault();
-        if (activeIndex !== -1) {
+        if (activeIndex !== -1 && activeIndex < filteredCoins.length) {
           handleCoinClick(filteredCoins[activeIndex]);
         } else if (filteredCoins.length > 0 && searchTerm) {
-          // If enter is pressed and no item is highlighted, but there are results,
-          // optionally select the first one or do nothing.
-          // For now, let's do nothing if no explicit highlight.
+          // If enter is pressed, no item is highlighted, but there are results and a search term,
+          // automatically select the first coin.
+          handleCoinClick(filteredCoins[0]);
         }
         break;
       case 'Escape':
@@ -103,10 +106,10 @@ const CoinAutocomplete: React.FC<CoinAutocompleteProps> = ({ onSelectCoin, coins
   };
 
   return (
-    <div className="relative w-full" role="combobox" aria-expanded={isOpen} aria-haspopup="listbox" aria-controls="coin-list">
+    <div ref={rootRef} className="relative w-full" role="combobox" aria-expanded={isOpen} aria-haspopup="listbox" aria-controls={listboxId}>
       <input
         ref={inputRef}
-        id="coin-input"
+        id={inputId}
         type="text"
         placeholder="Search for a coin..."
         value={searchTerm}
@@ -116,12 +119,12 @@ const CoinAutocomplete: React.FC<CoinAutocompleteProps> = ({ onSelectCoin, coins
         onKeyDown={handleKeyDown}
         aria-autocomplete="list"
         aria-label="Search for a coin"
-        aria-activedescendant={activeIndex !== -1 ? `coin-option-${filteredCoins[activeIndex]?.id}` : undefined}
+        aria-activedescendant={activeIndex !== -1 && activeIndex < filteredCoins.length ? `coin-option-${filteredCoins[activeIndex]?.id}` : undefined}
         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
       />
       {isOpen && filteredCoins.length > 0 && (
         <ul
-          id="coin-list"
+          id={listboxId}
           role="listbox"
           className="coin-autocomplete-list absolute z-10 w-full mt-1 border border-input rounded-md bg-popover shadow-lg max-h-60 overflow-auto"
         >

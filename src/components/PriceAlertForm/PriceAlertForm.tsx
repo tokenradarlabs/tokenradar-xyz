@@ -1,6 +1,8 @@
 'use client';
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
+import { ConfirmDialog } from '../ui/confirm-dialog';
+import { ConfirmDialog } from '../ui/confirm-dialog';
 import { useAutoSave, hasUnsavedData } from '@/lib/utils/auto-save';
 import StepIndicator from '../ui/step-indicator';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,6 +20,7 @@ import { Spinner } from '../ui/spinner';
 import { useToast } from '@/lib/contexts/toast-context';
 import { useCoinAndExchangeData } from '@/lib/hooks/useCoinAndExchangeData';
 import { useFormSubmission } from '@/lib/hooks/useFormSubmission';
+import { ConfirmDialog } from '../ui/confirm-dialog';
 
 export default function PriceAlertForm() {
   const { showToast } = useToast();
@@ -29,6 +32,7 @@ export default function PriceAlertForm() {
   } = useCoinAndExchangeData();
   const [currentStep, setCurrentStep] = useState(0);
   const steps = ['Channel', 'Details', 'Review'];
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const AUTO_SAVE_KEY = 'priceAlertForm';
 
   const methods = useForm<PriceAlertFormValues>({
@@ -86,25 +90,45 @@ export default function PriceAlertForm() {
     }
   }, [currentStep]);
 
-  const { handleSubmit: handleFormSubmission, isSubmitting } =
-    useFormSubmission<PriceAlertFormValues>({
-      onSubmit: async (data: PriceAlertFormValues) => {
-        const response = await fetch('/api/price-alerts', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to create price alert.');
-        }
-
-        methods.reset(); // Reset form fields
-        clearSavedData(); // Clear auto-saved data
+  const submitForm = async (data: PriceAlertFormValues) => {
+    const response = await fetch('/api/price-alerts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to create price alert.');
+    }
+
+    methods.reset(); // Reset form fields
+    clearSavedData(); // Clear auto-saved data
+  };
+
+  const onConfirmSubmit = async (data: PriceAlertFormValues) => {
+    const response = await fetch('/api/price-alerts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to create price alert.');
+    }
+
+    methods.reset(); // Reset form fields
+    clearSavedData(); // Clear auto-saved data
+  };
+
+  const { handleSubmit: submitHandler, isSubmitting } =
+    useFormSubmission<PriceAlertFormValues>({
+      onSubmit: onConfirmSubmit,
       successMessage: 'Price alert created successfully.',
       errorMessage: 'Failed to create price alert.',
       onSuccess: () => {
@@ -114,6 +138,10 @@ export default function PriceAlertForm() {
         console.error('Failed to create price alert:', error);
       },
     });
+  
+  const handlePreSubmit = () => {
+    setShowConfirmDialog(true);
+  };
 
   const formDisabled = isSubmitting || isLoadingData;
 
@@ -149,7 +177,7 @@ export default function PriceAlertForm() {
           onStepClick={setCurrentStep}
         />
       </div>
-      <form onSubmit={methods.handleSubmit(handleFormSubmission)} className='space-y-5'>
+      <form onSubmit={methods.handleSubmit(handlePreSubmit)} className='space-y-5'>
         <FormProvider {...methods}>
           {currentStep === 0 && (
             <>
@@ -317,6 +345,14 @@ export default function PriceAlertForm() {
           {lastSaved && <p>Last saved: {lastSaved.toLocaleTimeString()}</p>}
         </div>
       </form>
+      <ConfirmDialog
+        open={showConfirmDialog}
+        onOpenChange={setShowConfirmDialog}
+        title="Confirm Alert Submission"
+        description="Are you sure you want to create this price alert?"
+        onConfirm={methods.handleSubmit(submitHandler)}
+        onCancel={() => setShowConfirmDialog(false)}
+      />
     </div>
   );
 }

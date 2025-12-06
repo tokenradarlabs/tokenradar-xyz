@@ -41,6 +41,17 @@ export const UrlField = React.forwardRef<HTMLInputElement, UrlFieldProps>(
       return;
     }
 
+    try {
+      new URL(url);
+    } catch (e) {
+      toast({
+        title: 'Error',
+        description: 'Please enter a valid URL.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsTesting(true);
     try {
       const response = await fetch(url, {
@@ -64,10 +75,10 @@ export const UrlField = React.forwardRef<HTMLInputElement, UrlFieldProps>(
           variant: 'destructive',
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: 'Error',
-        description: `Webhook test failed: ${error.message}`,
+        description: `Webhook test failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: 'destructive',
       });
     } finally {

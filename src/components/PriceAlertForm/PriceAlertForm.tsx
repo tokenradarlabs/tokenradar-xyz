@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { ConfirmDialog } from '../ui/confirm-dialog';
-import { useAutoSave, hasUnsavedData } from '@/lib/utils/auto-save';
+import { useAutoSave } from '@/lib/utils/auto-save';
 import StepIndicator from '../ui/step-indicator';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -46,10 +46,11 @@ export default function PriceAlertForm() {
     },
   });
 
-  const { isSaving, lastSaved, restore, clearSavedData } =
+  const { isSaving, lastSaved, restore, clearSavedData, isDirty } =
     useAutoSave<PriceAlertFormValues>({
       key: AUTO_SAVE_KEY,
       data: methods.watch(),
+      initialData: methods.getValues(), // Use current form values as initial data
       onRestore: savedData => {
         methods.reset(savedData);
         showToast('Unsaved data restored.', 'info');
@@ -59,14 +60,21 @@ export default function PriceAlertForm() {
       },
     });
 
+  // New: Handle browser beforeunload warning
   useEffect(() => {
-    if (hasUnsavedData(AUTO_SAVE_KEY)) {
-      showToast(
-        'Unsaved changes detected. Click restore to load them.',
-        'info'
-      );
-    }
-  }, [restore, showToast]); // Run only once on mount
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (isDirty) {
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isDirty]);
 
   const channelRef = useRef<HTMLSelectElement>(null);
   const webhookUrlRef = useRef<HTMLInputElement>(null);

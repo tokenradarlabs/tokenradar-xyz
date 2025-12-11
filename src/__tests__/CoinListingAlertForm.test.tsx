@@ -57,17 +57,25 @@ describe('CoinListingAlertForm', () => {
     expect(screen.getByRole('status')).toBeInTheDocument(); // Spinner has role="status"
   });
 
-  it('displays error message when data loading fails', () => {
-    const errorMessage = 'Failed to load coin data.';
-    (useCoinAndExchangeData as jest.Mock).mockReturnValue({
-      coins: [],
-      exchanges: [],
-      isLoading: false,
-      coinsError: new Error(errorMessage),
-      exchangesError: null,
+  it('displays error for invalid coin/exchange combination (Bitcoin/Binance)', async () => {
+    const userEvent = await import('@testing-library/user-event');
+    render(<CoinListingAlertForm />);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/Send me an/i)).toBeInTheDocument();
     });
 
-    render(<CoinListingAlertForm />);
-    expect(screen.getByText(`Error loading data: ${errorMessage}`)).toBeInTheDocument();
+    // Select 'Bitcoin' for coin
+    const coinSelect = screen.getByLabelText(/as soon as/i);
+    userEvent.selectOptions(coinSelect, 'Bitcoin');
+
+    // Select 'Binance' for exchange
+    const exchangeSelect = screen.getByLabelText(/gets listed on/i);
+    userEvent.selectOptions(exchangeSelect, 'Binance');
+
+    // Expect the error message to be displayed
+    await waitFor(() => {
+      expect(screen.getByText('Bitcoin on Binance is not a valid combination for this alert.')).toBeInTheDocument();
+    });
   });
 });

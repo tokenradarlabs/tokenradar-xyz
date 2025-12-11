@@ -112,6 +112,7 @@ export default function CoinListingAlertForm() {
           label='as soon as'
           options={coins.map(c => ({ label: c, value: c }))}
           disabled={formDisabled}
+          error={form.formState.errors.coin?.message}
         />
 
         <SelectField

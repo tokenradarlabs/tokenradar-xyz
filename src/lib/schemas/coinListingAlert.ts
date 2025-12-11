@@ -19,6 +19,21 @@ export const coinListingAlertSchema = z
     exchange: z.string().min(1, { message: 'Exchange is required.' }),
   })
   .refine(
+    data => {
+      if (
+        data.coin.toLowerCase() === 'bitcoin' &&
+        data.exchange.toLowerCase() === 'binance'
+      ) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: 'Bitcoin on Binance is not a valid combination for this alert.',
+      path: ['coin'], // Attach error to the coin field for visibility
+    }
+  )
+  .refine(
     data =>
       data.channel === 'webhook'
         ? Boolean(data.webhook && data.webhook.trim())

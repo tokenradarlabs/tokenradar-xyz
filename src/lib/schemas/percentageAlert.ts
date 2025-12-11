@@ -17,13 +17,13 @@ export const percentageAlertSchema = z
     discordWebhookUrl: z
       .string()
       .url({ message: 'Invalid Discord webhook URL.' })
-      .optional()
-      .or(z.literal('')),
+      .transform((e) => (e === '' ? undefined : e))
+      .optional(),
     webhookUrl: z
       .string()
       .url({ message: 'Invalid webhook URL.' })
-      .optional()
-      .or(z.literal('')),
+      .transform((e) => (e === '' ? undefined : e))
+      .optional(),
     exchange: z.string().min(1, { message: 'Exchange is required.' }),
   })
   .refine(

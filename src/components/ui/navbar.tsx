@@ -1,7 +1,8 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { Button } from './button';
 import { ThemeToggle } from './theme-toggle';
 import {
@@ -51,6 +52,25 @@ const NAV_ITEMS: NavItem[] = [
 export function Navbar() {
   const [active, setActive] = useState<number>(0);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleRouteChangeStart = () => setIsLoading(true);
+    const handleRouteChangeComplete = () => setIsLoading(false);
+    const handleRouteChangeError = () => setIsLoading(false);
+
+    router.events.on('routeChangeStart', handleRouteChangeStart);
+    router.events.on('routeChangeComplete', handleRouteChangeComplete);
+    router.events.on('routeChangeError', handleRouteChangeError);
+
+    return () => {
+      router.events.off('routeChangeStart', handleRouteChangeStart);
+      router.events.off('routeChangeComplete', handleRouteChangeComplete);
+      router.events.off('routeChangeError', handleRouteChangeError);
+    };
+  }, [router]);
+
 
   const handleTabClick = (idx: number) => {
     setActive(idx);
@@ -60,6 +80,9 @@ export function Navbar() {
 
   return (
     <div className='sticky top-0 z-50'>
+      {isLoading && (
+        <div className='fixed left-0 top-0 z-[9999] h-[3px] w-full animate-pulse bg-blue-500'></div>
+      )}
       <a
         href='#main-content'
         className='sr-only focus:not-sr-only focus:absolute focus:left-0 focus:top-0 focus:z-[999] focus:rounded-br-lg focus:bg-white focus:p-3 focus:text-black'

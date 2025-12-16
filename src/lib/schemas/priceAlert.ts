@@ -1,11 +1,12 @@
 import { z } from 'zod';
+import { zodSanitizeString } from '@/utils/validation';
 
 export const priceAlertSchema = z
   .object({
     coins: z
       .array(
         z.object({
-          coinId: z.string().min(1, { message: 'Coin ID is required.' }),
+          coinId: zodSanitizeString.min(1, { message: 'Coin ID is required.' }),
           condition: z.enum(['above', 'below'], {
             message: 'Condition is required.',
           }),
@@ -15,21 +16,19 @@ export const priceAlertSchema = z
     threshold: z.coerce
       .number()
       .min(0, { message: 'Threshold must be non-negative.' }),
-    currency: z.string().min(1, { message: 'Currency is required.' }),
+    currency: zodSanitizeString.min(1, { message: 'Currency is required.' }),
     channel: z.enum(['discord', 'webhook'], {
       message: 'Channel is required.',
     }),
-    discordWebhookUrl: z
-      .string()
+    discordWebhookUrl: zodSanitizeString
       .url({ message: 'Invalid Discord webhook URL.' })
       .optional()
       .or(z.literal('')),
-    webhookUrl: z
-      .string()
+    webhookUrl: zodSanitizeString
       .url({ message: 'Invalid webhook URL.' })
       .optional()
       .or(z.literal('')),
-    exchange: z.string().min(1, { message: 'Exchange is required.' }),
+    exchange: zodSanitizeString.min(1, { message: 'Exchange is required.' }),
   })
   .refine(
     data =>

@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 export const sanitizeInput = (input: string | null | undefined): string => {
   if (input === null || input === undefined) {
     return '';
@@ -10,6 +12,8 @@ export const sanitizeInput = (input: string | null | undefined): string => {
     .replace(/'/g, '&#x27;')
     .replace(/\//g, '&#x2F;');
 };
+
+export const zodSanitizeString = z.string().transform((val) => sanitizeInput(val));
 
 export const isWithinRange = (
   value: number | null | undefined,

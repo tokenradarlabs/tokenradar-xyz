@@ -3,9 +3,24 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ZodSchema, ZodError } from 'zod';
 import { useEffect, useRef, useCallback } from 'react';
 
+/**
+ * Custom hook for form validation using react-hook-form and Zod.
+ *
+ * @template T The type of the form data.
+ * @param {ZodSchema<T>} schema The Zod schema to validate the form data against.
+ * @param {T} defaultValues The default values for the form fields.
+ * @param {'onChange' | 'onBlur' | 'onSubmit' | 'onTouched' | 'all'} [mode='onChange'] The validation trigger mode.
+ *   - 'onChange': Validation triggers on change events.
+ *   - 'onBlur': Validation triggers on blur events.
+ *   - 'onSubmit': Validation triggers on submit events.
+ *   - 'onTouched': Validation triggers when a field is touched.
+ *   - 'all': Validation triggers on both onChange and onBlur events.
+ * @returns The react-hook-form hook return object, with a batched setValue function.
+ */
 export function useFormValidation<T extends object>(
   schema: ZodSchema<T>,
-  defaultValues: T
+  defaultValues: T,
+  mode: 'onChange' | 'onBlur' | 'onSubmit' | 'onTouched' | 'all' = 'onChange'
 ) {
   const schemaRef = useRef(schema);
 
@@ -34,7 +49,7 @@ export function useFormValidation<T extends object>(
   const form = useForm<T>({
     resolver,
     defaultValues,
-    mode: 'onChange',
+    mode,
     criteriaMode: 'all',
   });
 

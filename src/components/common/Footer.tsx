@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer() {
   return (
@@ -140,52 +141,53 @@ export default function Footer() {
             >
               Connect
             </h3>
-            <ul className='space-y-2'>
-              <li>
-                <Link
-                  href='https://discord.gg/tokenradar'
-                  className='text-sm text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400'
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  title='Join our Discord community'
-                >
-                  Discord
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='https://twitter.com/tokenradarlabs'
-                  className='text-sm text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400'
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  title='Follow us on Twitter'
-                >
-                  Twitter
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='https://github.com/tokenradarlabs'
-                  className='text-sm text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400'
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  title='Check out our GitHub'
-                >
-                  GitHub
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href='https://t.me/tokenradar'
-                  className='text-sm text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400'
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  title='Join us on Telegram'
-                >
-                  Telegram
-                </Link>
-              </li>
-            </ul>
+            <div className='flex space-x-4'>
+              <Link
+                href='https://github.com/tokenradarlabs'
+                target='_blank'
+                rel='noopener noreferrer'
+                aria-label='GitHub'
+                className='text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 transition-colors duration-200'
+              >
+                <Image
+                  src='/github.svg'
+                  alt='GitHub'
+                  width={24}
+                  height={24}
+                  className='h-6 w-6'
+                />
+              </Link>
+              <Link
+                href='https://discord.gg/tokenradar'
+                target='_blank'
+                rel='noopener noreferrer'
+                aria-label='Discord'
+                className='text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 transition-colors duration-200'
+              >
+                <Image
+                  src='/discord.svg'
+                  alt='Discord'
+                  width={24}
+                  height={24}
+                  className='h-6 w-6'
+                />
+              </Link>
+              <Link
+                href='https://twitter.com/tokenradarlabs'
+                target='_blank'
+                rel='noopener noreferrer'
+                aria-label='Twitter/X'
+                className='text-slate-600 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400 transition-colors duration-200'
+              >
+                <Image
+                  src='/x.svg'
+                  alt='Twitter/X'
+                  width={24}
+                  height={24}
+                  className='h-6 w-6'
+                />
+              </Link>
+            </div>
           </nav>
         </div>
 
@@ -243,7 +245,6 @@ export default function Footer() {
               'https://twitter.com/tokenradarlabs',
               'https://github.com/tokenradarlabs',
               'https://discord.gg/tokenradar',
-              'https://t.me/tokenradar',
             ],
           })}
         </script>

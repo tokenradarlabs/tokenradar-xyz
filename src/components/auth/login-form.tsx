@@ -28,6 +28,7 @@ const authenticateUser = async (values: LoginFormData) => {
 
 export function LoginForm() {
   const [rateLimitError, setRateLimitError] = useState<string | null>(null);
+  const [retryAfterSeconds, setRetryAfterSeconds] = useState<number>(0);
   const { form, handleSubmit, isSubmitting } = useFormHandler<LoginFormData>({
     schema: loginFormSchema,
     defaultValues: {
@@ -36,18 +37,28 @@ export function LoginForm() {
     },
     onSubmit: async (values: LoginFormData) => {
       setRateLimitError(null); // Clear any previous rate limit errors
+      setRetryAfterSeconds(0);
 
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // TODO: replace authenticateUser with your real auth call (e.g. API client, next-auth, etc.)
       // For now, we'll simulate a successful authentication.
-      const result = await authenticateUser(values);
+      // Simulate a rate limit error for demonstration
+      const result = {
+        ok: false,
+        status: 429,
+        message: 'Too many login attempts.',
+        retryAfter: 30,
+      };
+      // const result = await authenticateUser(values); // Uncomment this for real auth
 
       if (!result || !result.ok) {
         if (result?.status === 429) {
+          const retryAfter = result.retryAfter || 60; // Default to 60 seconds if not provided
+          setRetryAfterSeconds(retryAfter);
           setRateLimitError(
-            'Too many login attempts. Please try again after some time.'
+            `Too many login attempts. Please try again in ${retryAfter} seconds.`
           );
           return; // Prevent further processing for rate limit error
         }
@@ -90,18 +101,20 @@ export function LoginForm() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (rateLimitError) {
-      timerRef.current = setTimeout(() => {
-        setRateLimitError(null);
-      }, 5000); // Clear after 5 seconds
+    if (retryAfterSeconds > 0) {
+      timerRef.current = setInterval(() => {
+        setRetryAfterSeconds(prev => prev - 1);
+      }, 1000);
+    } else if (retryAfterSeconds === 0 && rateLimitError) {
+      setRateLimitError(null);
     }
 
     return () => {
       if (timerRef.current) {
-        clearTimeout(timerRef.current);
+        clearInterval(timerRef.current);
       }
     };
-  }, [rateLimitError]);
+  }, [retryAfterSeconds, rateLimitError]);
 
   return (
     <Card className='mx-auto w-full max-w-md'>
@@ -123,7 +136,7 @@ export function LoginForm() {
                         <Input
                           placeholder='Enter your email'
                           type='email'
-                          disabled={isSubmitting}
+                          disabled={isSubmitting || retryAfterSeconds > 0}
                           {...field}
                         />
                       </FormControl>
@@ -159,7 +172,7 @@ export function LoginForm() {
                       <Input
                         placeholder='Enter your password'
                         type='password'
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || retryAfterSeconds > 0}
                         error={!!form.formState.errors.password}
                         {...field}
                       />
@@ -170,11 +183,17 @@ export function LoginForm() {
               )}
             />
             {rateLimitError && (
-              <div role="alert" aria-live="assertive" className='text-destructive text-center'>
-                {rateLimitError}
+              <div
+                role='alert'
+                aria-live='assertive'
+                className='text-center font-medium text-destructive-foreground p-3 rounded-md bg-destructive mt-4'
+              >
+                {retryAfterSeconds > 0
+                  ? `Too many login attempts. Please try again in ${retryAfterSeconds} seconds.`
+                  : rateLimitError}
               </div>
             )}
-            <Button type='submit' className='w-full' disabled={isSubmitting || !!rateLimitError}>
+            <Button type='submit' className='w-full' disabled={isSubmitting || retryAfterSeconds > 0}>
               {isSubmitting ? 'Logging in...' : 'Login'}
             </Button>
           </form>

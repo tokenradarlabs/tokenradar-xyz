@@ -25,6 +25,40 @@ const directions = [
 export default function BTCDominanceAlertForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [btcDominance, setBtcDominance] = useState<number | null>(null);
+  const [dominanceLoading, setDominanceLoading] = useState(true);
+  const [dominanceError, setDominanceError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchBtcDominance = async () => {
+      try {
+        setDominanceLoading(true);
+        setDominanceError(null);
+        const response = await fetch('https://api.coingecko.com/api/v3/global');
+        if (!response.ok) {
+          throw new Error('Failed to fetch BTC dominance');
+        }
+        const data = await response.json();
+        const dominance = data.data.market_cap_percentage.btc;
+        setBtcDominance(dominance);
+      } catch (err: unknown) {
+        const errorMessage =
+          err instanceof Error
+            ? err.message
+            : 'Failed to fetch BTC dominance.';
+        setDominanceError(errorMessage);
+        console.error('Failed to fetch BTC dominance:', err);
+      } finally {
+        setDominanceLoading(false);
+      }
+    };
+
+    fetchBtcDominance(); // Initial fetch
+
+    const intervalId = setInterval(fetchBtcDominance, 30000); // Fetch every 30 seconds
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, []);
 
   const form = useForm<BTCDominanceAlertFormValues>({
     resolver: zodResolver(btcDominanceAlertSchema),

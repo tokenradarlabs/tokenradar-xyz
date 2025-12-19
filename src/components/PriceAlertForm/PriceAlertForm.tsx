@@ -1,7 +1,8 @@
 'use client';
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { ConfirmDialog } from '../ui/confirm-dialog';
+import { KeyboardShortcutsModal } from '../ui/keyboard-shortcuts-modal';
 import { useAutoSave } from '@/lib/utils/auto-save';
 import StepIndicator from '../ui/step-indicator';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -31,6 +32,8 @@ export default function PriceAlertForm() {
   const [currentStep, setCurrentStep] = useState(0);
   const steps = ['Channel', 'Details', 'Review'];
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showKeyboardShortcutsModal, setShowKeyboardShortcutsModal] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
   const AUTO_SAVE_KEY = 'priceAlertForm';
 
   const methods = useForm<PriceAlertFormValues>({
@@ -75,6 +78,46 @@ export default function PriceAlertForm() {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [isDirty]);
+
+  // New: Keyboard shortcuts
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        if (formRef.current) {
+          formRef.current.dispatchEvent(
+            new Event('submit', { cancelable: true, bubbles: true })
+          );
+        }
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        if (showConfirmDialog) {
+          setShowConfirmDialog(false);
+        } else if (showKeyboardShortcutsModal) {
+          setShowKeyboardShortcutsModal(false);
+        } else {
+          // Blur active element if it's an input/textarea to "cancel" editing
+          const activeElement = document.activeElement as HTMLElement;
+          if (
+            activeElement &&
+            (activeElement.tagName === 'INPUT' ||
+              activeElement.tagName === 'TEXTAREA' ||
+              activeElement.tagName === 'SELECT')
+          ) {
+            activeElement.blur();
+          }
+        }
+      }
+    },
+    [showConfirmDialog, showKeyboardShortcutsModal, formRef]
+  );
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleKeyDown]);
 
   const channelRef = useRef<HTMLSelectElement>(null);
   const webhookUrlRef = useRef<HTMLInputElement>(null);
@@ -166,7 +209,7 @@ export default function PriceAlertForm() {
           onStepClick={setCurrentStep}
         />
       </div>
-      <form onSubmit={methods.handleSubmit(handlePreSubmit)} className='space-y-5'>
+      <form ref={formRef} onSubmit={methods.handleSubmit(handlePreSubmit)} className='space-y-5'>
         <FormProvider {...methods}>
           {currentStep === 0 && (
             <>
@@ -332,6 +375,13 @@ export default function PriceAlertForm() {
         <div className='mt-4 text-center text-sm text-gray-500 dark:text-gray-400'>
           {isSaving && <p>Saving...</p>}
           {lastSaved && <p>Last saved: {lastSaved.toLocaleTimeString()}</p>}
+          <button
+            type='button'
+            onClick={() => setShowKeyboardShortcutsModal(true)}
+            className='mt-2 text-blue-500 hover:underline dark:text-blue-400'
+          >
+            Keyboard Shortcuts
+          </button>
         </div>
       </form>
       <ConfirmDialog
@@ -341,6 +391,10 @@ export default function PriceAlertForm() {
         description="Are you sure you want to create this price alert?"
         onConfirm={methods.handleSubmit(submitHandler)}
         onCancel={() => setShowConfirmDialog(false)}
+      />
+      <KeyboardShortcutsModal
+        open={showKeyboardShortcutsModal}
+        onOpenChange={setShowKeyboardShortcutsModal}
       />
     </div>
   );
